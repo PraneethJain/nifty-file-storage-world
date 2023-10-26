@@ -1,7 +1,7 @@
 #include "../common/headers.h"
 #include "headers.h"
 
-void *storage_server_relay(void *arg)
+void *storage_server_init(void *arg)
 {
   // naming server is the server
   (void)arg;
@@ -20,16 +20,18 @@ void *storage_server_relay(void *arg)
   printf("Listening for storage servers on port %i\n", NM_SS_PORT);
   while (1)
   {
+    // receive init information from the storage servers
+    // also periodically check if each storage server is still alive
     socklen_t addr_size = sizeof(client_addr);
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
 
-    char recv_buffer[MAX_STR_LEN] = {0};
-    CHECK(recv(clientfd, recv_buffer, MAX_STR_LEN, 0), -1)
-    printf("%s\n", recv_buffer);
+    storage_server_init_response resp;
+    CHECK(recv(clientfd, &resp, sizeof(resp), 0), -1)
+    printf("%i %i\n", resp.port_for_client, resp.port_for_nm);
 
     char send_buffer[MAX_STR_LEN] = {0};
-    strcpy(send_buffer, "sent from TCP server");
+    strcpy(send_buffer, "sent from naming server");
     CHECK(send(clientfd, send_buffer, MAX_STR_LEN, 0), -1);
 
     CHECK(close(clientfd), -1);
@@ -47,14 +49,23 @@ void *client_relay(void *arg)
   return NULL;
 }
 
+void *storage_server_relay(void *arg)
+{
+  // naming server is the client
+  (void)arg;
+  return NULL;
+}
+
 int main()
 {
-  pthread_t storage_server_relay_thread, client_relay_thread;
+  pthread_t storage_server_init_thread, client_relay_thread, storage_server_relay_thread;
 
-  pthread_create(&storage_server_relay_thread, NULL, storage_server_relay, NULL);
+  pthread_create(&storage_server_init_thread, NULL, storage_server_init, NULL);
   pthread_create(&client_relay_thread, NULL, client_relay, NULL);
+  pthread_create(&storage_server_relay_thread, NULL, storage_server_relay, NULL);
 
-  pthread_join(storage_server_relay_thread, NULL);
+  pthread_join(storage_server_init_thread, NULL);
   pthread_join(client_relay_thread, NULL);
+  pthread_join(storage_server_relay_thread, NULL);
   return 0;
 }

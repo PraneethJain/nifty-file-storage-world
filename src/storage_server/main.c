@@ -23,7 +23,11 @@ void *init_storage_server(void *arg)
   sem_wait(&client_port_created);
   sem_wait(&nm_port_created);
 
-  // TODO: send port_for_nm, port_for_client and directory tree to nm
+  storage_server_init_response resp;
+  resp.port_for_client = port_for_client;
+  resp.port_for_nm = port_for_nm;
+  // also fill in the directory structure in resp
+  CHECK(send(sockfd, &resp, sizeof(resp), 0), -1);
 
   CHECK(close(sockfd), -1);
   return NULL;

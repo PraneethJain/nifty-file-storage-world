@@ -26,6 +26,13 @@
 #define MAX_CLIENTS 16
 #define MAX_STORAGE_SERVERS 16
 
+typedef struct storage_server_init_response
+{
+  i32 port_for_client;
+  i32 port_for_nm;
+  // directory structure
+} storage_server_init_response;
+
 #define CHECK(actual_value, error_value)                                                                               \
   if ((actual_value) == error_value)                                                                                   \
   {                                                                                                                    \
