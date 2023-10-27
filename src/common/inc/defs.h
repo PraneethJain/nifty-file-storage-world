@@ -13,7 +13,8 @@ typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-#define ERROR_PRINT(fmt, args...) fprintf(stderr, C_RED "[ERROR] " fmt C_RESET, ##args)
+#define ERROR_PRINT(fmt, args...)                                                                                      \
+  fprintf(stderr, C_RED "[ERROR] %s:%d:%s()" fmt C_RESET, __FILE__, __LINE__, __func__, ##args)
 
 #ifdef DEBUG
 #define DEBUG_PRINT(fmt, args...)                                                                                      \

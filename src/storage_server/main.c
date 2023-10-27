@@ -23,7 +23,7 @@ void *init_storage_server(void *arg)
   sem_wait(&client_port_created);
   sem_wait(&nm_port_created);
 
-  storage_server_init_response resp;
+  storage_server_data resp;
   resp.port_for_client = port_for_client;
   resp.port_for_nm = port_for_nm;
   // also fill in the directory structure in resp
@@ -99,7 +99,7 @@ void *naming_server_relay(void *arg)
 
   socklen_t len = sizeof(server_addr);
   CHECK(getsockname(serverfd, (struct sockaddr *)&server_addr, &len), -1);
-  port_for_nm = server_addr.sin_port;
+  port_for_nm = ntohs(server_addr.sin_port);
   sem_post(&nm_port_created);
 
   printf("Listening for naming server on port %i\n", port_for_nm);
@@ -108,15 +108,6 @@ void *naming_server_relay(void *arg)
     socklen_t addr_size = sizeof(client_addr);
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
-
-    char recv_buffer[MAX_STR_LEN] = {0};
-    CHECK(recv(clientfd, recv_buffer, MAX_STR_LEN, 0), -1)
-    printf("%s\n", recv_buffer);
-
-    char send_buffer[MAX_STR_LEN] = {0};
-    strcpy(send_buffer, "sent from TCP server");
-    CHECK(send(clientfd, send_buffer, MAX_STR_LEN, 0), -1);
-
     CHECK(close(clientfd), -1);
   }
 
