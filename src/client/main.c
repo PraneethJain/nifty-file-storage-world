@@ -17,6 +17,22 @@ void send_to_nm(const void *buf, const size_t size)
   CHECK(close(sockfd), -1);
 }
 
+void recv_from_nm(void *buf, const size_t size)
+{
+  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  CHECK(sockfd, -1);
+
+  struct sockaddr_in addr;
+  memset(&addr, '\0', sizeof(addr));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(NM_CLIENT_PORT);
+  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
+  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
+
+  CHECK(recv(sockfd, buf, size, 0), -1);
+  CHECK(close(sockfd), -1);
+}
+
 i8 get_operation()
 {
   printf("Operations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
@@ -36,6 +52,16 @@ int main()
   {
     enum operation op = get_operation();
     send_to_nm(&op, sizeof(op));
+    if (op == READ || op == WRITE || op == METADATA)
+    {
+      char path[MAX_STR_LEN];
+      scanf("%s", path);
+      // error handle
+      send_to_nm(path, sizeof(path));
+      i32 port;
+      recv_from_nm(&port, sizeof(port));
+      printf("%d\n", port);
+    }
   }
   // if (op == COPY_FILE)
   // {
