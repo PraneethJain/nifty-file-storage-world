@@ -1,7 +1,7 @@
 #include "../common/headers.h"
 #include "headers.h"
 
-i32 connect_to_nm()
+void send_to_nm(const void *buf, const size_t size)
 {
   const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
   CHECK(sockfd, -1);
@@ -13,35 +13,29 @@ i32 connect_to_nm()
   addr.sin_addr.s_addr = inet_addr(LOCALHOST);
   CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
 
-  return sockfd;
+  CHECK(send(sockfd, buf, size, 0), -1);
+  CHECK(close(sockfd), -1);
 }
 
 i8 get_operation()
 {
-  printf("Functionalities:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
+  printf("Operations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
          "folder\n8.Copy file\n9.Copy folder\n");
-  printf("Enter the number of the functionality that you wish to perform: ");
-  i8 op_int;
-  scanf("%hhi", &op_int);
-  if (op_int < 1 || op_int > 9)
-    return -1;
-  return op_int;
+  i8 op_int = -1;
+  while (op_int < 1 || op_int > 9)
+  {
+    printf("Enter the number of the operation that you wish to perform: ");
+    scanf("%hhi", &op_int);
+  }
+  return op_int - 1;
 }
 
 int main()
 {
-  const i32 nm_sockfd = connect_to_nm();
-
   while (1)
   {
-    i8 op_int = get_operation();
-    if (op_int == -1)
-    {
-      printf("Enter valid choice!\n");
-      continue;
-    }
-    enum operation op = op_int;
-    CHECK(send(nm_sockfd, &op, sizeof(op), 0), -1);
+    enum operation op = get_operation();
+    send_to_nm(&op, sizeof(op));
   }
   // if (op == COPY_FILE)
   // {
