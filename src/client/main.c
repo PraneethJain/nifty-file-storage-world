@@ -16,15 +16,16 @@ i32 connect_to_nm()
   return sockfd;
 }
 
-enum operation read_operation()
+i8 get_operation()
 {
-  printf("Functionalities:-\n1.Read\n2.Write\n3.Retrieve information\n4.Create\n5.Delete\n6.Copy\n");
+  printf("Functionalities:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
+         "folder\n8.Copy file\n9.Copy folder\n");
   printf("Enter the number of the functionality that you wish to perform: ");
   i8 op_int;
   scanf("%hhi", &op_int);
-  enum operation op = op_int;
-  // check for error
-  return op;
+  if (op_int < 1 || op_int > 9)
+    return -1;
+  return op_int;
 }
 
 int main()
@@ -33,7 +34,13 @@ int main()
 
   while (1)
   {
-    enum operation op = read_operation();
+    i8 op_int = get_operation();
+    if (op_int == -1)
+    {
+      printf("Enter valid choice!\n");
+      continue;
+    }
+    enum operation op = op_int;
     CHECK(send(nm_sockfd, &op, sizeof(op), 0), -1);
   }
   // if (op == COPY_FILE)
