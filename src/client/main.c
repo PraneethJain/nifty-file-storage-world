@@ -21,7 +21,7 @@ enum operation read_operation()
   printf("Functionalities:-\n1.Read\n2.Write\n3.Retrieve information\n4.Create\n5.Delete\n6.Copy\n");
   printf("Enter the number of the functionality that you wish to perform: ");
   i8 op_int;
-  scanf("%i", &op_int);
+  scanf("%hhi", &op_int);
   enum operation op = op_int;
   // check for error
   return op;

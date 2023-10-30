@@ -112,7 +112,55 @@ void *client_relay(void *arg)
 {
   // naming server is the server
   (void)arg;
+  const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
+  CHECK(serverfd, -1);
 
+  struct sockaddr_in server_addr, client_addr;
+  memset(&server_addr, '\0', sizeof(server_addr));
+  memset(&client_addr, '\0', sizeof(client_addr));
+  server_addr.sin_family = AF_INET;
+  server_addr.sin_port = htons(NM_CLIENT_PORT);
+  server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
+
+  CHECK(bind(serverfd, (struct sockaddr *)&server_addr, sizeof(server_addr)), -1);
+  CHECK(listen(serverfd, MAX_STORAGE_SERVERS), -1);
+  printf("Listening for storage servers on port %i\n", NM_CLIENT_PORT);
+  while (1)
+  {
+    // receive init information from the storage servers
+    socklen_t addr_size = sizeof(client_addr);
+    const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
+    CHECK(clientfd, -1);
+
+    enum operation op;
+    CHECK(recv(clientfd, &op, sizeof(op), 0), -1)
+    printf("received %i\n", op);
+    switch (op)
+    {
+    case READ:
+      break;
+    case WRITE:
+      break;
+    case METADATA:
+      break;
+    case CREATE_FILE:
+      break;
+    case DELETE_FILE:
+      break;
+    case CREATE_FOLDER:
+      break;
+    case DELETE_FOLDER:
+      break;
+    case COPY_FILE:
+      break;
+    case COPY_FOLDER:
+      break;
+    }
+
+    CHECK(close(clientfd), -1);
+  }
+
+  CHECK(close(serverfd), -1);
   return NULL;
 }
 
