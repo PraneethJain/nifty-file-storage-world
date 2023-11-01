@@ -1,38 +1,6 @@
 #include "../common/headers.h"
 #include "headers.h"
 
-void send_to_nm(const void *buf, const size_t size)
-{
-  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(sockfd, -1);
-
-  struct sockaddr_in addr;
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(NM_CLIENT_PORT);
-  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
-
-  CHECK(send(sockfd, buf, size, 0), -1);
-  CHECK(close(sockfd), -1);
-}
-
-void recv_from_nm(void *buf, const size_t size)
-{
-  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(sockfd, -1);
-
-  struct sockaddr_in addr;
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(NM_CLIENT_PORT);
-  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
-
-  CHECK(recv(sockfd, buf, size, 0), -1);
-  CHECK(close(sockfd), -1);
-}
-
 i8 get_operation()
 {
   printf("Operations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
@@ -46,23 +14,40 @@ i8 get_operation()
   return op_int - 1;
 }
 
+i32 init_nm_connection()
+{
+  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  CHECK(sockfd, -1);
+
+  struct sockaddr_in addr;
+  memset(&addr, '\0', sizeof(addr));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(NM_CLIENT_PORT);
+  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
+  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
+
+  return sockfd;
+}
+
 int main()
 {
+  const i32 nm_sockfd = init_nm_connection();
   while (1)
   {
     enum operation op = get_operation();
-    send_to_nm(&op, sizeof(op));
+    CHECK(send(nm_sockfd, &op, sizeof(op), 0), -1);
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
       scanf("%s", path);
       // error handle
-      send_to_nm(path, sizeof(path));
+      CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
       i32 port;
-      recv_from_nm(&port, sizeof(port));
+      CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
       printf("%d\n", port);
     }
   }
+  close(nm_sockfd);
   // if (op == COPY_FILE)
   // {
   //   char src_path[100];
