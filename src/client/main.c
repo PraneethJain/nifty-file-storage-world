@@ -44,7 +44,21 @@ int main()
       CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
       i32 port;
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
-      printf("%d\n", port);
+      printf("%i\n", port);
+      // connect to ss and do your operations
+    }
+    else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
+    {
+      char path[MAX_STR_LEN];
+      scanf("%s", path);
+      // error handle
+      CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
+      i32 status;
+      CHECK(recv(nm_sockfd, &status, sizeof(status), 0), -1);
+      printf("status: %i\n", status);
+    }
+    else if (op == COPY_FILE || op == COPY_FOLDER)
+    {
     }
   }
   close(nm_sockfd);

@@ -55,7 +55,7 @@ void *storage_server_init(void *arg)
 
     storage_server_data resp;
     CHECK(recv(clientfd, &resp, sizeof(resp), 0), -1)
-    printf("%i %i\n", resp.port_for_client, resp.port_for_nm);
+    printf("%i %i %i\n", resp.port_for_client, resp.port_for_nm, resp.port_for_alive);
 
     CHECK(close(clientfd), -1);
     add_connected_storage_server(resp);
@@ -65,7 +65,7 @@ void *storage_server_init(void *arg)
   return NULL;
 }
 
-void *storage_server_checker(void *arg)
+void *alive_checker(void *arg)
 {
   // naming server is the client
   // periodically check if each storage server is alive
@@ -81,7 +81,7 @@ void *storage_server_checker(void *arg)
       struct sockaddr_in addr;
       memset(&addr, '\0', sizeof(addr));
       addr.sin_family = AF_INET;
-      addr.sin_port = htons(connected_storage_servers.storage_servers[i].port_for_nm);
+      addr.sin_port = htons(connected_storage_servers.storage_servers[i].port_for_alive);
       addr.sin_addr.s_addr = inet_addr(LOCALHOST);
       if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
       {
@@ -115,9 +115,19 @@ void *storage_server_relay(void *arg)
   return NULL;
 }
 
-i32 ss_client_port_from_path(char *path)
+storage_server_data ss_from_path(char *path)
 {
   (void)path;
   // rana
-  return connected_storage_servers.storage_servers[0].port_for_client;
+  return connected_storage_servers.storage_servers[0];
+}
+
+i32 ss_client_port_from_path(char *path)
+{
+  return ss_from_path(path).port_for_client;
+}
+
+i32 ss_nm_port_from_path(char *path)
+{
+  return ss_from_path(path).port_for_nm;
 }

@@ -31,6 +31,7 @@ typedef struct storage_server_data
 {
   i32 port_for_client;
   i32 port_for_nm;
+  i32 port_for_alive;
   // directory structure
 } storage_server_data;
 
