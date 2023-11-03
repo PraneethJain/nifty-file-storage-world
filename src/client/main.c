@@ -1,3 +1,11 @@
+/**
+ * @file main.c
+ * @brief Entry point for a client
+ * @details
+ * - Command line interface for a client
+ * - Reads operations and sends to the naming server and storage servers
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

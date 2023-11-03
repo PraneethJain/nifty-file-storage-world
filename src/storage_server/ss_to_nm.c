@@ -1,3 +1,12 @@
+/**
+ * @file ss_to_nm.c
+ * @brief Communication between a storage server and the naming server
+ * @details
+ * - Informs naming server upon initialization
+ * - Responds to alive requests from the naming server
+ * - Handles operations received from the naming server
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

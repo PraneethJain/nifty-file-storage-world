@@ -1,3 +1,12 @@
+/**
+ * @file nm_to_ss.c
+ * @brief Communication between the naming server and storage servers
+ * @details
+ * - Stores all the currently connected storage servers
+ * - Manages adding and removing these servers whenever needed
+ * - Retrieves storage server data from paths provided
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

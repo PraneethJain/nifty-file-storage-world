@@ -1,3 +1,12 @@
+/**
+ * @file nm_to_client.c
+ * @brief Communication between the naming server and clients
+ * @details
+ * - Receives initial client connections and spawns a new thread for each client
+ * - Handles all operations sent to the naming server from the client
+ * - Forwards requests to the storage server whenever needed
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

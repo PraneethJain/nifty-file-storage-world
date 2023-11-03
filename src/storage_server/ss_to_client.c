@@ -1,3 +1,10 @@
+/**
+ * @file ss_to_client.c
+ * @brief Communication between a storage server and a client
+ * @details
+ * - Handles operations sent directly to a storage server from a client
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

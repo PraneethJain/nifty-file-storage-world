@@ -1,3 +1,13 @@
+/**
+ * @file main.c
+ * @brief Entry point for the naming server
+ * @details
+ * Initialize threads for:
+ * - Receiving initial information from storage servers
+ * - Periodically checking if each of those storage servers is alive
+ * - Receiving connections from clients
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 

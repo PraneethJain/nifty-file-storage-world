@@ -1,3 +1,14 @@
+/**
+ * @file main.c
+ * @brief Entry point for a storage server
+ * @details
+ * Initializes threads for:
+ * - Sending initial information to the naming server
+ * - Receiving operations from a client
+ * - Receiving operations from the naming server
+ * - Accepting alive requests from the naming server
+ */
+
 #include "../common/headers.h"
 #include "headers.h"
 
