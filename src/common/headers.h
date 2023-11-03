@@ -24,8 +24,7 @@
 #define NM_SS_PORT 18000
 #define NM_CLIENT_PORT 18001
 #define MAX_STR_LEN 1024
-#define MAX_CLIENTS 16
-#define MAX_STORAGE_SERVERS 16
+#define MAX_CONNECTIONS 16
 
 typedef struct storage_server_data
 {
@@ -47,6 +46,11 @@ enum operation
   COPY_FILE,
   COPY_FOLDER
 };
+
+// network.c
+i32 connect_to_port(const i32 port);
+i32 bind_to_port(const i32 port);
+i32 get_port(const i32 fd);
 
 #define CHECK(actual_value, error_value)                                                                               \
   if ((actual_value) == error_value)                                                                                   \

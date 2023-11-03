@@ -10,20 +10,14 @@ void send_client_port(const i32 clientfd)
   CHECK(send(clientfd, &port, sizeof(port), 0), -1);
 }
 
-void send_nm_op(const i32 clientfd, const enum operation op)
+void send_nm_op_single(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
   CHECK(recv(clientfd, path, sizeof(path), 0), -1);
 
   // naming server is the client
   const i32 port = ss_nm_port_from_path(path);
-  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  struct sockaddr_in addr;
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
+  const i32 sockfd = connect_to_port(port);
 
   CHECK(send(sockfd, &op, sizeof(op), 0), -1);
   CHECK(send(sockfd, path, sizeof(path), 0), -1);
@@ -36,23 +30,40 @@ void send_nm_op(const i32 clientfd, const enum operation op)
   close(sockfd);
 }
 
+void send_nm_op_double(const i32 clientfd, const enum operation op)
+{
+  // TODO
+
+  (void)op;
+  char from_path[MAX_STR_LEN];
+  char to_path[MAX_STR_LEN];
+  CHECK(recv(clientfd, from_path, sizeof(to_path), 0), -1);
+  CHECK(recv(clientfd, to_path, sizeof(to_path), 0), -1);
+
+  // naming server is the client
+  const i32 from_port = ss_nm_port_from_path(from_path);
+  const i32 to_port = ss_nm_port_from_path(to_path);
+
+  const i32 from_sockfd = connect_to_port(from_port);
+  const i32 to_sockfd = connect_to_port(to_port);
+
+  // CHECK(send(sockfd, &op, sizeof(op), 0), -1);
+  // CHECK(send(sockfd, path, sizeof(path), 0), -1);
+
+  // send status code received from ss to client
+
+  close(from_sockfd);
+  close(to_sockfd);
+}
+
 void *client_init(void *arg)
 {
   // naming server is the server
   (void)arg;
-  const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(serverfd, -1);
 
-  struct sockaddr_in server_addr, client_addr;
-  memset(&server_addr, '\0', sizeof(server_addr));
-  memset(&client_addr, '\0', sizeof(client_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(NM_CLIENT_PORT);
-  server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-
-  CHECK(bind(serverfd, (struct sockaddr *)&server_addr, sizeof(server_addr)), -1);
-  CHECK(listen(serverfd, MAX_CLIENTS), -1);
+  const i32 serverfd = bind_to_port(NM_CLIENT_PORT);
   printf("Listening for clients on port %i\n", NM_CLIENT_PORT);
+  struct sockaddr_in client_addr;
   while (1)
   {
     // receive init information from the clients
@@ -74,6 +85,7 @@ void *client_init(void *arg)
 void *client_relay(void *arg)
 {
   const i32 clientfd = *(i32 *)arg;
+  free(arg);
   while (1)
   {
     enum operation op;
@@ -89,11 +101,11 @@ void *client_relay(void *arg)
     case DELETE_FILE:
     case CREATE_FOLDER:
     case DELETE_FOLDER:
-      send_nm_op(clientfd, op);
+      send_nm_op_single(clientfd, op);
       break;
     case COPY_FILE:
-      break;
     case COPY_FOLDER:
+      send_nm_op_double(clientfd, op);
       break;
     }
   }

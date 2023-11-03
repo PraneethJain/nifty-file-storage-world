@@ -5,15 +5,8 @@ void *init_storage_server(void *arg)
 {
   // storage server is the client
   (void)arg;
-  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(sockfd, -1);
 
-  struct sockaddr_in addr;
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(NM_SS_PORT);
-  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
+  const i32 sockfd = connect_to_port(NM_SS_PORT);
 
   sem_wait(&client_port_created);
   sem_wait(&nm_port_created);
@@ -35,25 +28,12 @@ void *alive_relay(void *arg)
   // storage server is the server
   (void)arg;
 
-  const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(serverfd, -1);
-
-  struct sockaddr_in server_addr, client_addr;
-  memset(&server_addr, '\0', sizeof(server_addr));
-  memset(&client_addr, '\0', sizeof(client_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = 0;
-  server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-
-  CHECK(bind(serverfd, (struct sockaddr *)&server_addr, sizeof(server_addr)), -1);
-  CHECK(listen(serverfd, MAX_CLIENTS), -1);
-
-  socklen_t len = sizeof(server_addr);
-  CHECK(getsockname(serverfd, (struct sockaddr *)&server_addr, &len), -1);
-  port_for_alive = ntohs(server_addr.sin_port);
+  const i32 serverfd = bind_to_port(0);
+  port_for_alive = get_port(serverfd);
   sem_post(&alive_port_created);
 
   printf("Listening for alive on port %i\n", port_for_alive);
+  struct sockaddr_in client_addr;
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);
@@ -72,25 +52,12 @@ void *naming_server_relay(void *arg)
   // storage server is the server
   (void)arg;
 
-  const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(serverfd, -1);
-
-  struct sockaddr_in server_addr, client_addr;
-  memset(&server_addr, '\0', sizeof(server_addr));
-  memset(&client_addr, '\0', sizeof(client_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = 0;
-  server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-
-  CHECK(bind(serverfd, (struct sockaddr *)&server_addr, sizeof(server_addr)), -1);
-  CHECK(listen(serverfd, MAX_CLIENTS), -1);
-
-  socklen_t len = sizeof(server_addr);
-  CHECK(getsockname(serverfd, (struct sockaddr *)&server_addr, &len), -1);
-  port_for_nm = ntohs(server_addr.sin_port);
+  const i32 serverfd = bind_to_port(0);
+  port_for_nm = get_port(serverfd);
   sem_post(&nm_port_created);
 
   printf("Listening for naming server on port %i\n", port_for_nm);
+  struct sockaddr_in client_addr;
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);

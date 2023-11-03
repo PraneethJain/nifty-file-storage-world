@@ -14,21 +14,6 @@ i8 get_operation()
   return op_int - 1;
 }
 
-i32 connect_to_port(const i32 port)
-{
-  const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(sockfd, -1);
-
-  struct sockaddr_in addr;
-  memset(&addr, '\0', sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-  CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
-
-  return sockfd;
-}
-
 int main()
 {
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
@@ -62,6 +47,16 @@ int main()
     }
     else if (op == COPY_FILE || op == COPY_FOLDER)
     {
+      char from_path[MAX_STR_LEN];
+      char to_path[MAX_STR_LEN];
+      scanf("%s", from_path);
+      scanf("%s", to_path);
+      // error handle
+      CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
+      CHECK(send(nm_sockfd, to_path, sizeof(to_path), 0), -1);
+      i32 status;
+      CHECK(recv(nm_sockfd, &status, sizeof(status), 0), -1);
+      printf("status: %i\n", status);
     }
     else
     {

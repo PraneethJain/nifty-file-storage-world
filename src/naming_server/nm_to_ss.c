@@ -4,7 +4,7 @@
 struct
 {
   i32 size;
-  storage_server_data storage_servers[MAX_STORAGE_SERVERS];
+  storage_server_data storage_servers[MAX_CONNECTIONS];
 } connected_storage_servers = {0};
 
 void remove_connected_storage_server(i32 index)
@@ -33,19 +33,10 @@ void *storage_server_init(void *arg)
 {
   // naming server is the server
   (void)arg;
-  const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
-  CHECK(serverfd, -1);
 
-  struct sockaddr_in server_addr, client_addr;
-  memset(&server_addr, '\0', sizeof(server_addr));
-  memset(&client_addr, '\0', sizeof(client_addr));
-  server_addr.sin_family = AF_INET;
-  server_addr.sin_port = htons(NM_SS_PORT);
-  server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
-
-  CHECK(bind(serverfd, (struct sockaddr *)&server_addr, sizeof(server_addr)), -1);
-  CHECK(listen(serverfd, MAX_STORAGE_SERVERS), -1);
+  const i32 serverfd = bind_to_port(NM_SS_PORT);
   printf("Listening for storage servers on port %i\n", NM_SS_PORT);
+  struct sockaddr_in client_addr;
   while (1)
   {
     // receive init information from the storage servers
