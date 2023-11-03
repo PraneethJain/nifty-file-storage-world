@@ -1,4 +1,3 @@
 *.out
 .vscode
-doxygen/html
-doxygen/latex
+doxygen
