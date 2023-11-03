@@ -1,31 +1,42 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+/**
+ * @brief Send ports and accessible paths to the naming server upon this storage server's initialization
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *init_storage_server(void *arg)
 {
-  // storage server is the client
   (void)arg;
 
   const i32 sockfd = connect_to_port(NM_SS_PORT);
+
+  storage_server_data resp;
+  // TODO: take user input of all accessible paths and fill in directory structure in resp
 
   sem_wait(&client_port_created);
   sem_wait(&nm_port_created);
   sem_wait(&alive_port_created);
 
-  storage_server_data resp;
   resp.port_for_client = port_for_client;
   resp.port_for_nm = port_for_nm;
   resp.port_for_alive = port_for_alive;
-  // also fill in the directory structure in resp
   CHECK(send(sockfd, &resp, sizeof(resp), 0), -1);
 
   CHECK(close(sockfd), -1);
   return NULL;
 }
 
+/**
+ * @brief Accept connection requests sent periodically from the naming server to ensure storage server is alive
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *alive_relay(void *arg)
 {
-  // storage server is the server
   (void)arg;
 
   const i32 serverfd = bind_to_port(0);
@@ -47,9 +58,14 @@ void *alive_relay(void *arg)
   return NULL;
 }
 
+/**
+ * @brief Handles operations sent via the naming server. Sends back a status code to the naming server.
+ *
+ * @param arg NULL
+ * @return void* NULLg
+ */
 void *naming_server_relay(void *arg)
 {
-  // storage server is the server
   (void)arg;
 
   const i32 serverfd = bind_to_port(0);
@@ -61,6 +77,7 @@ void *naming_server_relay(void *arg)
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);
+    // clientfd here is the file descriptor of the naming server
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
 
@@ -71,10 +88,10 @@ void *naming_server_relay(void *arg)
     if (op == COPY_FILE || op == COPY_FOLDER)
     {
       // receive 2 paths
+      status = 2;
     }
     else
     {
-      // receive path
       char path[MAX_STR_LEN];
       CHECK(recv(clientfd, path, sizeof(path), 0), -1);
       status = 1;

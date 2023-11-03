@@ -1,6 +1,11 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+/**
+ * @brief Receive path from client and send the corresponding storage server's port
+ *
+ * @param clientfd file descriptor of the client socket
+ */
 void send_client_port(const i32 clientfd)
 {
   char path[MAX_STR_LEN];
@@ -10,6 +15,12 @@ void send_client_port(const i32 clientfd)
   CHECK(send(clientfd, &port, sizeof(port), 0), -1);
 }
 
+/**
+ * @brief Receive path from client, perform specified operation on storage server and send the status code
+ *
+ * @param clientfd file descriptor of the client socket
+ * @param op specified operation
+ */
 void send_nm_op_single(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
@@ -30,6 +41,12 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   close(sockfd);
 }
 
+/**
+ * @brief Receive 2 paths from client, perform copy operation on storage server and send the status code
+ *
+ * @param clientfd file descriptor of the client socket
+ * @param op specified operation
+ */
 void send_nm_op_double(const i32 clientfd, const enum operation op)
 {
   // TODO
@@ -56,9 +73,14 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   close(to_sockfd);
 }
 
+/**
+ * @brief Initializes connection to the clients and spawns a new client relay for each of them
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *client_init(void *arg)
 {
-  // naming server is the server
   (void)arg;
 
   const i32 serverfd = bind_to_port(NM_CLIENT_PORT);
@@ -66,7 +88,6 @@ void *client_init(void *arg)
   struct sockaddr_in client_addr;
   while (1)
   {
-    // receive init information from the clients
     socklen_t addr_size = sizeof(client_addr);
     i32 *clientfd = malloc(sizeof(i32));
     *clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
@@ -75,13 +96,20 @@ void *client_init(void *arg)
     pthread_t client_relay_thread;
     pthread_create(&client_relay_thread, NULL, client_relay, clientfd);
   }
-  // maybe join client_relays
+  // maybe join client_relays if ever a break statement is added
 
   CHECK(close(serverfd), -1);
 
   return NULL;
 }
 
+/**
+ * @brief Receives all operations from the client.
+ * In case of READ, WRITE and METADATA, sends the port number of the corresponding storage server to the client.
+ * In other cases, performs the operation and sends the status code to the client
+ * @param arg integer pointer to the client file descriptor
+ * @return void* NULL
+ */
 void *client_relay(void *arg)
 {
   const i32 clientfd = *(i32 *)arg;

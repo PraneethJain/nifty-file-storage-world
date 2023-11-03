@@ -1,5 +1,11 @@
 #include "headers.h"
 
+/**
+ * @brief Establish a connection to a server using TCP
+ *
+ * @param port A server should be bound and listening to this
+ * @return i32 file descriptor
+ */
 i32 connect_to_port(const i32 port)
 {
   const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -15,6 +21,12 @@ i32 connect_to_port(const i32 port)
   return sockfd;
 }
 
+/**
+ * @brief Establish a server using TCP
+ *
+ * @param port
+ * @return i32 file descriptor
+ */
 i32 bind_to_port(const i32 port)
 {
   const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -33,6 +45,12 @@ i32 bind_to_port(const i32 port)
   return serverfd;
 }
 
+/**
+ * @brief Get the port number of a socket
+ *
+ * @param fd file descriptor of the socket
+ * @return i32 port number
+ */
 i32 get_port(const i32 fd)
 {
   struct sockaddr_in server_addr;

@@ -1,9 +1,15 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+/**
+ * @brief Handles operations from client directly sent to storage server
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *client_relay(void *arg)
 {
-  // storage server is the server
+  // TODO
   (void)arg;
 
   const i32 serverfd = bind_to_port(0);

@@ -7,6 +7,11 @@ struct
   storage_server_data storage_servers[MAX_CONNECTIONS];
 } connected_storage_servers = {0};
 
+/**
+ * @brief Remove a disconnected storage server
+ *
+ * @param index
+ */
 void remove_connected_storage_server(i32 index)
 {
   if (index < 0 || index >= connected_storage_servers.size)
@@ -20,18 +25,28 @@ void remove_connected_storage_server(i32 index)
   }
   connected_storage_servers.size--;
 
-  // remove this storage server's stuff from directory structure
+  // TODO: remove this storage server's stuff from directory structure
 }
 
+/**
+ * @brief Add a connected storage server
+ *
+ * @param data
+ */
 void add_connected_storage_server(storage_server_data data)
 {
   connected_storage_servers.storage_servers[connected_storage_servers.size++] = data;
-  // add this storage server's stuff to directory structure
+  // TODO: add this storage server's stuff to directory structure
 }
 
+/**
+ * @brief Receive initial port and directory information from all new storage servers
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *storage_server_init(void *arg)
 {
-  // naming server is the server
   (void)arg;
 
   const i32 serverfd = bind_to_port(NM_SS_PORT);
@@ -39,7 +54,6 @@ void *storage_server_init(void *arg)
   struct sockaddr_in client_addr;
   while (1)
   {
-    // receive init information from the storage servers
     socklen_t addr_size = sizeof(client_addr);
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
@@ -56,10 +70,15 @@ void *storage_server_init(void *arg)
   return NULL;
 }
 
+/**
+ * @brief Periodically check if each storage server is still alive.
+ * Disconnect the ones that have crashed.
+ *
+ * @param arg NULL
+ * @return void* NULL
+ */
 void *alive_checker(void *arg)
 {
-  // naming server is the client
-  // periodically check if each storage server is alive
   (void)arg;
   while (1)
   {
@@ -99,25 +118,36 @@ void *alive_checker(void *arg)
   return NULL;
 }
 
-void *storage_server_relay(void *arg)
-{
-  // naming server is the client
-  (void)arg;
-  return NULL;
-}
-
+/**
+ * @brief Finds the storage server corresponding to the path and returns its data
+ *
+ * @param path
+ * @return storage_server_data
+ */
 storage_server_data ss_from_path(char *path)
 {
   (void)path;
-  // rana
+  // TODO
   return connected_storage_servers.storage_servers[0];
 }
 
+/**
+ * @brief Finds the storage server client port corresponding to the path
+ *
+ * @param path
+ * @return i32 storage server client port
+ */
 i32 ss_client_port_from_path(char *path)
 {
   return ss_from_path(path).port_for_client;
 }
 
+/**
+ * @brief Finds the storage server nm port corresponding to the path
+ *
+ * @param path
+ * @return i32 storage server nm port
+ */
 i32 ss_nm_port_from_path(char *path)
 {
   return ss_from_path(path).port_for_nm;
