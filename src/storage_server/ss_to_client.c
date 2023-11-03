@@ -21,7 +21,7 @@ void *client_relay(void *arg)
 
   socklen_t len = sizeof(server_addr);
   CHECK(getsockname(serverfd, (struct sockaddr *)&server_addr, &len), -1);
-  port_for_client = server_addr.sin_port;
+  port_for_client = ntohs(server_addr.sin_port);
   sem_post(&client_port_created);
 
   printf("Listening for clients on port %i\n", port_for_client);
@@ -31,13 +31,9 @@ void *client_relay(void *arg)
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
 
-    char recv_buffer[MAX_STR_LEN] = {0};
-    CHECK(recv(clientfd, recv_buffer, MAX_STR_LEN, 0), -1)
-    printf("%s\n", recv_buffer);
-
-    char send_buffer[MAX_STR_LEN] = {0};
-    strcpy(send_buffer, "sent from TCP server");
-    CHECK(send(clientfd, send_buffer, MAX_STR_LEN, 0), -1);
+    char path[MAX_STR_LEN];
+    CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1)
+    printf("%s\n", path);
 
     CHECK(close(clientfd), -1);
   }

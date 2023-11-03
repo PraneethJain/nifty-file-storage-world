@@ -14,7 +14,7 @@ i8 get_operation()
   return op_int - 1;
 }
 
-i32 init_nm_connection()
+i32 connect_to_port(const i32 port)
 {
   const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
   CHECK(sockfd, -1);
@@ -22,7 +22,7 @@ i32 init_nm_connection()
   struct sockaddr_in addr;
   memset(&addr, '\0', sizeof(addr));
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(NM_CLIENT_PORT);
+  addr.sin_port = htons(port);
   addr.sin_addr.s_addr = inet_addr(LOCALHOST);
   CHECK(connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)), -1);
 
@@ -31,7 +31,7 @@ i32 init_nm_connection()
 
 int main()
 {
-  const i32 nm_sockfd = init_nm_connection();
+  const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
   while (1)
   {
     const enum operation op = get_operation();
@@ -46,6 +46,9 @@ int main()
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
       printf("%i\n", port);
       // connect to ss and do your operations
+      const i32 ss_sockfd = connect_to_port(port);
+      CHECK(send(ss_sockfd, path, sizeof(path), 0), -1);
+      close(ss_sockfd);
     }
     else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
     {
