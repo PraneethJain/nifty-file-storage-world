@@ -41,7 +41,6 @@ void read_path(char *path_buffer)
   path_buffer[strcspn(path_buffer, "\n")] = 0;
   while (path_error(path_buffer))
   {
-    printf("Invalid path provided\n");
     fgets(path_buffer, MAX_STR_LEN, stdin);
     path_buffer[strcspn(path_buffer, "\n")] = 0;
   }
@@ -65,7 +64,20 @@ int main()
       const i32 ss_sockfd = connect_to_port(port);
       CHECK(send(ss_sockfd, &op, sizeof(op), 0), -1);
       CHECK(send(ss_sockfd, path, sizeof(path), 0), -1);
-      receive_and_print_file(ss_sockfd);
+      if (op == READ)
+      {
+        receive_and_print_file(ss_sockfd);
+      }
+      else if (op == WRITE)
+      {
+        char buffer[MAX_STR_LEN];
+        fgets(buffer, MAX_STR_LEN, stdin);
+        buffer[strcspn(buffer, "\n")] = 0;
+        CHECK(send(ss_sockfd, buffer, sizeof(buffer), 0), -1);
+      }
+      else if (op == METADATA)
+      {
+      }
       close(ss_sockfd);
     }
     else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)

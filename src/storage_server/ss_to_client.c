@@ -34,13 +34,31 @@ void *client_relay(void *arg)
     enum operation op;
     CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
     char path[MAX_STR_LEN];
-    CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1)
+    CHECK(recv(clientfd, path, sizeof(path), 0), -1)
     printf("Recieved path %s\n", path);
 
-    FILE *file = fopen(path, "r");
-    CHECK(file, NULL);
-    send_file(file, clientfd);
-    fclose(file);
+    if (op == READ)
+    {
+      FILE *file = fopen(path, "r");
+      CHECK(file, NULL);
+      send_file(file, clientfd);
+      fclose(file);
+    }
+    else if (op == WRITE)
+    {
+      FILE *file = fopen(path, "w");
+      CHECK(file, NULL);
+      char buffer[MAX_STR_LEN];
+      CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
+      fwrite(buffer, strlen(buffer), 1, file);
+      fclose(file);
+    }
+    else if (op == METADATA)
+    {
+    }
+    else
+    {
+    }
 
     CHECK(close(clientfd), -1);
   }
