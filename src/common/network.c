@@ -60,6 +60,12 @@ i32 get_port(const i32 fd)
   return ntohs(server_addr.sin_port);
 }
 
+/**
+ * @brief Send a file in chunks of char arrays
+ *
+ * @param f file pointer of the file to be sent
+ * @param sockfd socket to which the file is to be sent
+ */
 void send_file(FILE *f, const i32 sockfd)
 {
   char buffer[MAX_STR_LEN] = {0};
@@ -71,6 +77,11 @@ void send_file(FILE *f, const i32 sockfd)
   }
 }
 
+/**
+ * @brief Receive a file and print it to stdout
+ *
+ * @param sockfd socket from which the file is to be received
+ */
 void receive_and_print_file(const i32 sockfd)
 {
   char buffer[MAX_STR_LEN];
