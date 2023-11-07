@@ -22,15 +22,27 @@ i8 get_operation()
   return op_int - 1;
 }
 
-bool path_error(char *path)
+bool path_error(const char *path)
 {
-  i16 len = strlen(path);
-  for (int i = 0; i < len; i++)
+  const i16 len = strlen(path);
+  if (len == 0 || (len == 1 && isspace(path[0])))
+    return true;
+  for (i16 i = 0; i < len; i++)
   {
-    if (i != 0 && path[i - 1] == '/' && path[i] == '/')
+    if ((i != len - 1 && isspace(path[i])) || (i != 0 && path[i - 1] == '/' && path[i] == '/'))
       return true;
   }
   return false;
+}
+
+void read_path(char *path_buffer)
+{
+  fgets(path_buffer, MAX_STR_LEN, stdin);
+  while (path_error(path_buffer))
+  {
+    printf("Invalid path provided\n");
+    fgets(path_buffer, MAX_STR_LEN, stdin);
+  }
 }
 
 int main()
@@ -43,18 +55,11 @@ int main()
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
-      scanf("%s", path);
-      if (path_error(path))
-      {
-        printf("Invalid path provided\n");
-        continue;
-      }
+      read_path(path);
       CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
       i32 port;
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
-      // printf("%i\n", port);
-      // connect to ss and do yoThe NM identifies the correct Storage Server and returns the precise IP address and
-      // client port for that SS to the client.ur operations
+
       const i32 ss_sockfd = connect_to_port(port);
       CHECK(send(ss_sockfd, path, sizeof(path), 0), -1);
       close(ss_sockfd);
@@ -62,12 +67,7 @@ int main()
     else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
     {
       char path[MAX_STR_LEN];
-      scanf("%s", path);
-      if (path_error(path))
-      {
-        printf("Invalid path provided\n");
-        continue;
-      }
+      read_path(path);
       CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
       i32 status;
       CHECK(recv(nm_sockfd, &status, sizeof(status), 0), -1);
@@ -77,18 +77,9 @@ int main()
     {
       char from_path[MAX_STR_LEN];
       char to_path[MAX_STR_LEN];
-      scanf("%s", from_path);
-      if (path_error(from_path))
-      {
-        printf("Invalid path provided\n");
-        continue;
-      }
-      scanf("%s", to_path);
-      if (path_error(to_path))
-      {
-        printf("Invalid path provided\n");
-        continue;
-      }
+      read_path(from_path);
+      read_path(to_path);
+
       CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
       CHECK(send(nm_sockfd, to_path, sizeof(to_path), 0), -1);
       i32 status;
