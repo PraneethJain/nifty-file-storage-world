@@ -319,6 +319,35 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id)
   free(T2);
 }
 
+void RemoveServerPath(Tree T, u32 ss_id)
+{
+  Tree trav = T->ChildDirectoryLL;
+  while (trav != NULL)
+  {
+    if (trav->NodeInfo.ss_id == ss_id)
+    {
+      if (trav->NextSibling == NULL)
+      {
+        DeleteTree(trav);
+        return;
+      }
+      trav = trav->NextSibling;
+      DeleteTree(trav->PrevSibling);
+    }
+    else
+    {
+      trav = trav->NextSibling;
+    }
+  }
+}
+
+u32 GetPathSSID(Tree T, char *path)
+{
+  char *Delim = "/\\";
+  char *token = strtok(path, Delim);
+  return FindChild(T, token, 0, 0)->NodeInfo.ss_id;
+}
+
 // void RandomTest()
 // {
 //   Tree T = InitTree();
