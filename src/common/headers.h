@@ -43,6 +43,20 @@ enum operation
   COPY_FOLDER
 };
 
+enum status
+{
+  SUCCESS,
+  INVALID_PATH,
+  INVALID_OPERATION,
+  NOT_FOUND,
+  UNAVAILABLE,
+  READ_PERMISSION_DENIED,
+  WRITE_PERMISSION_DENIED,
+  CREATE_PERMISSION_DENIED,
+  DELETE_PERMISSION_DENIED,
+  UNKNOWN_PERMISSION_DENIED
+};
+
 // network.c
 i32 connect_to_port(const i32 port);
 i32 bind_to_port(const i32 port);
