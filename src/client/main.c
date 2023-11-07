@@ -114,6 +114,9 @@ int main()
       }
       else if (op == METADATA)
       {
+        metadata meta;
+        CHECK(recv(ss_sockfd, &meta, sizeof(meta), 0), -1);
+        printf("%s\n", ctime(&meta.last_access_time));
       }
       enum status code;
       CHECK(recv(ss_sockfd, &code, sizeof(code), 0), -1);
