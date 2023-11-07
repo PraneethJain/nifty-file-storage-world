@@ -291,12 +291,14 @@ void AddAccessibleDir(char *DirPath, Tree Parent) {
 void MergeTree(Tree T1, Tree T2, u32 ss_id) {
   Tree trav = T2->ChildDirectoryLL;
   while (trav != NULL) {
-    Tree temp = FindChild(T1, "", 1, 1);
-    memcpy(&temp->NodeInfo, &trav->NodeInfo, sizeof(trav->NodeInfo));
-    temp->NodeInfo.ss_id = ss_id;
-    Tree next = trav->NextSibling;
-    free(trav);
-    trav = next;
+    trav->NextSibling = T1->ChildDirectoryLL;
+    if (T1->ChildDirectoryLL != NULL)
+      T1->ChildDirectoryLL->PrevSibling = trav;
+    trav->Parent = T1;
+    trav->PrevSibling = NULL;
+    T1->ChildDirectoryLL = trav;
+    trav->NodeInfo.ss_id = ss_id;
+    trav = trav->NextSibling;
   }
   free(T2);
 }
