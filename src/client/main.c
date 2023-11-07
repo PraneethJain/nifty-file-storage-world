@@ -53,7 +53,7 @@ void print_error(enum status error)
   case SUCCESS:
     break;
   case INVALID_PATH:
-    printf("Invalid path\n");
+    printf("Invalid path");
     break;
   case INVALID_OPERATION:
     printf("Invalid operation");
@@ -77,7 +77,7 @@ void print_error(enum status error)
     printf("Delete permissio denied");
     break;
   case UNKNOWN_PERMISSION_DENIED:
-    printf("Permission denied\n");
+    printf("Permission denied");
     break;
   }
   printf("\n");
@@ -90,19 +90,32 @@ int main()
   {
     const enum operation op = get_operation();
     CHECK(send(nm_sockfd, &op, sizeof(op), 0), -1);
+    enum status code;
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
       read_path(path);
       CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
+      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      if (code != SUCCESS)
+      {
+        print_error(code);
+        continue;
+      }
       i32 port;
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
-
       const i32 ss_sockfd = connect_to_port(port);
       CHECK(send(ss_sockfd, &op, sizeof(op), 0), -1);
       CHECK(send(ss_sockfd, path, sizeof(path), 0), -1);
+      CHECK(recv(ss_sockfd, &code, sizeof(code), 0), -1);
+      if (code != SUCCESS)
+      {
+        print_error(code);
+        continue;
+      }
       if (op == READ)
       {
+        CHECK(recv(ss_sockfd, &port, sizeof(port), 0), -1);
         receive_and_print_file(ss_sockfd);
       }
       else if (op == WRITE)
@@ -114,10 +127,10 @@ int main()
       }
       else if (op == METADATA)
       {
+        // receive the metadata
+        // convert to client-readable form and print
+        // no error handling
       }
-      enum status code;
-      CHECK(recv(ss_sockfd, &code, sizeof(code), 0), -1);
-      print_error(code);
       close(ss_sockfd);
     }
     else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
@@ -125,9 +138,11 @@ int main()
       char path[MAX_STR_LEN];
       read_path(path);
       CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
-      i32 status;
-      CHECK(recv(nm_sockfd, &status, sizeof(status), 0), -1);
-      printf("status: %i\n", status);
+      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      if (code != SUCCESS)
+        print_error(code);
+      else
+        printf("Operation done successfully\n");
     }
     else if (op == COPY_FILE || op == COPY_FOLDER)
     {
@@ -135,12 +150,23 @@ int main()
       char to_path[MAX_STR_LEN];
       read_path(from_path);
       read_path(to_path);
-
+      if (path_error(from_path) || path_error(to_path))
+      {
+        printf("Invalid path\n");
+        continue;
+      }
       CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
+      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      print_error(code);
       CHECK(send(nm_sockfd, to_path, sizeof(to_path), 0), -1);
-      i32 status;
-      CHECK(recv(nm_sockfd, &status, sizeof(status), 0), -1);
-      printf("status: %i\n", status);
+      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      print_error(code);
+      // receive code once more to check if copying was a success
+      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      if (code == SUCCESS)
+        printf("Copied successfully\n");
+      else
+        print_error(code);
     }
     else
     {
