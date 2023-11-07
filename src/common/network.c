@@ -59,3 +59,28 @@ i32 get_port(const i32 fd)
 
   return ntohs(server_addr.sin_port);
 }
+
+void send_file(FILE *f, const i32 sockfd)
+{
+  char buffer[MAX_STR_LEN] = {0};
+
+  while (fgets(buffer, MAX_STR_LEN, f) != NULL)
+  {
+    CHECK(send(sockfd, buffer, sizeof(buffer), 0), -1)
+    bzero(buffer, MAX_STR_LEN);
+  }
+}
+
+void receive_and_print_file(const i32 sockfd)
+{
+  char buffer[MAX_STR_LEN];
+  while (1)
+  {
+    const i32 size = recv(sockfd, buffer, sizeof(buffer), 0);
+    CHECK(size, -1);
+    if (size == 0)
+      return;
+    printf("%s", buffer);
+    bzero(buffer, MAX_STR_LEN);
+  }
+}

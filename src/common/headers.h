@@ -22,8 +22,6 @@
 #include "inc/defs.h"
 #include "inc/tree.h"
 
-
-
 typedef struct storage_server_data
 {
   i32 port_for_client;
@@ -50,6 +48,8 @@ enum operation
 i32 connect_to_port(const i32 port);
 i32 bind_to_port(const i32 port);
 i32 get_port(const i32 fd);
+void send_file(FILE *f, const i32 sockfd);
+void receive_and_print_file(const i32 sockfd);
 
 #define CHECK(actual_value, error_value)                                                                               \
   if ((actual_value) == error_value)                                                                                   \

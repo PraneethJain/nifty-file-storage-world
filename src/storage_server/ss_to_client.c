@@ -31,9 +31,16 @@ void *client_relay(void *arg)
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
 
+    enum operation op;
+    CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
     char path[MAX_STR_LEN];
     CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1)
-    printf("%s\n", path);
+    printf("Recieved path %s\n", path);
+
+    FILE *file = fopen(path, "r");
+    CHECK(file, NULL);
+    send_file(file, clientfd);
+    fclose(file);
 
     CHECK(close(clientfd), -1);
   }
