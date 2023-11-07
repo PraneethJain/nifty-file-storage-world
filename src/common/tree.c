@@ -125,7 +125,7 @@ int SendTreeData(Tree T, char *buffer)
   return 0;
 }
 
-i32 ReceiveTreeDataDriver(Tree T, char* buffer, u32 *lastindex, u32 BufferCapacity)
+i32 ReceiveTreeDataDriver(Tree T, char *buffer, u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex + sizeof(T->NodeInfo) >= BufferCapacity)
     return -1;
@@ -222,7 +222,8 @@ struct TreeNode *ProcessDirPath(char *DirPath, Tree T, bool CreateFlag)
   while (token != NULL)
   {
     Tree temp = FindChild(Cur, token, 0, 0);
-    if (temp == NULL && CreateFlag) {
+    if (temp == NULL && CreateFlag)
+    {
       temp = FindChild(Cur, token, CreateFlag, 0);
       temp->NodeInfo.Access = 0;
     }
@@ -237,9 +238,9 @@ struct TreeNode *ProcessDirPath(char *DirPath, Tree T, bool CreateFlag)
 
 bool IsDirectory(const char *location)
 {
-    struct stat st;
-    i32 status = lstat(location, &st);
-    return S_ISDIR(st.st_mode) && (status != -1);
+  struct stat st;
+  i32 status = lstat(location, &st);
+  return S_ISDIR(st.st_mode) && (status != -1);
 }
 
 void ProcessWholeDir(char *DirPath, Tree Parent)
@@ -268,13 +269,13 @@ void ProcessWholeDir(char *DirPath, Tree Parent)
     strcat(filepath, en->d_name);
     if (IsDirectory(filepath))
     {
-      struct TreeNode* T = ProcessDirPath(en->d_name, Parent, 1);
+      struct TreeNode *T = ProcessDirPath(en->d_name, Parent, 1);
       T->NodeInfo.IsFile = 0;
       ProcessWholeDir(filepath, T);
     }
     else
     {
-      struct TreeNode* T = ProcessDirPath(en->d_name, Parent, 1);
+      struct TreeNode *T = ProcessDirPath(en->d_name, Parent, 1);
       T->NodeInfo.IsFile = 1;
     }
     free(files[index]);
@@ -283,21 +284,36 @@ void ProcessWholeDir(char *DirPath, Tree Parent)
   free(files);
 }
 
-void AddAccessibleDir(char *DirPath, Tree Parent) {
-  struct TreeNode* T = ProcessDirPath(DirPath, Parent, 1);
+void AddAccessibleDir(char *DirPath, Tree Parent)
+{
+  struct TreeNode *T = ProcessDirPath(DirPath, Parent, 1);
   ProcessWholeDir(DirPath, T);
 }
 
-void MergeTree(Tree T1, Tree T2, u32 ss_id) {
-  Tree trav = T2->ChildDirectoryLL;
-  while (trav != NULL) {
-    trav->NextSibling = T1->ChildDirectoryLL;
-    if (T1->ChildDirectoryLL != NULL)
-      T1->ChildDirectoryLL->PrevSibling = trav;
-    trav->Parent = T1;
-    trav->PrevSibling = NULL;
-    T1->ChildDirectoryLL = trav;
+void MergeTree(Tree T1, Tree T2, u32 ss_id)
+{
+  Tree trav = T1->ChildDirectoryLL;
+
+  if (trav != NULL)
+  {
+    while (trav->NextSibling != NULL)
+    {
+      trav = trav->NextSibling;
+    }
+    trav->NextSibling = T2->ChildDirectoryLL;
+  }
+  else
+  {
+    T1->ChildDirectoryLL = T2->ChildDirectoryLL;
+  }
+
+  if (T2->ChildDirectoryLL != NULL)
+    T2->ChildDirectoryLL->PrevSibling = trav;
+  trav = T2->ChildDirectoryLL;
+  while (trav != NULL)
+  {
     trav->NodeInfo.ss_id = ss_id;
+    trav->Parent = T1;
     trav = trav->NextSibling;
   }
   free(T2);
