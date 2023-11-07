@@ -27,7 +27,7 @@ bool path_error(char *path)
   i16 len = strlen(path);
   for (int i = 0; i < len; i++)
   {
-    if (path[i] == ' ')
+    if (i != 0 && path[i - 1] == '/' && path[i] == '/')
       return true;
   }
   return false;
