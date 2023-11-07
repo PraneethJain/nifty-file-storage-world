@@ -3,6 +3,12 @@
 
 #include <stdint.h>
 
+#define LOCALHOST "127.0.0.1"
+#define NM_SS_PORT 18000
+#define NM_CLIENT_PORT 18001
+#define MAX_STR_LEN 1024
+#define MAX_CONNECTIONS 16
+
 typedef int8_t i8;
 typedef int16_t i16;
 typedef int32_t i32;

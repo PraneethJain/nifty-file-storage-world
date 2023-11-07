@@ -20,18 +20,32 @@ void *init_storage_server(void *arg)
 {
   (void)arg;
 
-  const i32 sockfd = connect_to_port(NM_SS_PORT);
-
-  storage_server_data resp;
-  // TODO: take user input of all accessible paths and fill in directory structure in resp
-
   sem_wait(&client_port_created);
   sem_wait(&nm_port_created);
   sem_wait(&alive_port_created);
 
+  storage_server_data resp;
+
+  resp.ss_tree = InitTree();
+  // TODO: take user input of all accessible paths and fill in directory structure in resp
+
+  i8 numpaths;
+  scanf("%hhd", &numpaths);
+  for (i8 i = 0; i < numpaths; i++)
+  {
+    char filepath[MAX_STR_LEN];
+    scanf("%s", filepath);
+    printf("%s\n", filepath);
+    AddAccessibleDir(filepath, resp.ss_tree);
+  }
+
+  PrintTree(resp.ss_tree, 0);
+
   resp.port_for_client = port_for_client;
   resp.port_for_nm = port_for_nm;
   resp.port_for_alive = port_for_alive;
+
+  const i32 sockfd = connect_to_port(NM_SS_PORT);
   CHECK(send(sockfd, &resp, sizeof(resp), 0), -1);
 
   CHECK(close(sockfd), -1);

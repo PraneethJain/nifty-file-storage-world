@@ -1,6 +1,6 @@
 #include "headers.h"
 
-const int MaxBufferLength = 50000;
+const i32 MaxBufferLength = 50000;
 
 /*
       *
@@ -14,28 +14,6 @@ const int MaxBufferLength = 50000;
      v  v  v
     A/D
 */
-
-const int MaxNameLength = 32;
-
-struct Information
-{
-  char DirectoryName[32];
-  u8 NumChild;
-  /*
-  Pointer to files in directory.
-  */
-};
-
-struct TreeNode
-{
-  struct Information NodeInfo;
-  struct TreeNode *NextSibling;
-  struct TreeNode *PrevSibling;
-  struct TreeNode *ChildDirectoryLL; // LL - > Linked List
-  struct TreeNode *Parent;
-};
-
-typedef struct TreeNode *Tree;
 
 struct TreeNode *InitNode(const char *Name, struct TreeNode *Parent)
 {
@@ -67,7 +45,7 @@ child doesn't exist. The function will return this node.
 If NoNameFlag is enabled then a child node will be created with no name.
 The function will return this node.
 */
-struct TreeNode *FindChild(Tree T, const char *ChildName, int CreateFlag, int NoNameFlag)
+struct TreeNode *FindChild(Tree T, const char *ChildName, bool CreateFlag, bool NoNameFlag)
 {
   if (T->ChildDirectoryLL == NULL)
   {
@@ -104,18 +82,10 @@ struct TreeNode *FindChild(Tree T, const char *ChildName, int CreateFlag, int No
   return NULL;
 }
 
-Tree FindNode(Tree T)
-{
-}
-
-Tree InsertNode(Tree T, struct TreeNode *Target)
-{
-}
-
 #define DIRINFO 'D'
 #define DIREND '.'
 
-int SendTreeDataDriver(Tree T, char buffer[MaxBufferLength], int *lastindex, int BufferCapacity)
+int SendTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex >= BufferCapacity)
     return -1;
@@ -149,13 +119,13 @@ int SendTreeDataDriver(Tree T, char buffer[MaxBufferLength], int *lastindex, int
 
 int SendTreeData(Tree T, char buffer[MaxBufferLength])
 {
-  int lastindex = 0;
+  u32 lastindex = 0;
   if (SendTreeDataDriver(T, buffer, &lastindex, MaxBufferLength) == -1)
     return -1;
   return 0;
 }
 
-int ReceiveTreeDataDriver(Tree T, char buffer[MaxBufferLength], int *lastindex, int BufferCapacity)
+i32 ReceiveTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex + sizeof(T->NodeInfo) >= BufferCapacity)
     return -1;
@@ -181,15 +151,15 @@ int ReceiveTreeDataDriver(Tree T, char buffer[MaxBufferLength], int *lastindex, 
 Tree ReceiveTreeData(char buffer[MaxBufferLength])
 {
   Tree T = InitTree();
-  int lastindex = 1;
+  u32 lastindex = 1;
   if (ReceiveTreeDataDriver(T, buffer, &lastindex, MaxBufferLength) == -1)
     return NULL;
   return T;
 }
 
-void PrintTree(Tree T, int indent)
+void PrintTree(Tree T, u32 indent)
 {
-  for (int i = 0; i < indent; i++)
+  for (u32 i = 0; i < indent; i++)
   {
     printf("\t");
   }
@@ -202,7 +172,7 @@ void PrintTree(Tree T, int indent)
   }
 }
 
-int DeleteTree(Tree T)
+i32 DeleteTree(Tree T)
 {
   struct TreeNode *trav = T->ChildDirectoryLL;
   struct TreeNode *next;
@@ -233,12 +203,12 @@ int DeleteTree(Tree T)
   return 0;
 }
 
-struct TreeNode *ProcessDirPath(char *DirPath, Tree T, int CreateFlag)
+struct TreeNode *ProcessDirPath(char *DirPath, Tree T, bool CreateFlag)
 {
   struct TreeNode *Cur = T;
   if (T == NULL)
     return NULL;
-  char DirPathCopy[128];
+  char DirPathCopy[MAX_STR_LEN];
   strcpy(DirPathCopy, DirPath);
   char *Delim = "/\\";
   char *token = strtok(DirPathCopy, Delim);
@@ -252,34 +222,82 @@ struct TreeNode *ProcessDirPath(char *DirPath, Tree T, int CreateFlag)
   return Cur;
 }
 
-void RandomTest()
+bool IsDirectory(const char *location)
 {
-  Tree T = InitTree();
-  Tree T2 = FindChild(T, "Hello", 1, 0);
-  Tree T3 = FindChild(T2, "Fuck YOU", 1, 0);
-  Tree T4 = FindChild(T, "LOL", 1, 0);
-  Tree T5 = FindChild(T3, "NOPLEASE", 1, 0);
-  Tree T6 = FindChild(T4, "OAWKFEOWAJFAW", 1, 0);
-  Tree T7 = ProcessDirPath("Hello/My/Name/Is/Harshvardhan", T, 1);
-  DeleteTree(ProcessDirPath("Hello/My/Name", T, 0));
-  char Buffer[MaxBufferLength];
-  SendTreeData(T, Buffer);
-  Tree TRec = ReceiveTreeData(Buffer);
-  printf("OG:\n");
-  PrintTree(T, 0);
-  printf("Test:\n");
-  PrintTree(TRec, 0);
-  if ((T7 = ProcessDirPath("Hello/My/Name//Is/Harshvardhan", TRec, 0)) != NULL)
-  {
-    printf("Passed: %s!\n", T7->NodeInfo.DirectoryName);
-  }
-  else
-  {
-    printf("Failed\n");
-  }
+    struct stat st;
+    i32 status = lstat(location, &st);
+    return S_ISDIR(st.st_mode) && (status != -1);
 }
 
-int main()
+void ProcessWholeDir(char *DirPath, Tree Parent)
 {
-  RandomTest();
+  struct dirent *en;
+  struct dirent **files;
+  i32 numfiles = scandir(DirPath, &files, NULL, NULL);
+  if (numfiles < 0)
+  {
+    fprintf(stderr, "Unable to execute scandir on directory: %s\n", DirPath);
+    return;
+  }
+  i32 index = 0;
+  while (index < numfiles)
+  {
+    en = files[index];
+    if (en->d_name[0] == '.' && ((en->d_name[1] == '.' && en->d_name[2] == '\0') || en->d_name[1] == '\0'))
+    {
+      free(files[index]);
+      index++;
+      continue;
+    }
+    char filepath[MAX_STR_LEN];
+    strcpy(filepath, DirPath);
+    strcat(filepath, "/");
+    strcat(filepath, en->d_name);
+    if (IsDirectory(filepath))
+    {
+      struct TreeNode* T = ProcessDirPath(en->d_name, Parent, 1);
+      T->NodeInfo.IsFile = 0;
+      ProcessWholeDir(filepath, T);
+    }
+    else
+    {
+      struct TreeNode* T = ProcessDirPath(en->d_name, Parent, 1);
+      T->NodeInfo.IsFile = 1;
+    }
+    free(files[index]);
+    index++;
+  }
+  free(files);
 }
+
+void AddAccessibleDir(char *DirPath, Tree Parent) {
+  struct TreeNode* T = ProcessDirPath(DirPath, Parent, 1);
+  ProcessWholeDir(DirPath, T);
+}
+
+// void RandomTest()
+// {
+//   Tree T = InitTree();
+//   Tree T2 = FindChild(T, "Hello", 1, 0);
+//   Tree T3 = FindChild(T2, "Fuck YOU", 1, 0);
+//   Tree T4 = FindChild(T, "LOL", 1, 0);
+//   Tree T5 = FindChild(T3, "NOPLEASE", 1, 0);
+//   Tree T6 = FindChild(T4, "OAWKFEOWAJFAW", 1, 0);
+//   Tree T7 = ProcessDirPath("Hello/My/Name/Is/Harshvardhan", T, 1);
+//   char Buffer[MaxBufferLength];
+//   SendTreeData(T, Buffer);
+//   Tree TRec = ReceiveTreeData(Buffer);
+//   DeleteTree(ProcessDirPath("Hello/My/Name", T, 0));
+//   printf("OG:\n");
+//   PrintTree(T, 0);
+//   printf("Test:\n");
+//   PrintTree(TRec, 0);
+//   if ((T7 = ProcessDirPath("Hello/My/Name//Is/Harshvardhan", TRec, 0)) != NULL)
+//   {
+//     printf("Passed: %s!\n", T7->NodeInfo.DirectoryName);
+//   }
+//   else
+//   {
+//     printf("Failed\n");
+//   }
+// }
