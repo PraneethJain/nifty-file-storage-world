@@ -16,6 +16,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "inc/colors.h"
@@ -29,6 +30,15 @@ typedef struct storage_server_data
   i32 port_for_alive;
   char ss_tree[MAX_STR_LEN];
 } storage_server_data;
+
+typedef struct metadata
+{
+  time_t last_modified_time;
+  time_t last_access_time;
+  time_t last_status_change_time;
+  u64 size;
+  i8 permissions;
+} metadata;
 
 enum operation
 {
