@@ -30,11 +30,15 @@ void remove_connected_storage_server(i32 index)
     ERROR_PRINT("Invalid index\n");
   }
 
+  int ss_id = connected_storage_servers.storage_servers[index].port_for_nm;
+
   for (i32 i = index; i + 1 < connected_storage_servers.size; ++i)
   {
     connected_storage_servers.storage_servers[i] = connected_storage_servers.storage_servers[i + 1];
   }
   connected_storage_servers.size--;
+
+  RemoveServerPath(NM_Tree, ss_id);
 
   // TODO: remove this storage server's stuff from directory structure
 }
@@ -148,6 +152,13 @@ storage_server_data ss_from_path(char *path)
 {
   (void)path;
   // TODO
+  i32 ssid = GetPathSSID(NM_Tree, path);
+  for (int i=0; i<connected_storage_servers.size; i++)
+  {
+    if (connected_storage_servers.storage_servers[i].port_for_nm == ssid) {
+      return connected_storage_servers.storage_servers[i];
+    }
+  }
   return connected_storage_servers.storage_servers[0];
 }
 
