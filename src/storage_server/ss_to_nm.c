@@ -35,7 +35,6 @@ void *init_storage_server(void *arg)
   {
     char filepath[MAX_STR_LEN];
     scanf("%s", filepath);
-    printf("%s\n", filepath);
     AddAccessibleDir(filepath, resp.ss_tree);
   }
 

@@ -9,6 +9,7 @@ struct Information
   char DirectoryName[MAX_STR_LEN];
   u8 NumChild;
   bool IsFile;
+  bool Access;
   /*
   Extra Information
   */

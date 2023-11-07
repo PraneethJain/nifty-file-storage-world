@@ -163,7 +163,14 @@ void PrintTree(Tree T, u32 indent)
   {
     printf("\t");
   }
+  if (T->NodeInfo.Access == 0)
+    printf(C_BLACK);
+  else if (T->NodeInfo.IsFile)
+    printf(C_BLUE);
+  else
+    printf(C_YELLOW);
   printf("%s\n", T->NodeInfo.DirectoryName);
+  printf(C_RESET);
   struct TreeNode *trav = T->ChildDirectoryLL;
   while (trav != NULL)
   {
@@ -214,11 +221,17 @@ struct TreeNode *ProcessDirPath(char *DirPath, Tree T, bool CreateFlag)
   char *token = strtok(DirPathCopy, Delim);
   while (token != NULL)
   {
-    Cur = FindChild(Cur, token, CreateFlag, 0);
+    Tree temp = FindChild(Cur, token, 0, 0);
+    if (temp == NULL && CreateFlag) {
+      temp = FindChild(Cur, token, CreateFlag, 0);
+      temp->NodeInfo.Access = 0;
+    }
+    Cur = temp;
     if (Cur == NULL)
       return NULL;
     token = strtok(NULL, Delim);
   }
+  Cur->NodeInfo.Access = 1;
   return Cur;
 }
 
