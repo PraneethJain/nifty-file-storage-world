@@ -11,8 +11,11 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+Tree NM_Tree;
+
 int main()
 {
+  NM_Tree = InitTree();
   pthread_t storage_server_init_thread, alive_checker_thread;
   pthread_t client_relay_thread;
 

@@ -10,6 +10,8 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+extern Tree NM_Tree;
+
 struct
 {
   i32 size;
@@ -44,7 +46,16 @@ void remove_connected_storage_server(i32 index)
  */
 void add_connected_storage_server(storage_server_data data)
 {
-  connected_storage_servers.storage_servers[connected_storage_servers.size++] = data;
+  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_alive = data.port_for_alive;
+  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_client = data.port_for_client;
+  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_nm = data.port_for_nm;
+
+  Tree temp = ReceiveTreeData(data.ss_tree);
+  MergeTree(NM_Tree, temp, data.port_for_nm);
+
+  PrintTree(NM_Tree, 0);
+
+  connected_storage_servers.size++;
   // TODO: add this storage server's stuff to directory structure
 }
 

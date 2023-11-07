@@ -10,6 +10,8 @@
 #include "../common/headers.h"
 #include "headers.h"
 
+extern Tree NM_Tree;
+
 /**
  * @brief Receive path from client and send the corresponding storage server's port
  *

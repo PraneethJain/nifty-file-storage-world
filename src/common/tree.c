@@ -85,7 +85,7 @@ struct TreeNode *FindChild(Tree T, const char *ChildName, bool CreateFlag, bool 
 #define DIRINFO 'D'
 #define DIREND '.'
 
-int SendTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, u32 BufferCapacity)
+int SendTreeDataDriver(Tree T, char *buffer, u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex >= BufferCapacity)
     return -1;
@@ -117,7 +117,7 @@ int SendTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, u32
   return 0;
 }
 
-int SendTreeData(Tree T, char buffer[MaxBufferLength])
+int SendTreeData(Tree T, char *buffer)
 {
   u32 lastindex = 0;
   if (SendTreeDataDriver(T, buffer, &lastindex, MaxBufferLength) == -1)
@@ -125,7 +125,7 @@ int SendTreeData(Tree T, char buffer[MaxBufferLength])
   return 0;
 }
 
-i32 ReceiveTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, u32 BufferCapacity)
+i32 ReceiveTreeDataDriver(Tree T, char* buffer, u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex + sizeof(T->NodeInfo) >= BufferCapacity)
     return -1;
@@ -148,7 +148,7 @@ i32 ReceiveTreeDataDriver(Tree T, char buffer[MaxBufferLength], u32 *lastindex, 
   return 0;
 }
 
-Tree ReceiveTreeData(char buffer[MaxBufferLength])
+Tree ReceiveTreeData(char *buffer)
 {
   Tree T = InitTree();
   u32 lastindex = 1;
@@ -286,6 +286,19 @@ void ProcessWholeDir(char *DirPath, Tree Parent)
 void AddAccessibleDir(char *DirPath, Tree Parent) {
   struct TreeNode* T = ProcessDirPath(DirPath, Parent, 1);
   ProcessWholeDir(DirPath, T);
+}
+
+void MergeTree(Tree T1, Tree T2, u32 ss_id) {
+  Tree trav = T2->ChildDirectoryLL;
+  while (trav != NULL) {
+    Tree temp = FindChild(T1, "", 1, 1);
+    memcpy(&temp->NodeInfo, &trav->NodeInfo, sizeof(trav->NodeInfo));
+    temp->NodeInfo.ss_id = ss_id;
+    Tree next = trav->NextSibling;
+    free(trav);
+    trav = next;
+  }
+  free(T2);
 }
 
 // void RandomTest()

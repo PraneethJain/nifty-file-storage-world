@@ -26,7 +26,7 @@ void *init_storage_server(void *arg)
 
   storage_server_data resp;
 
-  resp.ss_tree = InitTree();
+  Tree SS_Tree = InitTree();
   // TODO: take user input of all accessible paths and fill in directory structure in resp
 
   i8 numpaths;
@@ -35,10 +35,12 @@ void *init_storage_server(void *arg)
   {
     char filepath[MAX_STR_LEN];
     scanf("%s", filepath);
-    AddAccessibleDir(filepath, resp.ss_tree);
+    AddAccessibleDir(filepath, SS_Tree);
   }
 
-  PrintTree(resp.ss_tree, 0);
+  PrintTree(SS_Tree, 0);
+
+  SendTreeData(SS_Tree, resp.ss_tree);
 
   resp.port_for_client = port_for_client;
   resp.port_for_nm = port_for_nm;

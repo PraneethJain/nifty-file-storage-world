@@ -27,8 +27,7 @@ typedef struct storage_server_data
   i32 port_for_client;
   i32 port_for_nm;
   i32 port_for_alive;
-  Tree ss_tree;
-  // directory structure
+  char ss_tree[MAX_STR_LEN];
 } storage_server_data;
 
 enum operation
