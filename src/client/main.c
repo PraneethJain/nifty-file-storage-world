@@ -46,6 +46,43 @@ void read_path(char *path_buffer)
   }
 }
 
+void print_error(enum status error)
+{
+  switch (error)
+  {
+  case SUCCESS:
+    break;
+  case INVALID_PATH:
+    printf("Invalid path\n");
+    break;
+  case INVALID_OPERATION:
+    printf("Invalid operation");
+    break;
+  case NOT_FOUND:
+    printf("Not found");
+    break;
+  case UNAVAILABLE:
+    printf("Resource is busy");
+    break;
+  case READ_PERMISSION_DENIED:
+    printf("Read permission denied");
+    break;
+  case WRITE_PERMISSION_DENIED:
+    printf("Write permission denied");
+    break;
+  case CREATE_PERMISSION_DENIED:
+    printf("Create permission denied");
+    break;
+  case DELETE_PERMISSION_DENIED:
+    printf("Delete permissio denied");
+    break;
+  case UNKNOWN_PERMISSION_DENIED:
+    printf("Permission denied\n");
+    break;
+  }
+  printf("\n");
+}
+
 int main()
 {
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
@@ -78,6 +115,9 @@ int main()
       else if (op == METADATA)
       {
       }
+      enum status code;
+      CHECK(recv(ss_sockfd, &code, sizeof(code), 0), -1);
+      print_error(code);
       close(ss_sockfd);
     }
     else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
