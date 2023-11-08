@@ -102,6 +102,7 @@ int main()
         print_error(code);
         continue;
       }
+
       i32 port;
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
       const i32 ss_sockfd = connect_to_port(port);
@@ -113,6 +114,7 @@ int main()
         print_error(code);
         continue;
       }
+
       if (op == READ)
       {
         CHECK(recv(ss_sockfd, &port, sizeof(port), 0), -1);
@@ -150,11 +152,7 @@ int main()
       char to_path[MAX_STR_LEN];
       read_path(from_path);
       read_path(to_path);
-      if (path_error(from_path) || path_error(to_path))
-      {
-        printf("Invalid path\n");
-        continue;
-      }
+
       CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
       CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
       print_error(code);
