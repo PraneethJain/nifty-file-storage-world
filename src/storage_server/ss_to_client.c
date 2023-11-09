@@ -37,10 +37,13 @@ void *client_relay(void *arg)
     CHECK(recv(clientfd, path, sizeof(path), 0), -1)
     printf("Recieved path %s\n", path);
 
+    enum status code;
     if (op == READ)
     {
       FILE *file = fopen(path, "r");
       CHECK(file, NULL);
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
       send_file(file, clientfd);
       fclose(file);
     }

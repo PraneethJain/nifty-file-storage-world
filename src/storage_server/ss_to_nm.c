@@ -108,20 +108,19 @@ void *naming_server_relay(void *arg)
     enum operation op;
     CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
 
-    i32 status = -1;
+    enum status code;
     if (op == COPY_FILE || op == COPY_FOLDER)
     {
       // receive 2 paths
-      status = 2;
     }
     else
     {
       char path[MAX_STR_LEN];
       CHECK(recv(clientfd, path, sizeof(path), 0), -1);
-      status = 1;
     }
+    code = SUCCESS;
 
-    CHECK(send(clientfd, &status, sizeof(status), 0), -1);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
     CHECK(close(clientfd), -1);
   }

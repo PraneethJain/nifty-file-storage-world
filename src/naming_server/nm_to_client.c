@@ -23,6 +23,8 @@ void send_client_port(const i32 clientfd)
   CHECK(recv(clientfd, path, sizeof(path), 0), -1);
 
   const i32 port = ss_client_port_from_path(path);
+  enum status code = SUCCESS;
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
   CHECK(send(clientfd, &port, sizeof(port), 0), -1);
 }
 
@@ -38,16 +40,18 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   CHECK(recv(clientfd, path, sizeof(path), 0), -1);
 
   // naming server is the client
+  printf("1\n");
   const i32 port = ss_nm_port_from_path(path);
+  printf("2\n");
   const i32 sockfd = connect_to_port(port);
 
   CHECK(send(sockfd, &op, sizeof(op), 0), -1);
   CHECK(send(sockfd, path, sizeof(path), 0), -1);
 
   // send status code received from ss to client
-  i32 status;
-  CHECK(recv(sockfd, &status, sizeof(status), 0), -1);
-  CHECK(send(clientfd, &status, sizeof(status), 0), -1);
+  enum status code;
+  CHECK(recv(sockfd, &code, sizeof(code), 0), -1);
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
   close(sockfd);
 }
