@@ -122,6 +122,7 @@ int SendTreeData(Tree T, char *buffer)
   u32 lastindex = 0;
   if (SendTreeDataDriver(T, buffer, &lastindex, MaxBufferLength) == -1)
     return -1;
+  buffer[lastindex] = '\0';
   return 0;
 }
 
@@ -341,11 +342,14 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
-u32 GetPathSSID(Tree T, char *path)
+i32 GetPathSSID(Tree T, char *path)
 {
   char *Delim = "/\\";
   char *token = strtok(path, Delim);
-  return FindChild(T, token, 0, 0)->NodeInfo.ss_id;
+  Tree RetT = FindChild(T, token, 0, 0);
+  if (RetT == NULL)
+    return -1;
+  return RetT->NodeInfo.ss_id;
 }
 
 // void RandomTest()

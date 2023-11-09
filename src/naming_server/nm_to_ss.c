@@ -142,6 +142,20 @@ void *alive_checker(void *arg)
   return NULL;
 }
 
+storage_server_data MinSizeStorageServer()
+{
+  int BestSS = 0;
+  size_t minsize = strlen(connected_storage_servers.storage_servers[0].ss_tree);
+  for (int i=0; i<connected_storage_servers.size; i++)
+  {
+    if (strlen(connected_storage_servers.storage_servers[i].ss_tree) < minsize) {
+      minsize = strlen(connected_storage_servers.storage_servers[i].ss_tree);
+      BestSS = i;
+    }
+  }
+  return connected_storage_servers.storage_servers[BestSS];
+}
+
 /**
  * @brief Finds the storage server corresponding to the path and returns its data
  *
@@ -153,6 +167,10 @@ storage_server_data ss_from_path(char *path)
   (void)path;
   // TODO
   i32 ssid = GetPathSSID(NM_Tree, path);
+  if (ssid == -1)
+  {
+    return MinSizeStorageServer();
+  }
   for (int i=0; i<connected_storage_servers.size; i++)
   {
     if (connected_storage_servers.storage_servers[i].port_for_nm == ssid) {
