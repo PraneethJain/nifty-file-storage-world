@@ -51,6 +51,8 @@ void *client_relay(void *arg)
     {
       FILE *file = fopen(path, "w");
       CHECK(file, NULL);
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
       char buffer[MAX_STR_LEN];
       CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
       fwrite(buffer, strlen(buffer), 1, file);
