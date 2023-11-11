@@ -162,21 +162,21 @@ storage_server_data MinSizeStorageServer()
  * @param path
  * @return storage_server_data
  */
-storage_server_data ss_from_path(char *path)
+storage_server_data ss_from_path(const char *path)
 {
   (void)path;
   // TODO
-  i32 ssid = GetPathSSID(NM_Tree, path);
-  if (ssid == -1)
-  {
-    return MinSizeStorageServer();
-  }
-  for (int i=0; i<connected_storage_servers.size; i++)
-  {
-    if (connected_storage_servers.storage_servers[i].port_for_nm == ssid) {
-      return connected_storage_servers.storage_servers[i];
-    }
-  }
+  // i32 ssid = GetPathSSID(NM_Tree, path);
+  // if (ssid == -1)
+  // {
+  //   return MinSizeStorageServer();
+  // }
+  // for (int i=0; i<connected_storage_servers.size; i++)
+  // {
+  //   if (connected_storage_servers.storage_servers[i].port_for_nm == ssid) {
+  //     return connected_storage_servers.storage_servers[i];
+  //   }
+  // }
   return connected_storage_servers.storage_servers[0];
 }
 

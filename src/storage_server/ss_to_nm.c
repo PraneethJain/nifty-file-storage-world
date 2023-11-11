@@ -109,16 +109,86 @@ void *naming_server_relay(void *arg)
     CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
 
     enum status code;
-    if (op == COPY_FILE || op == COPY_FOLDER)
+    if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
+    {
+      char path[MAX_STR_LEN];
+      CHECK(recv(clientfd, path, sizeof(path), 0), -1);
+      if (op == CREATE_FILE)
+      {
+        FILE *f = fopen(path, "a");
+        if (f == NULL)
+        {
+          if (errno == EACCES)
+            code = WRITE_PERMISSION_DENIED;
+          else
+            code = INVALID_PATH;
+        }
+        else
+        {
+          code = SUCCESS;
+          fclose(f);
+        }
+      }
+      else if (op == DELETE_FILE)
+      {
+        i32 res = remove(path);
+        if (res == -1)
+        {
+          if (errno == EACCES)
+            code = DELETE_PERMISSION_DENIED;
+          else if (errno == EBUSY)
+            code = UNAVAILABLE;
+          else
+            code = INVALID_PATH;
+        }
+        else
+        {
+          code = SUCCESS;
+        }
+      }
+      else if (op == CREATE_FOLDER)
+      {
+        i32 res = mkdir(path, 0777);
+        if (res == -1)
+        {
+          if (errno == EACCES)
+            code = CREATE_PERMISSION_DENIED;
+          else
+            code = INVALID_PATH;
+        }
+        else
+        {
+          code = SUCCESS;
+        }
+      }
+      else if (op == DELETE_FOLDER)
+      {
+        i32 res = rmdir(path);
+        if (res == -1)
+        {
+          if (errno == EACCES)
+            code = DELETE_PERMISSION_DENIED;
+          else if (errno == EBUSY)
+            code = NON_EMPTY_DIRECTORY;
+          else if (errno == EBUSY)
+            code = UNAVAILABLE;
+          else
+            code = INVALID_PATH;
+        }
+        else
+        {
+          code = SUCCESS;
+        }
+      }
+    }
+    else if (op == COPY_FILE || op == COPY_FOLDER)
     {
       // receive 2 paths
     }
     else
     {
-      char path[MAX_STR_LEN];
-      CHECK(recv(clientfd, path, sizeof(path), 0), -1);
+      code = INVALID_OPERATION;
     }
-    code = SUCCESS;
 
     CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
