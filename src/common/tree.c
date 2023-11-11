@@ -342,7 +342,7 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
-i32 GetPathSSID(Tree T, char *path)
+i32 GetPathSSID(Tree T, const char *path)
 {
   char pathcopy[MAX_STR_LEN];
   strcpy(pathcopy, path);

@@ -35,7 +35,7 @@ Tree ReceiveTreeData(char *buffer);
 void MergeTree(Tree T1, Tree T2, u32 ss_id);
 
 void RemoveServerPath(Tree T, u32 ss_id);
-i32 GetPathSSID(Tree T, char *path);
+i32 GetPathSSID(Tree T, const char *path);
 
 void PrintTree(Tree T, u32 indent);
 
