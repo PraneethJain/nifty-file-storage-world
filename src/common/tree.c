@@ -344,8 +344,10 @@ void RemoveServerPath(Tree T, u32 ss_id)
 
 i32 GetPathSSID(Tree T, char *path)
 {
+  char pathcopy[MAX_STR_LEN];
+  strcpy(pathcopy, path);
   char *Delim = "/\\";
-  char *token = strtok(path, Delim);
+  char *token = strtok(pathcopy, Delim);
   Tree RetT = FindChild(T, token, 0, 0);
   if (RetT == NULL)
     return -1;
