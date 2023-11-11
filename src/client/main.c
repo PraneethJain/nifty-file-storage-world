@@ -11,7 +11,7 @@
 
 i8 get_operation()
 {
-  printf("Operations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
+  printf("\nOperations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
          "folder\n8.Copy file\n9.Copy folder\n10.Exit\n");
   i8 op_int = -1;
   while (op_int < 1 || op_int > 10)
@@ -46,9 +46,9 @@ void read_path(char *path_buffer)
   }
 }
 
-void print_error(enum status error)
+void print_error(enum status code)
 {
-  switch (error)
+  switch (code)
   {
   case SUCCESS:
     break;
@@ -74,10 +74,13 @@ void print_error(enum status error)
     printf("Create permission denied");
     break;
   case DELETE_PERMISSION_DENIED:
-    printf("Delete permissio denied");
+    printf("Delete permission denied");
     break;
   case UNKNOWN_PERMISSION_DENIED:
     printf("Permission denied");
+    break;
+  case NON_EMPTY_DIRECTORY:
+    printf("Directory is not empty");
     break;
   }
   printf("\n");
@@ -171,7 +174,6 @@ int main()
 
       if (op == READ)
       {
-        CHECK(recv(ss_sockfd, &port, sizeof(port), 0), -1);
         receive_and_print_file(ss_sockfd);
       }
       else if (op == WRITE)
