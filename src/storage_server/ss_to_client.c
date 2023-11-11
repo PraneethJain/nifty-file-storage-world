@@ -62,13 +62,15 @@ void *client_relay(void *arg)
     {
       struct stat fileinfo;
       CHECK(stat(path, &fileinfo), -1);
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
       metadata meta;
       meta.last_modified_time = fileinfo.st_mtime;
       meta.last_access_time = fileinfo.st_atime;
       meta.last_status_change_time = fileinfo.st_ctime;
       meta.size = fileinfo.st_size;
-      meta.permissions = fileinfo.st_mode;
+      meta.mode = fileinfo.st_mode;
 
       CHECK(send(clientfd, &meta, sizeof(meta), 0), -1);
     }

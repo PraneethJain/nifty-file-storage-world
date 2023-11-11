@@ -83,6 +83,60 @@ void print_error(enum status error)
   printf("\n");
 }
 
+void print_mode(mode_t mode)
+{
+  switch (mode & S_IFMT)
+  {
+  case S_IFBLK:
+    putchar('b');
+    break;
+  case S_IFCHR:
+    putchar('c');
+    break;
+  case S_IFDIR:
+    putchar('d');
+    break;
+  case S_IFIFO:
+    putchar('p');
+    break;
+  case S_IFLNK:
+    putchar('l');
+    break;
+  case S_IFREG:
+    putchar('-');
+    break;
+  case S_IFSOCK:
+    putchar('s');
+    break;
+  default:
+    putchar('?');
+    break;
+  }
+
+  putchar((mode & S_IRUSR) ? 'r' : '-');
+  putchar((mode & S_IWUSR) ? 'w' : '-');
+  if (mode & S_ISUID)
+    putchar((mode & S_IXUSR) ? 's' : 'S');
+  else
+    putchar((mode & S_IXUSR) ? 'x' : '-');
+
+  putchar((mode & S_IRGRP) ? 'r' : '-');
+  putchar((mode & S_IWGRP) ? 'w' : '-');
+  if (mode & S_ISGID)
+    putchar((mode & S_IXGRP) ? 's' : 'S');
+  else
+    putchar((mode & S_IXGRP) ? 'x' : '-');
+
+  putchar((mode & S_IROTH) ? 'r' : '-');
+  putchar((mode & S_IWOTH) ? 'w' : '-');
+  if (mode & S_ISVTX)
+    putchar((mode & S_IXOTH) ? 't' : 'T');
+  else
+    putchar((mode & S_IXOTH) ? 'x' : '-');
+
+  putchar(' ');
+}
+
 int main()
 {
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
@@ -129,9 +183,14 @@ int main()
       }
       else if (op == METADATA)
       {
-        // receive the metadata
-        // convert to client-readable form and print
-        // no error handling
+        struct metadata meta;
+        CHECK(recv(ss_sockfd, &meta, sizeof(meta), 0), -1);
+        printf("Size: %lu\n", meta.size);
+        printf("Last accessed: %s\n", ctime(&meta.last_access_time));
+        printf("Last modified: %s\n", ctime(&meta.last_modified_time));
+        printf("Last status change: %s\n", ctime(&meta.last_status_change_time));
+        print_mode(meta.mode);
+        printf("\n");
       }
       close(ss_sockfd);
     }

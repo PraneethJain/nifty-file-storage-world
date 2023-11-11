@@ -37,7 +37,7 @@ typedef struct metadata
   time_t last_access_time;
   time_t last_status_change_time;
   u64 size;
-  i8 permissions;
+  mode_t mode;
 } metadata;
 
 enum operation
