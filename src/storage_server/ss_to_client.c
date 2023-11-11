@@ -41,38 +41,69 @@ void *client_relay(void *arg)
     if (op == READ)
     {
       FILE *file = fopen(path, "r");
-      CHECK(file, NULL);
-      code = SUCCESS;
-      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      send_file(file, clientfd);
-      fclose(file);
+      if (file == NULL)
+      {
+        if (errno == EACCES)
+          code = READ_PERMISSION_DENIED;
+        else
+          code = NOT_FOUND;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      }
+      else
+      {
+        code = SUCCESS;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+        send_file(file, clientfd);
+        fclose(file);
+      }
     }
     else if (op == WRITE)
     {
       FILE *file = fopen(path, "w");
-      CHECK(file, NULL);
-      code = SUCCESS;
-      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      char buffer[MAX_STR_LEN];
-      CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
-      fwrite(buffer, strlen(buffer), 1, file);
-      fclose(file);
+      if (file == NULL)
+      {
+        if (errno == EACCES)
+          code = WRITE_PERMISSION_DENIED;
+        else
+          code = NOT_FOUND;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      }
+      else
+      {
+        code = SUCCESS;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+        char buffer[MAX_STR_LEN];
+        CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
+        fwrite(buffer, strlen(buffer), 1, file);
+        fclose(file);
+      }
     }
     else if (op == METADATA)
     {
       struct stat fileinfo;
-      CHECK(stat(path, &fileinfo), -1);
-      code = SUCCESS;
-      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      i32 res = stat(path, &fileinfo);
+      if (res == -1)
+      {
+        if (errno == EACCES)
+          code = READ_PERMISSION_DENIED;
+        else
+          code = NOT_FOUND;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      }
+      else
+      {
+        code = SUCCESS;
+        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
-      metadata meta;
-      meta.last_modified_time = fileinfo.st_mtime;
-      meta.last_access_time = fileinfo.st_atime;
-      meta.last_status_change_time = fileinfo.st_ctime;
-      meta.size = fileinfo.st_size;
-      meta.mode = fileinfo.st_mode;
+        metadata meta;
+        meta.last_modified_time = fileinfo.st_mtime;
+        meta.last_access_time = fileinfo.st_atime;
+        meta.last_status_change_time = fileinfo.st_ctime;
+        meta.size = fileinfo.st_size;
+        meta.mode = fileinfo.st_mode;
 
-      CHECK(send(clientfd, &meta, sizeof(meta), 0), -1);
+        CHECK(send(clientfd, &meta, sizeof(meta), 0), -1);
+      }
     }
     else
     {
