@@ -12,55 +12,57 @@
 
 extern Tree NM_Tree;
 
+typedef struct connected_storage_server_node
+{
+  storage_server_data data;
+  struct connected_storage_server_node *next;
+} connected_storage_server_node;
+
 struct
 {
-  i32 size;
-  storage_server_data storage_servers[MAX_CONNECTIONS];
+  u32 length;
+  connected_storage_server_node *first;
 } connected_storage_servers = {0};
 
 /**
- * @brief Remove a disconnected storage server
+ * @brief Initialize a new storage server node with data
  *
- * @param index
+ * @param data
+ * @return connected_storage_server_node*
  */
-void remove_connected_storage_server(i32 index)
+connected_storage_server_node *init_connected_storage_server_node(storage_server_data data)
 {
-  if (index < 0 || index >= connected_storage_servers.size)
-  {
-    ERROR_PRINT("Invalid index\n");
-  }
+  connected_storage_server_node *n = malloc(sizeof(connected_storage_server_node));
+  n->data = data;
+  n->next = NULL;
 
-  int ss_id = connected_storage_servers.storage_servers[index].port_for_nm;
-
-  for (i32 i = index; i + 1 < connected_storage_servers.size; ++i)
-  {
-    connected_storage_servers.storage_servers[i] = connected_storage_servers.storage_servers[i + 1];
-  }
-  connected_storage_servers.size--;
-
-  RemoveServerPath(NM_Tree, ss_id);
-
-  // TODO: remove this storage server's stuff from directory structure
+  return n;
 }
 
 /**
- * @brief Add a connected storage server
+ * @brief Add a connected storage server to the linked list
  *
  * @param data
  */
 void add_connected_storage_server(storage_server_data data)
 {
-  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_alive = data.port_for_alive;
-  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_client = data.port_for_client;
-  connected_storage_servers.storage_servers[connected_storage_servers.size].port_for_nm = data.port_for_nm;
+  if (connected_storage_servers.length == 0)
+  {
+    connected_storage_servers.first = init_connected_storage_server_node(data);
+  }
+  else
+  {
+    connected_storage_server_node *cur;
+    for (cur = connected_storage_servers.first; cur->next != NULL; cur = cur->next)
+      ;
+    cur->next = init_connected_storage_server_node(data);
+  }
+
+  ++connected_storage_servers.length;
 
   Tree temp = ReceiveTreeData(data.ss_tree);
   MergeTree(NM_Tree, temp, data.port_for_nm);
-
   PrintTree(NM_Tree, 0);
-
-  connected_storage_servers.size++;
-  // TODO: add this storage server's stuff to directory structure
 }
 
 /**
@@ -107,22 +109,32 @@ void *alive_checker(void *arg)
   while (1)
   {
     sleep(3);
-    for (i32 i = 0; i < connected_storage_servers.size; ++i)
+    connected_storage_server_node *cur = connected_storage_servers.first;
+    connected_storage_server_node *prev = NULL;
+    while (cur != NULL)
     {
       const i32 sockfd = socket(AF_INET, SOCK_STREAM, 0);
       CHECK(sockfd, -1);
-
       struct sockaddr_in addr;
       memset(&addr, '\0', sizeof(addr));
       addr.sin_family = AF_INET;
-      addr.sin_port = htons(connected_storage_servers.storage_servers[i].port_for_alive);
+      addr.sin_port = htons(cur->data.port_for_alive);
       addr.sin_addr.s_addr = inet_addr(LOCALHOST);
       if (connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)) == -1)
       {
         if (errno == 111) // Connection refused
         {
-          printf("Storage server %i has disconnected!\n", i);
-          remove_connected_storage_server(i);
+          printf("Storage server with ssid %i has disconnected!\n", cur->data.port_for_nm);
+          RemoveServerPath(NM_Tree, cur->data.port_for_nm);
+          if (prev == NULL)
+          {
+            connected_storage_servers.first = cur->next;
+          }
+          else
+          {
+            prev->next = cur->next;
+          }
+          free(cur);
           break;
         }
         else
@@ -133,29 +145,32 @@ void *alive_checker(void *arg)
       }
       else
       {
-        printf("Storage server %i is alive!\n", i);
+        printf("Storage server with ssid %i is alive!\n", cur->data.port_for_nm);
       }
 
       CHECK(close(sockfd), -1);
+
+      prev = cur;
+      cur = cur->next;
     }
   }
   return NULL;
 }
 
-storage_server_data MinSizeStorageServer()
-{
-  int BestSS = 0;
-  size_t minsize = strlen(connected_storage_servers.storage_servers[0].ss_tree);
-  for (int i = 0; i < connected_storage_servers.size; i++)
-  {
-    if (strlen(connected_storage_servers.storage_servers[i].ss_tree) < minsize)
-    {
-      minsize = strlen(connected_storage_servers.storage_servers[i].ss_tree);
-      BestSS = i;
-    }
-  }
-  return connected_storage_servers.storage_servers[BestSS];
-}
+// storage_server_data MinSizeStorageServer()
+// {
+//   int BestSS = 0;
+//   size_t minsize = strlen(connected_storage_servers.first->data.ss_tree);
+//   for (connected_storage_server_node *cur = connected_storage_servers.first; cur != NULL; cur = cur->next)
+//   {
+//     if (strlen(cur->data.ss_tree) < minsize)
+//     {
+//       minsize = strlen(cur->data.ss_tree);
+//       BestSS = i;
+//     }
+//   }
+//   return connected_storage_servers.storage_servers[BestSS];
+// }
 
 /**
  * @brief Finds the storage server corresponding to the path and returns its data
@@ -166,18 +181,17 @@ storage_server_data MinSizeStorageServer()
 storage_server_data *ss_from_path(const char *path)
 {
   i32 ssid = GetPathSSID(NM_Tree, path);
-  if (ssid == -1)
+  if (ssid != -1)
   {
-    return NULL;
-  }
-  for (int i = 0; i < connected_storage_servers.size; i++)
-  {
-    if (connected_storage_servers.storage_servers[i].port_for_nm == ssid)
+    for (connected_storage_server_node *cur = connected_storage_servers.first; cur != NULL; cur = cur->next)
     {
-      return &connected_storage_servers.storage_servers[i];
+      if (cur->data.port_for_nm == ssid)
+      {
+        return &cur->data;
+      }
     }
   }
-  return &connected_storage_servers.storage_servers[0];
+  return NULL;
 }
 
 /**
@@ -191,10 +205,8 @@ i32 ss_client_port_from_path(const char *path)
   storage_server_data *ss_info = ss_from_path(path);
   if (ss_info == NULL)
   {
-    printf("here\n");
     return -1;
   }
-  printf("%d\n", ss_info->port_for_client);
   return ss_info->port_for_client;
 }
 
