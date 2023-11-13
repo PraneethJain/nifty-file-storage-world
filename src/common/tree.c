@@ -47,6 +47,10 @@ The function will return this node.
 */
 struct TreeNode *FindChild(Tree T, const char *ChildName, bool CreateFlag, bool NoNameFlag)
 {
+  if (ChildName == NULL)
+  {
+    return T;
+  }
   if (T->ChildDirectoryLL == NULL)
   {
     if (CreateFlag)
@@ -380,6 +384,7 @@ Tree GetParentOfPath(Tree T, const char *path)
   }
   return Cur;
 }
+
 
 // void RandomTest()
 // {
