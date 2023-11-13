@@ -135,6 +135,7 @@ void *alive_checker(void *arg)
             prev->next = cur->next;
           }
           free(cur);
+          --connected_storage_servers.length;
           break;
         }
         else
