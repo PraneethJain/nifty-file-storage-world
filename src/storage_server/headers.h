@@ -13,6 +13,7 @@ extern sem_t alive_port_created;
 
 // ss_to_client.c
 void *client_relay(void *arg);
+void *client_init(void *arg);
 
 // ss_to_nm.c
 void *init_storage_server(void *arg);

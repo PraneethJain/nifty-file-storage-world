@@ -14,7 +14,7 @@
  * @param arg NULL
  * @return void* NULL
  */
-void *client_relay(void *arg)
+void *client_init(void *arg)
 {
   // TODO
   (void)arg;
@@ -28,91 +28,104 @@ void *client_relay(void *arg)
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);
-    const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
-    CHECK(clientfd, -1);
+    i32 *clientfd = malloc(sizeof(i32));
+    *clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
+    CHECK(*clientfd, -1);
 
-    enum operation op;
-    CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
-    char path[MAX_STR_LEN];
-    CHECK(recv(clientfd, path, sizeof(path), 0), -1)
-    printf("Recieved path %s\n", path);
-
-    enum status code;
-    if (op == READ)
-    {
-      FILE *file = fopen(path, "r");
-      if (file == NULL)
-      {
-        if (errno == EACCES)
-          code = READ_PERMISSION_DENIED;
-        else
-          code = NOT_FOUND;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      }
-      else
-      {
-        code = SUCCESS;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-        send_file(file, clientfd);
-        fclose(file);
-      }
-    }
-    else if (op == WRITE)
-    {
-      FILE *file = fopen(path, "w");
-      if (file == NULL)
-      {
-        if (errno == EACCES)
-          code = WRITE_PERMISSION_DENIED;
-        else
-          code = NOT_FOUND;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      }
-      else
-      {
-        code = SUCCESS;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-        char buffer[MAX_STR_LEN];
-        CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
-        fwrite(buffer, strlen(buffer), 1, file);
-        fclose(file);
-      }
-    }
-    else if (op == METADATA)
-    {
-      struct stat fileinfo;
-      i32 res = stat(path, &fileinfo);
-      if (res == -1)
-      {
-        if (errno == EACCES)
-          code = READ_PERMISSION_DENIED;
-        else
-          code = NOT_FOUND;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      }
-      else
-      {
-        code = SUCCESS;
-        CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-
-        metadata meta;
-        meta.last_modified_time = fileinfo.st_mtime;
-        meta.last_access_time = fileinfo.st_atime;
-        meta.last_status_change_time = fileinfo.st_ctime;
-        meta.size = fileinfo.st_size;
-        meta.mode = fileinfo.st_mode;
-
-        CHECK(send(clientfd, &meta, sizeof(meta), 0), -1);
-      }
-    }
-    else
-    {
-    }
-
-    CHECK(close(clientfd), -1);
+    pthread_t client_relay_thread;
+    pthread_create(&client_relay_thread, NULL, client_relay, clientfd);
   }
 
   CHECK(close(serverfd), -1);
 
   return NULL;
 }
+
+void *client_relay(void *arg)
+{
+  const i32 clientfd = *(i32 *)arg;
+  free(arg);
+
+  enum operation op;
+  CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
+  char path[MAX_STR_LEN];
+  CHECK(recv(clientfd, path, sizeof(path), 0), -1)
+  printf("Recieved path %s\n", path);
+
+  enum status code;
+  if (op == READ)
+  {
+    FILE *file = fopen(path, "r");
+    if (file == NULL)
+    {
+      if (errno == EACCES)
+        code = READ_PERMISSION_DENIED;
+      else
+        code = NOT_FOUND;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    }
+    else
+    {
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      send_file(file, clientfd);
+      fclose(file);
+    }
+  }
+  else if (op == WRITE)
+  {
+    FILE *file = fopen(path, "w");
+    if (file == NULL)
+    {
+      if (errno == EACCES)
+        code = WRITE_PERMISSION_DENIED;
+      else
+        code = NOT_FOUND;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    }
+    else
+    {
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      char buffer[MAX_STR_LEN];
+      CHECK(recv(clientfd, buffer, sizeof(buffer), 0), -1);
+      fwrite(buffer, strlen(buffer), 1, file);
+      fclose(file);
+    }
+  }
+  else if (op == METADATA)
+  {
+    struct stat fileinfo;
+    i32 res = stat(path, &fileinfo);
+    if (res == -1)
+    {
+      if (errno == EACCES)
+        code = READ_PERMISSION_DENIED;
+      else
+        code = NOT_FOUND;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    }
+    else
+    {
+      code = SUCCESS;
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+
+      metadata meta;
+      meta.last_modified_time = fileinfo.st_mtime;
+      meta.last_access_time = fileinfo.st_atime;
+      meta.last_status_change_time = fileinfo.st_ctime;
+      meta.size = fileinfo.st_size;
+      meta.mode = fileinfo.st_mode;
+
+      CHECK(send(clientfd, &meta, sizeof(meta), 0), -1);
+    }
+  }
+  else
+  {
+  }
+
+  CHECK(close(clientfd), -1);
+
+  return NULL;
+}
+
