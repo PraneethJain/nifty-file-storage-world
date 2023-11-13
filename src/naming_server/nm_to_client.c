@@ -83,7 +83,7 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
 
   if (op == CREATE_FILE)
   {
-    AddFile(NM_Tree, path);
+    AddFile(NM_Tree, path, port);
   }
   else if (op == DELETE_FILE)
   {
@@ -91,7 +91,7 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   }
   else if (op == CREATE_FOLDER)
   {
-    AddFolder(NM_Tree, path);
+    AddFolder(NM_Tree, path, port);
   }
   else if (op == DELETE_FOLDER)
   {

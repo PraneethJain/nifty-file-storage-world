@@ -289,9 +289,22 @@ void ProcessWholeDir(char *DirPath, Tree Parent)
   free(files);
 }
 
+bool CheckIfFile(char *DirPath)
+{
+  struct stat stats;
+  stat(DirPath, &stats);
+
+  if (S_ISDIR(stats.st_mode))
+    return 0;
+
+  return 1;
+}
+
 void AddAccessibleDir(char *DirPath, Tree Parent)
 {
   struct TreeNode *T = ProcessDirPath(DirPath, Parent, 1);
+  if (CheckIfFile(DirPath))
+    return;
   ProcessWholeDir(DirPath, T);
 }
 
@@ -414,16 +427,18 @@ char *get_parent(const char *path)
   return NULL;
 }
 
-void AddFile(Tree T, const char *path)
+void AddFile(Tree T, const char *path, i32 port_ss_nm)
 {
   Tree temp = ProcessDirPath(path, T, 1);
   temp->NodeInfo.IsFile = 1;
+  temp->NodeInfo.ss_id = port_ss_nm;
 }
 
-void AddFolder(Tree T, const char *path)
+void AddFolder(Tree T, const char *path, i32 port_ss_nm)
 {
   Tree temp = ProcessDirPath(path, T, 1);
   temp->NodeInfo.IsFile = 0;
+  temp->NodeInfo.ss_id = port_ss_nm;
 }
 
 void DeleteFile(Tree T, const char *path)

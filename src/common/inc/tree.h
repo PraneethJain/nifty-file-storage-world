@@ -38,8 +38,8 @@ void RemoveServerPath(Tree T, u32 ss_id);
 i32 GetPathSSID(Tree T, const char *path);
 char *get_parent(const char *path);
 
-void AddFile(Tree T, const char *path);
-void AddFolder(Tree T, const char *path);
+void AddFile(Tree T, const char *path, i32 port_ss_nm);
+void AddFolder(Tree T, const char *path, i32 port_ss_nm);
 void DeleteFile(Tree T, const char *path);
 void DeleteFolder(Tree T, const char *path);
 
