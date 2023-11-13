@@ -48,8 +48,19 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   CHECK(recv(clientfd, path, sizeof(path), 0), -1);
 
   enum status code;
+  char *parent = get_parent(path);
+  i32 port;
+  if (parent == NULL)
+  {
+    port = ss_nm_port_new();
+    printf("here %d\n", port);
+  }
+  else
+  {
+    port = ss_nm_port_from_path(parent);
+    free(parent);
+  }
   // naming server is the client
-  const i32 port = ss_nm_port_from_path(get_parent(path));
   if (port == -1)
   {
     code = NOT_FOUND;

@@ -157,20 +157,23 @@ void *alive_checker(void *arg)
   return NULL;
 }
 
-// storage_server_data MinSizeStorageServer()
-// {
-//   int BestSS = 0;
-//   size_t minsize = strlen(connected_storage_servers.first->data.ss_tree);
-//   for (connected_storage_server_node *cur = connected_storage_servers.first; cur != NULL; cur = cur->next)
-//   {
-//     if (strlen(cur->data.ss_tree) < minsize)
-//     {
-//       minsize = strlen(cur->data.ss_tree);
-//       BestSS = i;
-//     }
-//   }
-//   return connected_storage_servers.storage_servers[BestSS];
-// }
+storage_server_data *MinSizeStorageServer()
+{
+  connected_storage_server_node *BestSS = connected_storage_servers.first;
+  size_t minsize = strlen(connected_storage_servers.first->data.ss_tree);
+  for (connected_storage_server_node *cur = connected_storage_servers.first; cur != NULL; cur = cur->next)
+  {
+    if (strlen(cur->data.ss_tree) < minsize)
+    {
+      minsize = strlen(cur->data.ss_tree);
+      BestSS = cur;
+    }
+  }
+  if (BestSS == NULL)
+    return NULL;
+  else
+    return &BestSS->data;
+}
 
 /**
  * @brief Finds the storage server corresponding to the path and returns its data
@@ -224,4 +227,12 @@ i32 ss_nm_port_from_path(const char *path)
     return -1;
   }
   return ss_info->port_for_nm;
+}
+
+i32 ss_nm_port_new()
+{
+  storage_server_data *new_ss = MinSizeStorageServer();
+  if (new_ss == NULL)
+    return -1;
+  return new_ss->port_for_nm;
 }
