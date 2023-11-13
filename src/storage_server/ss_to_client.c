@@ -40,7 +40,11 @@ void *client_init(void *arg)
 
   return NULL;
 }
-
+/**
+ * @brief Receives operations read, write and metadata from the client.
+ * @param arg integer pointer to the client file descriptor
+ * @return void* NULL
+ */
 void *client_relay(void *arg)
 {
   const i32 clientfd = *(i32 *)arg;
@@ -122,10 +126,12 @@ void *client_relay(void *arg)
   }
   else
   {
+    // remaining operations will not be from client, but from NM.
+    code = INVALID_OPERATION;
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
   }
 
   CHECK(close(clientfd), -1);
 
   return NULL;
 }
-
