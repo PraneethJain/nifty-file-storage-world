@@ -24,6 +24,14 @@ void send_client_port(const i32 clientfd)
 
   const i32 port = ss_client_port_from_path(path);
   enum status code = SUCCESS;
+
+  if (port == -1)
+  {
+    code = NOT_FOUND;
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    return;
+  }
+
   CHECK(send(clientfd, &code, sizeof(code), 0), -1);
   CHECK(send(clientfd, &port, sizeof(port), 0), -1);
 }

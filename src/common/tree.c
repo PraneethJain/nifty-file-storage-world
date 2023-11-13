@@ -211,7 +211,7 @@ i32 DeleteTree(Tree T)
   return 0;
 }
 
-struct TreeNode *ProcessDirPath(char *DirPath, Tree T, bool CreateFlag)
+struct TreeNode *ProcessDirPath(const char *DirPath, Tree T, bool CreateFlag)
 {
   struct TreeNode *Cur = T;
   if (T == NULL)
@@ -345,6 +345,8 @@ void RemoveServerPath(Tree T, u32 ss_id)
 i32 GetPathSSID(Tree T, const char *path)
 {
   char pathcopy[MAX_STR_LEN];
+  if (ProcessDirPath(path, T, 0) == NULL)
+    return -1;
   strcpy(pathcopy, path);
   char *Delim = "/\\";
   char *token = strtok(pathcopy, Delim);
@@ -352,6 +354,31 @@ i32 GetPathSSID(Tree T, const char *path)
   if (RetT == NULL)
     return -1;
   return RetT->NodeInfo.ss_id;
+}
+
+Tree GetParentOfPath(Tree T, const char *path)
+{
+  char pathcopy[MAX_STR_LEN];
+  strcpy(pathcopy, path);
+  char *Delim = "/\\";
+
+  Tree Cur = T;
+
+  char *token = strtok(pathcopy, Delim);
+  if (token == NULL)
+  {
+    return 0;
+  }
+  char *nexttoken = strtok(NULL, Delim);
+  while (nexttoken != NULL)
+  {
+    Cur = FindChild(Cur, token, 0, 0);
+    if (Cur == NULL)
+      return NULL;
+    strcpy(token, nexttoken);
+    nexttoken = strtok(NULL, Delim);
+  }
+  return Cur;
 }
 
 // void RandomTest()

@@ -146,9 +146,10 @@ storage_server_data MinSizeStorageServer()
 {
   int BestSS = 0;
   size_t minsize = strlen(connected_storage_servers.storage_servers[0].ss_tree);
-  for (int i=0; i<connected_storage_servers.size; i++)
+  for (int i = 0; i < connected_storage_servers.size; i++)
   {
-    if (strlen(connected_storage_servers.storage_servers[i].ss_tree) < minsize) {
+    if (strlen(connected_storage_servers.storage_servers[i].ss_tree) < minsize)
+    {
       minsize = strlen(connected_storage_servers.storage_servers[i].ss_tree);
       BestSS = i;
     }
@@ -162,21 +163,21 @@ storage_server_data MinSizeStorageServer()
  * @param path
  * @return storage_server_data
  */
-storage_server_data ss_from_path(const char *path)
+storage_server_data *ss_from_path(const char *path)
 {
-  (void)path;
   i32 ssid = GetPathSSID(NM_Tree, path);
   if (ssid == -1)
   {
-    return MinSizeStorageServer();
+    return NULL;
   }
-  for (int i=0; i<connected_storage_servers.size; i++)
+  for (int i = 0; i < connected_storage_servers.size; i++)
   {
-    if (connected_storage_servers.storage_servers[i].port_for_nm == ssid) {
-      return connected_storage_servers.storage_servers[i];
+    if (connected_storage_servers.storage_servers[i].port_for_nm == ssid)
+    {
+      return &connected_storage_servers.storage_servers[i];
     }
   }
-  return connected_storage_servers.storage_servers[0];
+  return &connected_storage_servers.storage_servers[0];
 }
 
 /**
@@ -185,9 +186,16 @@ storage_server_data ss_from_path(const char *path)
  * @param path
  * @return i32 storage server client port
  */
-i32 ss_client_port_from_path(char *path)
+i32 ss_client_port_from_path(const char *path)
 {
-  return ss_from_path(path).port_for_client;
+  storage_server_data *ss_info = ss_from_path(path);
+  if (ss_info == NULL)
+  {
+    printf("here\n");
+    return -1;
+  }
+  printf("%d\n", ss_info->port_for_client);
+  return ss_info->port_for_client;
 }
 
 /**
@@ -196,7 +204,12 @@ i32 ss_client_port_from_path(char *path)
  * @param path
  * @return i32 storage server nm port
  */
-i32 ss_nm_port_from_path(char *path)
+i32 ss_nm_port_from_path(const char *path)
 {
-  return ss_from_path(path).port_for_nm;
+  storage_server_data *ss_info = ss_from_path(path);
+  if (ss_info == NULL)
+  {
+    return -1;
+  }
+  return ss_info->port_for_nm;
 }
