@@ -47,19 +47,45 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   char path[MAX_STR_LEN];
   CHECK(recv(clientfd, path, sizeof(path), 0), -1);
 
+  enum status code;
   // naming server is the client
-  const i32 port = ss_nm_port_from_path(path);
+  const i32 port = ss_nm_port_from_path(get_parent(path));
+  if (port == -1)
+  {
+    code = NOT_FOUND;
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    return;
+  }
   const i32 sockfd = connect_to_port(port);
 
   CHECK(send(sockfd, &op, sizeof(op), 0), -1);
   CHECK(send(sockfd, path, sizeof(path), 0), -1);
 
   // send status code received from ss to client
-  enum status code;
   CHECK(recv(sockfd, &code, sizeof(code), 0), -1);
   CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
   close(sockfd);
+
+  if (code != SUCCESS)
+    return;
+
+  if (op == CREATE_FILE)
+  {
+    AddFile(NM_Tree, path);
+  }
+  else if (op == DELETE_FILE)
+  {
+    DeleteFile(NM_Tree, path);
+  }
+  else if (op == CREATE_FOLDER)
+  {
+    AddFolder(NM_Tree, path);
+  }
+  else if (op == DELETE_FOLDER)
+  {
+    DeleteFolder(NM_Tree, path);
+  }
 }
 
 /**

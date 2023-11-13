@@ -385,6 +385,58 @@ Tree GetParentOfPath(Tree T, const char *path)
   return Cur;
 }
 
+char *get_parent(const char *path)
+{
+  char path_copy[MAX_STR_LEN];
+  strcpy(path_copy, path);
+  int string_length = strlen(path);
+  int flag = 1;
+  int i = string_length - 1;
+  for (; i >= 0; i--)
+  {
+    if ((path[i] != '/' && path[i] != '\\'))
+    {
+      flag = 0;
+    }
+    else if (!flag)
+    {
+      while (i >= 0 && (path[i] == '/' || path[i] == '\\'))
+      {
+        i--;
+      }
+      i++;
+      char *ret_string = malloc(sizeof(char) * MAX_STR_LEN);
+      path_copy[i] = '\0';
+      strcpy(ret_string, path_copy);
+      return (ret_string);
+    }
+  }
+  return NULL;
+}
+
+void AddFile(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 1);
+  temp->NodeInfo.IsFile = 1;
+}
+
+void AddFolder(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 1);
+  temp->NodeInfo.IsFile = 0;
+}
+
+void DeleteFile(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  DeleteTree(temp);
+}
+
+void DeleteFolder(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  DeleteTree(temp);
+}
 
 // void RandomTest()
 // {
