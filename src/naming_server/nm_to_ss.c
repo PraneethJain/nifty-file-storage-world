@@ -77,15 +77,19 @@ void *storage_server_init(void *arg)
 
   const i32 serverfd = bind_to_port(NM_SS_PORT);
   printf("Listening for storage servers on port %i\n", NM_SS_PORT);
+  LOG("Listening for storage servers on port %i\n", NM_SS_PORT);
   struct sockaddr_in client_addr;
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);
+    LOG("Awaiting a connection on socket FD\n");
     const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
     CHECK(clientfd, -1);
-
+    LOG("Accepted connection on socket FD\n");
     storage_server_data resp;
+    LOG("Receiving initial storage server data from client at port %i", NM_CLIENT_PORT);
     CHECK(recv(clientfd, &resp, sizeof(resp), 0), -1)
+    LOG("Received initial storage server data from client at port %i", NM_CLIENT_PORT);
     printf("%i %i %i\n", resp.port_for_client, resp.port_for_nm, resp.port_for_alive);
 
     CHECK(close(clientfd), -1);
@@ -125,6 +129,7 @@ void *alive_checker(void *arg)
         if (errno == 111) // Connection refused
         {
           printf("Storage server with ssid %i has disconnected!\n", cur->data.port_for_nm);
+          LOG("Storage server with ssid %i disconnected\n", cur->data.port_for_nm);
           RemoveServerPath(NM_Tree, cur->data.port_for_nm);
           if (prev == NULL)
           {
@@ -147,6 +152,7 @@ void *alive_checker(void *arg)
       else
       {
         printf("Storage server with ssid %i is alive!\n", cur->data.port_for_nm);
+        LOG("Storage server with ssid %i is alive\n", cur->data.port_for_nm);
       }
 
       CHECK(close(sockfd), -1);

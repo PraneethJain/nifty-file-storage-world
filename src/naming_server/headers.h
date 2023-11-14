@@ -3,6 +3,18 @@
 
 #include "../common/headers.h"
 
+#define LOG(fmt, args...)                                                                                              \
+  do                                                                                                                   \
+  {                                                                                                                    \
+    FILE *ptr = fopen("logfile.log", "a");                                                                             \
+    time_t currentTime;                                                                                                \
+    time(&currentTime);                                                                                                \
+    char timestamp[20];                                                                                                \
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtime(&currentTime));                              \
+    fprintf(ptr, "[%s] - " fmt, timestamp, ##args);                                                                    \
+    fclose(ptr);                                                                                                       \
+  } while (0)
+
 // nm_to_ss.c
 void add_connected_storage_server(storage_server_data data);
 void *storage_server_init(void *arg);
