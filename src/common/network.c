@@ -32,9 +32,8 @@ i32 bind_to_port(const i32 port)
   const i32 serverfd = socket(AF_INET, SOCK_STREAM, 0);
   CHECK(serverfd, -1);
 
-  struct sockaddr_in server_addr, client_addr;
+  struct sockaddr_in server_addr;
   memset(&server_addr, '\0', sizeof(server_addr));
-  memset(&client_addr, '\0', sizeof(client_addr));
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(port);
   server_addr.sin_addr.s_addr = inet_addr(LOCALHOST);
