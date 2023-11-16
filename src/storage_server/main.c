@@ -29,7 +29,7 @@ int main()
   pthread_create(&init_storage_server_thread, NULL, init_storage_server, NULL);
   pthread_create(&client_init_thread, NULL, client_init, NULL);
   pthread_create(&alive_thread, NULL, alive_relay, NULL);
-  pthread_create(&naming_server_relay_thread, NULL, naming_server_relay, NULL);
+  pthread_create(&naming_server_relay_thread, NULL, nm_communication_init, NULL);
 
   pthread_join(init_storage_server_thread, NULL);
   pthread_join(client_init_thread, NULL);

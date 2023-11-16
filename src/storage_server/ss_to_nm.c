@@ -82,13 +82,7 @@ void *alive_relay(void *arg)
   return NULL;
 }
 
-/**
- * @brief Handles operations sent via the naming server. Sends back a status code to the naming server.
- *
- * @param arg NULL
- * @return void* NULLg
- */
-void *naming_server_relay(void *arg)
+void *nm_communication_init(void *arg)
 {
   (void)arg;
 
@@ -101,188 +95,205 @@ void *naming_server_relay(void *arg)
   while (1)
   {
     socklen_t addr_size = sizeof(client_addr);
-    // clientfd here is the file descriptor of the naming server
-    const i32 clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
-    CHECK(clientfd, -1);
+    i32 *clientfd = malloc(sizeof(i32));
+    *clientfd = accept(serverfd, (struct sockaddr *)&client_addr, &addr_size);
+    CHECK(*clientfd, -1);
 
-    enum operation op;
-    CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
+    pthread_t naming_server_relay_thread;
+    pthread_create(&naming_server_relay_thread, NULL, naming_server_relay, clientfd);
+  }
 
-    enum status code;
-    if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
+  CHECK(close(serverfd), -1);
+
+  return NULL;
+}
+
+/**
+ * @brief Handles operations sent via the naming server. Sends back a status code to the naming server.
+ *
+ * @param arg NULL
+ * @return void* NULLg
+ */
+void *naming_server_relay(void *arg)
+{
+  const i32 clientfd = *(i32 *)arg;
+  free(arg);
+
+  enum operation op;
+  CHECK(recv(clientfd, &op, sizeof(op), 0), -1);
+
+  enum status code;
+  if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
+  {
+    char path[MAX_STR_LEN];
+    CHECK(recv(clientfd, path, sizeof(path), 0), -1);
+    if (op == CREATE_FILE)
     {
-      char path[MAX_STR_LEN];
-      CHECK(recv(clientfd, path, sizeof(path), 0), -1);
-      if (op == CREATE_FILE)
+      FILE *f = fopen(path, "a");
+      if (f == NULL)
       {
-        FILE *f = fopen(path, "a");
-        if (f == NULL)
-        {
-          if (errno == EACCES)
-            code = WRITE_PERMISSION_DENIED;
-          else
-            code = INVALID_PATH;
-        }
+        if (errno == EACCES)
+          code = WRITE_PERMISSION_DENIED;
         else
-        {
-          code = SUCCESS;
-          fclose(f);
-        }
+          code = INVALID_PATH;
       }
-      else if (op == DELETE_FILE)
+      else
       {
-        i32 res = remove(path);
-        if (res == -1)
-        {
-          if (errno == EACCES)
-            code = DELETE_PERMISSION_DENIED;
-          else if (errno == EBUSY)
-            code = UNAVAILABLE;
-          else
-            code = INVALID_PATH;
-        }
-        else
-        {
-          code = SUCCESS;
-        }
-      }
-      else if (op == CREATE_FOLDER)
-      {
-        i32 res = mkdir(path, 0777);
-        if (res == -1)
-        {
-          if (errno == EACCES)
-            code = CREATE_PERMISSION_DENIED;
-          else
-            code = INVALID_PATH;
-        }
-        else
-        {
-          code = SUCCESS;
-        }
-      }
-      else if (op == DELETE_FOLDER)
-      {
-        i32 res = rmdir(path);
-        if (res == -1)
-        {
-          if (errno == EACCES)
-            code = DELETE_PERMISSION_DENIED;
-          else if (errno == EBUSY)
-            code = NON_EMPTY_DIRECTORY;
-          else if (errno == EBUSY)
-            code = UNAVAILABLE;
-          else
-            code = INVALID_PATH;
-        }
-        else
-        {
-          code = SUCCESS;
-        }
+        code = SUCCESS;
+        fclose(f);
       }
     }
-    else if (op == COPY_FILE || op == COPY_FOLDER)
+    else if (op == DELETE_FILE)
     {
-      // receive 2 paths
-      enum copy_type ch;
-
-      CHECK(recv(clientfd, &ch, sizeof(ch), 0), -1);
-
-      if (ch == SENDER)
+      i32 res = remove(path);
+      if (res == -1)
       {
-        i8 rec_code;
-        char path[MAX_STR_LEN];
+        if (errno == EACCES)
+          code = DELETE_PERMISSION_DENIED;
+        else if (errno == EBUSY)
+          code = UNAVAILABLE;
+        else
+          code = INVALID_PATH;
+      }
+      else
+      {
+        code = SUCCESS;
+      }
+    }
+    else if (op == CREATE_FOLDER)
+    {
+      i32 res = mkdir(path, 0777);
+      if (res == -1)
+      {
+        if (errno == EACCES)
+          code = CREATE_PERMISSION_DENIED;
+        else
+          code = INVALID_PATH;
+      }
+      else
+      {
+        code = SUCCESS;
+      }
+    }
+    else if (op == DELETE_FOLDER)
+    {
+      i32 res = rmdir(path);
+      if (res == -1)
+      {
+        if (errno == EACCES)
+          code = DELETE_PERMISSION_DENIED;
+        else if (errno == EBUSY)
+          code = NON_EMPTY_DIRECTORY;
+        else if (errno == EBUSY)
+          code = UNAVAILABLE;
+        else
+          code = INVALID_PATH;
+      }
+      else
+      {
+        code = SUCCESS;
+      }
+    }
+  }
+  else if (op == COPY_FILE || op == COPY_FOLDER)
+  {
+    // receive 2 paths
+    enum copy_type ch;
+
+    CHECK(recv(clientfd, &ch, sizeof(ch), 0), -1);
+
+    if (ch == SENDER)
+    {
+      i8 rec_code;
+      char path[MAX_STR_LEN];
+
+      CHECK(recv(clientfd, &rec_code, sizeof(rec_code), 0), -1);
+      while (rec_code == 1)
+      {
+        CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
+        printf("Received %s\n",  path);
+
+        FILE *file = fopen(path, "r");
+        if (file == NULL)
+        {
+          if (errno == EACCES)
+            code = READ_PERMISSION_DENIED;
+          else
+            code = NOT_FOUND;
+          CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+        }
+        else
+        {
+          code = SUCCESS;
+          CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+          transmit_file_for_writing(file, clientfd);
+          fclose(file);
+        }
 
         CHECK(recv(clientfd, &rec_code, sizeof(rec_code), 0), -1);
-        while (rec_code == 1)
-        {
-          CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
-          printf("Received %s\n",  path);
+      }
+    }
+    else if (ch == RECEIVER)
+    {
+      i8 is_file;
+      char path[MAX_STR_LEN];
+      printf("here\n");
 
-          FILE *file = fopen(path, "r");
-          if (file == NULL)
+      CHECK(recv(clientfd, &is_file, sizeof(is_file), 0), -1);
+      while (is_file == 0 || is_file == 1)
+      {
+        CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
+        printf("Received %s\n",  path);
+        if (is_file == 0)
+        {
+          i32 res = mkdir(path, 0777);
+          if (res == -1)
           {
             if (errno == EACCES)
-              code = READ_PERMISSION_DENIED;
+              code = CREATE_PERMISSION_DENIED;
             else
-              code = NOT_FOUND;
+              code = INVALID_PATH;
+          }
+          else
+          {
+            code = SUCCESS;
+          }
+          CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+        }
+        else
+        {
+          FILE *f = fopen(path, "a");
+          if (f == NULL)
+          {
+            if (errno == EACCES)
+              code = WRITE_PERMISSION_DENIED;
+            else
+              code = INVALID_PATH;
             CHECK(send(clientfd, &code, sizeof(code), 0), -1);
           }
           else
           {
             code = SUCCESS;
             CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-            transmit_file_for_writing(file, clientfd);
-            fclose(file);
+            receive_and_write_file(clientfd, f);
           }
-
-          CHECK(recv(clientfd, &rec_code, sizeof(rec_code), 0), -1);
         }
-      }
-      else if (ch == RECEIVER)
-      {
-        i8 is_file;
-        char path[MAX_STR_LEN];
-        printf("here\n");
-
         CHECK(recv(clientfd, &is_file, sizeof(is_file), 0), -1);
-        while (is_file == 0 || is_file == 1)
-        {
-          CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
-          printf("Received %s\n",  path);
-          if (is_file == 0)
-          {
-            i32 res = mkdir(path, 0777);
-            if (res == -1)
-            {
-              if (errno == EACCES)
-                code = CREATE_PERMISSION_DENIED;
-              else
-                code = INVALID_PATH;
-            }
-            else
-            {
-              code = SUCCESS;
-            }
-            CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-          }
-          else
-          {
-            FILE *f = fopen(path, "a");
-            if (f == NULL)
-            {
-              if (errno == EACCES)
-                code = WRITE_PERMISSION_DENIED;
-              else
-                code = INVALID_PATH;
-              CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-            }
-            else
-            {
-              code = SUCCESS;
-              CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-              receive_and_write_file(clientfd, f);
-            }
-          }
-          CHECK(recv(clientfd, &is_file, sizeof(is_file), 0), -1);
-        }
-      }
-      else
-      {
-        code = INVALID_OPERATION;
       }
     }
     else
     {
       code = INVALID_OPERATION;
     }
-
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-
-    CHECK(close(clientfd), -1);
+  }
+  else
+  {
+    code = INVALID_OPERATION;
   }
 
-  CHECK(close(serverfd), -1);
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+
+  CHECK(close(clientfd), -1);
 
   return NULL;
 }

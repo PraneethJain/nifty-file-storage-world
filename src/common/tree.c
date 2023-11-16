@@ -304,7 +304,12 @@ void AddAccessibleDir(char *DirPath, Tree Parent)
 {
   struct TreeNode *T = ProcessDirPath(DirPath, Parent, 1);
   if (CheckIfFile(DirPath))
+  {
+    T->NodeInfo.IsFile = 1;
     return;
+  }
+  else
+    T->NodeInfo.IsFile = 0;
   ProcessWholeDir(DirPath, T);
 }
 

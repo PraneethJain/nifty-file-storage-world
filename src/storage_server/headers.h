@@ -19,6 +19,7 @@ void *client_init(void *arg);
 void *init_storage_server(void *arg);
 void *alive_relay(void *arg);
 void *naming_server_relay(void *arg);
+void *nm_communication_init(void *arg);
 
 
 #endif
