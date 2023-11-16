@@ -113,6 +113,7 @@ void transmit_file_for_writing(FILE *f, const i32 sockfd)
   }
   flag = BRK;
   CHECK(send(sockfd, &flag, sizeof(flag), 0), -1)
+  CHECK(recv(sockfd, &flag, sizeof(flag), 0), -1)
 }
 
 void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
@@ -131,6 +132,8 @@ void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
 
     bzero(buffer, MAX_STR_LEN);
   }
+  CHECK(recv(to_sockfd, &flag, sizeof(flag), 0), -1)
+  CHECK(send(from_sockfd, &flag, sizeof(flag), 0), -1)
 }
 
 void receive_and_write_file(const i32 from_sockfd, FILE* f)
@@ -149,4 +152,5 @@ void receive_and_write_file(const i32 from_sockfd, FILE* f)
     bzero(buffer, MAX_STR_LEN);
   }
   fclose(f);
+  CHECK(send(from_sockfd, &flag, sizeof(flag), 0), -1);
 }
