@@ -68,12 +68,22 @@ enum status
   NON_EMPTY_DIRECTORY
 };
 
+enum copy_type
+{
+  SENDER,
+  RECEIVER
+};
+
 // network.c
 i32 connect_to_port(const i32 port);
 i32 bind_to_port(const i32 port);
 i32 get_port(const i32 fd);
 void send_file(FILE *f, const i32 sockfd);
 void receive_and_print_file(const i32 sockfd);
+
+void transmit_file_for_writing(FILE *f, const i32 sockfd);
+void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd);
+void receive_and_write_file(const i32 from_sockfd, FILE* f);
 
 #define CHECK(actual_value, error_value)                                                                               \
   if ((actual_value) == error_value)                                                                                   \

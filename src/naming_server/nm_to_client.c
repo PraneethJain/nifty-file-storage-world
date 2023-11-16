@@ -124,6 +124,48 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   }
 }
 
+void CopyFileOrFolder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
+                      const i32 to_port)
+{
+  enum status code;
+  i8 dirflag = CopyTree->NodeInfo.IsFile;
+  CHECK(send(to_sockfd, &dirflag, sizeof(dirflag), 0), -1);
+  CHECK(send(to_sockfd, dest_path, MAX_STR_LEN, 0), -1);
+
+  if (dirflag)
+  {
+    CHECK(send(from_sockfd, &dirflag, sizeof(dirflag), 0), -1);
+    CHECK(send(from_sockfd, from_path, MAX_STR_LEN, 0), -1);
+
+    CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
+    CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
+
+    receive_and_transmit_file(from_sockfd, to_sockfd);
+
+    AddFile(NM_Tree, dest_path, to_port);
+    return;
+  }
+  else
+  {
+    AddFolder(NM_Tree, dest_path, to_port);
+  }
+
+  for (Tree trav = CopyTree->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)
+  {
+    char from_path_copy[MAX_STR_LEN];
+    char to_path_copy[MAX_STR_LEN];
+    strcpy(from_path_copy, from_path);
+    strcat(from_path_copy, "/");
+    strcat(from_path_copy, trav->NodeInfo.DirectoryName);
+
+    strcpy(to_path_copy, dest_path);
+    strcat(to_path_copy, "/");
+    strcat(to_path_copy, trav->NodeInfo.DirectoryName);
+
+    CopyFileOrFolder(trav, from_path_copy, to_path_copy, from_sockfd, to_sockfd, to_port);
+  }
+}
+
 /**
  * @brief Receive 2 paths from client, perform copy operation on storage server and send the status code
  *
@@ -132,15 +174,18 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
  */
 void send_nm_op_double(const i32 clientfd, const enum operation op)
 {
-  (void)op;
+  enum status code = SUCCESS;
+
   char from_path[MAX_STR_LEN];
   char to_path[MAX_STR_LEN];
   LOG("Receiving copy source path from client at port %i\n", NM_CLIENT_PORT);
   CHECK(recv(clientfd, from_path, sizeof(from_path), 0), -1);
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
   LOG("Received copy source path %s from client at port %i\n", from_path, NM_CLIENT_PORT);
 
   LOG("Receiving copy destination path from client at port %i\n", NM_CLIENT_PORT);
   CHECK(recv(clientfd, to_path, sizeof(to_path), 0), -1);
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
   LOG("Received copy destination path %s from client at port %i\n", to_path, NM_CLIENT_PORT);
   LOG("Finding storage server - naming server port corresponding to path %s\n", from_path);
   const i32 from_port = ss_nm_port_from_path(from_path);
@@ -153,6 +198,36 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
 
   // CHECK(send(sockfd, &op, sizeof(op), 0), -1);
   // CHECK(send(sockfd, path, sizeof(path), 0), -1);
+  enum copy_type ch = SENDER;
+
+  CHECK(send(from_sockfd, &op, sizeof(op), 0), -1);
+  CHECK(send(from_sockfd, &ch, sizeof(ch), 0), -1);
+
+  ch = RECEIVER;
+
+  CHECK(send(to_sockfd, &op, sizeof(op), 0), -1);
+  CHECK(send(to_sockfd, &ch, sizeof(ch), 0), -1);
+
+  Tree CopyTree = GetTreeFromPath(NM_Tree, from_path);
+  strcat(to_path, "/");
+  strcat(to_path, CopyTree->NodeInfo.DirectoryName);
+  CopyFileOrFolder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
+
+  i8 is_file = 2;
+  CHECK(send(to_sockfd, &is_file, sizeof(is_file), 0), -1);
+  CHECK(send(from_sockfd, &is_file, sizeof(is_file), 0), -1);
+
+  CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
+  CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
+  
+  if (op == COPY_FOLDER)
+  {
+  }
+  else if (op == COPY_FILE)
+  {
+  }
+
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 
   // send status code received from ss to client
 

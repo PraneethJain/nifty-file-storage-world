@@ -184,6 +184,93 @@ void *naming_server_relay(void *arg)
     else if (op == COPY_FILE || op == COPY_FOLDER)
     {
       // receive 2 paths
+      enum copy_type ch;
+
+      CHECK(recv(clientfd, &ch, sizeof(ch), 0), -1);
+
+      if (ch == SENDER)
+      {
+        i8 rec_code;
+        char path[MAX_STR_LEN];
+
+        CHECK(recv(clientfd, &rec_code, sizeof(rec_code), 0), -1);
+        while (rec_code == 1)
+        {
+          CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
+          printf("Received %s\n",  path);
+
+          FILE *file = fopen(path, "r");
+          if (file == NULL)
+          {
+            if (errno == EACCES)
+              code = READ_PERMISSION_DENIED;
+            else
+              code = NOT_FOUND;
+            CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+          }
+          else
+          {
+            code = SUCCESS;
+            CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+            transmit_file_for_writing(file, clientfd);
+            fclose(file);
+          }
+
+          CHECK(recv(clientfd, &rec_code, sizeof(rec_code), 0), -1);
+        }
+      }
+      else if (ch == RECEIVER)
+      {
+        i8 is_file;
+        char path[MAX_STR_LEN];
+        printf("here\n");
+
+        CHECK(recv(clientfd, &is_file, sizeof(is_file), 0), -1);
+        while (is_file == 0 || is_file == 1)
+        {
+          CHECK(recv(clientfd, path, MAX_STR_LEN, 0), -1);
+          printf("Received %s\n",  path);
+          if (is_file == 0)
+          {
+            i32 res = mkdir(path, 0777);
+            if (res == -1)
+            {
+              if (errno == EACCES)
+                code = CREATE_PERMISSION_DENIED;
+              else
+                code = INVALID_PATH;
+            }
+            else
+            {
+              code = SUCCESS;
+            }
+            CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+          }
+          else
+          {
+            FILE *f = fopen(path, "a");
+            if (f == NULL)
+            {
+              if (errno == EACCES)
+                code = WRITE_PERMISSION_DENIED;
+              else
+                code = INVALID_PATH;
+              CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+            }
+            else
+            {
+              code = SUCCESS;
+              CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+              receive_and_write_file(clientfd, f);
+            }
+          }
+          CHECK(recv(clientfd, &is_file, sizeof(is_file), 0), -1);
+        }
+      }
+      else
+      {
+        code = INVALID_OPERATION;
+      }
     }
     else
     {

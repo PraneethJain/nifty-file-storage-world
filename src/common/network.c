@@ -68,7 +68,6 @@ i32 get_port(const i32 fd)
 void send_file(FILE *f, const i32 sockfd)
 {
   char buffer[MAX_STR_LEN] = {0};
-
   while (fgets(buffer, MAX_STR_LEN, f) != NULL)
   {
     CHECK(send(sockfd, buffer, sizeof(buffer), 0), -1)
@@ -93,4 +92,61 @@ void receive_and_print_file(const i32 sockfd)
     printf("%s", buffer);
     bzero(buffer, MAX_STR_LEN);
   }
+}
+
+enum sendstatus
+{
+  INFO,
+  BRK
+};
+
+void transmit_file_for_writing(FILE *f, const i32 sockfd)
+{
+  char buffer[MAX_STR_LEN] = {0};
+  enum sendstatus flag = INFO;
+  while (fgets(buffer, MAX_STR_LEN, f) != NULL)
+  {
+    CHECK(send(sockfd, &flag, sizeof(flag), 0), -1)
+
+    CHECK(send(sockfd, buffer, sizeof(buffer), 0), -1)
+    bzero(buffer, MAX_STR_LEN);
+  }
+  flag = BRK;
+  CHECK(send(sockfd, &flag, sizeof(flag), 0), -1)
+}
+
+void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
+{
+  char buffer[MAX_STR_LEN];
+  enum sendstatus flag = INFO;
+  while (1)
+  {
+    CHECK(recv(from_sockfd, &flag, sizeof(flag), 0), -1)
+    CHECK(send(to_sockfd, &flag, sizeof(flag), 0), -1)
+    if (flag == BRK)
+      break;
+
+    CHECK(recv(from_sockfd, buffer, sizeof(buffer), 0), -1)
+    CHECK(send(to_sockfd, buffer, sizeof(buffer), 0), -1)
+
+    bzero(buffer, MAX_STR_LEN);
+  }
+}
+
+void receive_and_write_file(const i32 from_sockfd, FILE* f)
+{
+  char buffer[MAX_STR_LEN];
+  enum sendstatus flag = INFO;
+  while (1)
+  {
+    CHECK(recv(from_sockfd, &flag, sizeof(flag), 0), -1)
+    if (flag == BRK)
+      break;
+
+    CHECK(recv(from_sockfd, buffer, sizeof(buffer), 0), -1);
+    fwrite(buffer, strlen(buffer), 1, f);
+
+    bzero(buffer, MAX_STR_LEN);
+  }
+  fclose(f);
 }

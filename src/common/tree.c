@@ -453,6 +453,12 @@ void DeleteFolder(Tree T, const char *path)
   DeleteTree(temp);
 }
 
+Tree GetTreeFromPath(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  return temp;
+}
+
 // void RandomTest()
 // {
 //   Tree T = InitTree();
