@@ -94,63 +94,59 @@ void receive_and_print_file(const i32 sockfd)
   }
 }
 
-enum sendstatus
-{
-  INFO,
-  BRK
-};
-
 void transmit_file_for_writing(FILE *f, const i32 sockfd)
 {
   char buffer[MAX_STR_LEN] = {0};
-  enum sendstatus flag = INFO;
-  while (fgets(buffer, MAX_STR_LEN, f) != NULL)
+  int num_bytes_read = 0;
+  while (1)
   {
-    CHECK(send(sockfd, &flag, sizeof(flag), 0), -1)
+    num_bytes_read = fread(buffer, 1, MAX_STR_LEN, f);
+    CHECK(num_bytes_read, -1);
+    CHECK(send(sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
+    if (num_bytes_read == 0)
+      break;
 
-    CHECK(send(sockfd, buffer, sizeof(buffer), 0), -1)
+    CHECK(send(sockfd, buffer, num_bytes_read, 0), -1)
     bzero(buffer, MAX_STR_LEN);
   }
-  flag = BRK;
-  CHECK(send(sockfd, &flag, sizeof(flag), 0), -1)
-  CHECK(recv(sockfd, &flag, sizeof(flag), 0), -1)
+  CHECK(recv(sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
 }
 
 void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
 {
   char buffer[MAX_STR_LEN];
-  enum sendstatus flag = INFO;
+  int num_bytes_read = 0;
   while (1)
   {
-    CHECK(recv(from_sockfd, &flag, sizeof(flag), 0), -1)
-    CHECK(send(to_sockfd, &flag, sizeof(flag), 0), -1)
-    if (flag == BRK)
+    CHECK(recv(from_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
+    CHECK(send(to_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
+    if (num_bytes_read == 0)
       break;
 
-    CHECK(recv(from_sockfd, buffer, sizeof(buffer), 0), -1)
-    CHECK(send(to_sockfd, buffer, sizeof(buffer), 0), -1)
+    CHECK(recv(from_sockfd, buffer, num_bytes_read, 0), -1)
+    CHECK(send(to_sockfd, buffer, num_bytes_read, 0), -1)
 
     bzero(buffer, MAX_STR_LEN);
   }
-  CHECK(recv(to_sockfd, &flag, sizeof(flag), 0), -1)
-  CHECK(send(from_sockfd, &flag, sizeof(flag), 0), -1)
+  CHECK(recv(to_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
+  CHECK(send(from_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
 }
 
 void receive_and_write_file(const i32 from_sockfd, FILE* f)
 {
   char buffer[MAX_STR_LEN];
-  enum sendstatus flag = INFO;
+  int num_bytes_read = 0;
   while (1)
   {
-    CHECK(recv(from_sockfd, &flag, sizeof(flag), 0), -1)
-    if (flag == BRK)
+    CHECK(recv(from_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
+    if (num_bytes_read == 0)
       break;
 
-    CHECK(recv(from_sockfd, buffer, sizeof(buffer), 0), -1);
-    fwrite(buffer, strlen(buffer), 1, f);
+    CHECK(recv(from_sockfd, buffer, num_bytes_read, 0), -1);
+    fwrite(buffer, num_bytes_read, 1, f);
 
     bzero(buffer, MAX_STR_LEN);
   }
   fclose(f);
-  CHECK(send(from_sockfd, &flag, sizeof(flag), 0), -1);
+  CHECK(send(from_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1);
 }

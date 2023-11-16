@@ -147,6 +147,7 @@ void CopyFileOrFolder(Tree CopyTree, char *from_path, char *dest_path, const i32
   }
   else
   {
+    CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
     AddFolder(NM_Tree, dest_path, to_port);
   }
 
@@ -217,8 +218,8 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   CHECK(send(to_sockfd, &is_file, sizeof(is_file), 0), -1);
   CHECK(send(from_sockfd, &is_file, sizeof(is_file), 0), -1);
 
-  CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
   CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
+  CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
   
   if (op == COPY_FOLDER)
   {
