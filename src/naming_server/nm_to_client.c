@@ -323,7 +323,8 @@ void *client_relay(void *arg)
 {
   const i32 clientfd = *(i32 *)arg;
   free(arg);
-  while (1)
+  bool disconnect = false;
+  while (!disconnect)
   {
     enum operation op;
     LOG("Receiving operation from client at port %i\n", NM_CLIENT_PORT);
@@ -345,6 +346,10 @@ void *client_relay(void *arg)
     case COPY_FILE:
     case COPY_FOLDER:
       send_nm_op_double(clientfd, op);
+      break;
+    case DISCONNECT:
+      disconnect = true;
+      LOG("Client disconnected\n");
       break;
     }
   }

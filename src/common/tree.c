@@ -364,8 +364,23 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
+// cache *c;
+
 i32 GetPathSSID(Tree T, const char *path)
 {
+  // cache *prev = NULL;
+  // cache *curr = c;
+  // while (curr != NULL)
+  // {
+  //   if (strcmp(curr->path, path) == 0)
+  //   {
+  //     prev->next = curr->next;
+  //     curr->next = c;
+  //     return curr->SSID;
+  //   }
+  //   prev = curr;
+  //   curr = curr->next;
+  // }
   char pathcopy[MAX_STR_LEN];
   if (ProcessDirPath(path, T, 0) == NULL)
     return -1;
@@ -375,6 +390,7 @@ i32 GetPathSSID(Tree T, const char *path)
   Tree RetT = FindChild(T, token, 0, 0);
   if (RetT == NULL)
     return -1;
+  // insert into cache
   return RetT->NodeInfo.ss_id;
 }
 

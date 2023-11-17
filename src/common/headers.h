@@ -23,6 +23,15 @@
 #include "inc/defs.h"
 #include "inc/tree.h"
 
+// #define CACHE_SIZE 10
+
+// typedef struct cache
+// {
+//   char *path;
+//   int SSID;
+//   struct cache *next;
+// } cache;
+
 typedef struct storage_server_data
 {
   i32 port_for_client;
@@ -50,7 +59,8 @@ enum operation
   CREATE_FOLDER,
   DELETE_FOLDER,
   COPY_FILE,
-  COPY_FOLDER
+  COPY_FOLDER,
+  DISCONNECT
 };
 
 enum status
