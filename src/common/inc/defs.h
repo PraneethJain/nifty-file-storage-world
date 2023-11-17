@@ -9,6 +9,7 @@
 #define MAX_STR_LEN 1024
 #define MAX_NAME_LEN 128
 #define MAX_CONNECTIONS 16
+#define CACHE_SIZE 16
 
 typedef int8_t i8;
 typedef int16_t i16;

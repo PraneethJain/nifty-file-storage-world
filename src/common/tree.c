@@ -15,8 +15,6 @@ const i32 MaxBufferLength = 50000;
     A/D
 */
 
-#define CACHE_SIZE 16
-
 typedef struct node
 {
   char *path;
