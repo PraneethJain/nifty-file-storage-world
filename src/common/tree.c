@@ -15,6 +15,21 @@ const i32 MaxBufferLength = 50000;
     A/D
 */
 
+#define CACHE_SIZE 16
+
+typedef struct node
+{
+  char *path;
+  i32 SSID;
+  struct node *next;
+} node;
+
+struct
+{
+  node *ll;
+  i32 length;
+} cache_head = {0};
+
 struct TreeNode *InitNode(const char *Name, struct TreeNode *Parent)
 {
   struct TreeNode *Node = malloc(sizeof(struct TreeNode));
@@ -364,23 +379,45 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
-// cache *c;
-
 i32 GetPathSSID(Tree T, const char *path)
 {
-  // cache *prev = NULL;
-  // cache *curr = c;
-  // while (curr != NULL)
-  // {
-  //   if (strcmp(curr->path, path) == 0)
-  //   {
-  //     prev->next = curr->next;
-  //     curr->next = c;
-  //     return curr->SSID;
-  //   }
-  //   prev = curr;
-  //   curr = curr->next;
-  // }
+  int req_ssid;
+  node *prev = NULL;
+  node *curr = cache_head.ll;
+  int found = 0;
+  printf("Length of cache = %d\n", cache_head.length);
+  while (curr != NULL)
+  {
+    if (strcmp(curr->path, path) == 0)
+    {
+      if (prev == NULL)
+      {
+        printf("Cache hit!\n");
+        return curr->SSID;
+      }
+      prev->next = curr->next;
+      curr->next = cache_head.ll;
+      req_ssid = curr->SSID;
+      found = 1;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+  if (found)
+  {
+    printf("Cache hit!\n");
+    node *newnode = malloc(sizeof(node));
+    newnode->SSID = req_ssid;
+    newnode->path = malloc(sizeof(char) * MAX_STR_LEN);
+    strcpy(newnode->path, path);
+    if (cache_head.length == CACHE_SIZE)
+      free(prev);
+    newnode->next = cache_head.ll;
+    cache_head.ll = newnode;
+    return req_ssid;
+  }
+  else
+    printf("Cache miss!\n");
   char pathcopy[MAX_STR_LEN];
   if (ProcessDirPath(path, T, 0) == NULL)
     return -1;
@@ -390,7 +427,25 @@ i32 GetPathSSID(Tree T, const char *path)
   Tree RetT = FindChild(T, token, 0, 0);
   if (RetT == NULL)
     return -1;
-  // insert into cache
+  node *newnode = malloc(sizeof(node));
+  newnode->path = malloc(sizeof(char) * MAX_STR_LEN);
+  strcpy(newnode->path, path);
+  newnode->SSID = RetT->NodeInfo.ss_id;
+  newnode->next = cache_head.ll;
+  cache_head.ll = newnode;
+  if (cache_head.length == CACHE_SIZE)
+  {
+    node *curr = cache_head.ll;
+    // assuming max cache size is > 2
+    while (curr->next->next != NULL)
+    {
+      curr = curr->next;
+    }
+    free(curr->next);
+    curr->next = NULL;
+  }
+  else
+    ++cache_head.length;
   return RetT->NodeInfo.ss_id;
 }
 
@@ -462,16 +517,46 @@ void AddFolder(Tree T, const char *path, i32 port_ss_nm)
   temp->NodeInfo.ss_id = port_ss_nm;
 }
 
+void DeleteFromCache(const char *path)
+{
+  node *prev = NULL;
+  node *curr = cache_head.ll;
+  while (curr != NULL)
+  {
+    if (strcmp(curr->path, path) == 0)
+    {
+      printf("To be deleted node found in cache\n");
+      printf("Cache length before: %d\n", cache_head.length);
+      if (prev == NULL)
+      {
+        cache_head.ll = curr->next;
+        curr->next = NULL;
+      }
+      else
+        prev->next = curr->next;
+      cache_head.length--;
+      printf("Cache length after: %d\n", cache_head.length);
+      free(curr->path);
+      free(curr);
+      break;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+}
+
 void DeleteFile(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
   DeleteTree(temp);
+  DeleteFromCache(path);
 }
 
 void DeleteFolder(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
   DeleteTree(temp);
+  DeleteFromCache(path);
 }
 
 Tree GetTreeFromPath(Tree T, const char *path)

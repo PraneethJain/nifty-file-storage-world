@@ -112,7 +112,7 @@ void *alive_checker(void *arg)
   (void)arg;
   while (1)
   {
-    sleep(3);
+    sleep(5);
     connected_storage_server_node *cur = connected_storage_servers.first;
     connected_storage_server_node *prev = NULL;
     while (cur != NULL)
@@ -151,8 +151,7 @@ void *alive_checker(void *arg)
       }
       else
       {
-        printf("Storage server with ssid %i is alive!\n", cur->data.port_for_nm);
-        LOG("Storage server with ssid %i is alive\n", cur->data.port_for_nm);
+        // ok
       }
 
       CHECK(close(sockfd), -1);
