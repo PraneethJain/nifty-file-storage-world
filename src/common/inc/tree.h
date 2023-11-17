@@ -6,7 +6,7 @@ u8 plus_one(u8 x);
 
 struct Information
 {
-  char DirectoryName[MAX_DIRNAME_LEN];
+  char DirectoryName[MAX_NAME_LEN];
   u8 NumChild;
   bool IsFile;
   bool Access;

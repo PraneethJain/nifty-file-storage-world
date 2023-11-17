@@ -124,17 +124,17 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   }
 }
 
-void CopyFileOrFolder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
-                      const i32 to_port)
+void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
+                         const i32 to_port)
 {
   enum status code;
-  i8 dirflag = CopyTree->NodeInfo.IsFile;
-  CHECK(send(to_sockfd, &dirflag, sizeof(dirflag), 0), -1);
+  i8 is_file = CopyTree->NodeInfo.IsFile;
+  CHECK(send(to_sockfd, &is_file, sizeof(is_file), 0), -1);
   CHECK(send(to_sockfd, dest_path, MAX_STR_LEN, 0), -1);
 
-  if (dirflag)
+  if (is_file)
   {
-    CHECK(send(from_sockfd, &dirflag, sizeof(dirflag), 0), -1);
+    CHECK(send(from_sockfd, &is_file, sizeof(is_file), 0), -1);
     CHECK(send(from_sockfd, from_path, MAX_STR_LEN, 0), -1);
 
     CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
@@ -163,7 +163,7 @@ void CopyFileOrFolder(Tree CopyTree, char *from_path, char *dest_path, const i32
     strcat(to_path_copy, "/");
     strcat(to_path_copy, trav->NodeInfo.DirectoryName);
 
-    CopyFileOrFolder(trav, from_path_copy, to_path_copy, from_sockfd, to_sockfd, to_port);
+    copy_file_or_folder(trav, from_path_copy, to_path_copy, from_sockfd, to_sockfd, to_port);
   }
 }
 
@@ -203,7 +203,8 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
     LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
     return;
   }
-  else if (to_port == -1)
+
+  if (to_port == -1)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", to_path);
     code = NOT_FOUND;
@@ -256,8 +257,6 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   const i32 from_sockfd = connect_to_port(from_port);
   const i32 to_sockfd = connect_to_port(to_port);
 
-  // CHECK(send(sockfd, &op, sizeof(op), 0), -1);
-  // CHECK(send(sockfd, path, sizeof(path), 0), -1);
   enum copy_type ch = SENDER;
 
   CHECK(send(from_sockfd, &op, sizeof(op), 0), -1);
@@ -268,7 +267,7 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   CHECK(send(to_sockfd, &op, sizeof(op), 0), -1);
   CHECK(send(to_sockfd, &ch, sizeof(ch), 0), -1);
 
-  CopyFileOrFolder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
+  copy_file_or_folder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
 
   i8 is_file = 2;
   CHECK(send(to_sockfd, &is_file, sizeof(is_file), 0), -1);
@@ -278,8 +277,6 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
 
   CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-
-  // send status code received from ss to client
 
   close(from_sockfd);
   close(to_sockfd);

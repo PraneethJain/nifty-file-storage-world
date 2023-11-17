@@ -7,7 +7,7 @@
 #define NM_SS_PORT 18000
 #define NM_CLIENT_PORT 18001
 #define MAX_STR_LEN 1024
-#define MAX_DIRNAME_LEN 32
+#define MAX_NAME_LEN 128
 #define MAX_CONNECTIONS 16
 
 typedef int8_t i8;
