@@ -17,7 +17,7 @@ const i32 MaxBufferLength = 50000;
 
 typedef struct node
 {
-  char *path;
+  char path[MAX_STR_LEN];
   i32 SSID;
   struct node *next;
 } node;
@@ -379,43 +379,33 @@ void RemoveServerPath(Tree T, u32 ss_id)
 
 i32 GetPathSSID(Tree T, const char *path)
 {
-  int req_ssid;
+  i32 req_ssid;
   node *prev = NULL;
   node *curr = cache_head.ll;
-  int found = 0;
   printf("Length of cache = %d\n", cache_head.length);
   while (curr != NULL)
   {
     if (strcmp(curr->path, path) == 0)
     {
+      printf("Cache hit!\n");
       if (prev == NULL)
       {
-        printf("Cache hit!\n");
         return curr->SSID;
       }
       prev->next = curr->next;
-      curr->next = cache_head.ll;
       req_ssid = curr->SSID;
-      found = 1;
+      free(curr);
+      node *newnode = malloc(sizeof(node));
+      newnode->SSID = req_ssid;
+      strcpy(newnode->path, path);
+      newnode->next = cache_head.ll;
+      cache_head.ll = newnode;
+      return req_ssid;
     }
     prev = curr;
     curr = curr->next;
   }
-  if (found)
-  {
-    printf("Cache hit!\n");
-    node *newnode = malloc(sizeof(node));
-    newnode->SSID = req_ssid;
-    newnode->path = malloc(sizeof(char) * MAX_STR_LEN);
-    strcpy(newnode->path, path);
-    if (cache_head.length == CACHE_SIZE)
-      free(prev);
-    newnode->next = cache_head.ll;
-    cache_head.ll = newnode;
-    return req_ssid;
-  }
-  else
-    printf("Cache miss!\n");
+  printf("Cache miss!\n");
   char pathcopy[MAX_STR_LEN];
   if (ProcessDirPath(path, T, 0) == NULL)
     return -1;
@@ -426,7 +416,6 @@ i32 GetPathSSID(Tree T, const char *path)
   if (RetT == NULL)
     return -1;
   node *newnode = malloc(sizeof(node));
-  newnode->path = malloc(sizeof(char) * MAX_STR_LEN);
   strcpy(newnode->path, path);
   newnode->SSID = RetT->NodeInfo.ss_id;
   newnode->next = cache_head.ll;
@@ -534,7 +523,6 @@ void DeleteFromCache(const char *path)
         prev->next = curr->next;
       cache_head.length--;
       printf("Cache length after: %d\n", cache_head.length);
-      free(curr->path);
       free(curr);
       break;
     }
