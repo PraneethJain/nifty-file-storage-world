@@ -38,11 +38,13 @@ void RemoveServerPath(Tree T, u32 ss_id);
 i32 GetPathSSID(Tree T, const char *path);
 char *get_parent(const char *path);
 Tree GetTreeFromPath(Tree T, const char *path);
+i8 Is_File(Tree T, const char *path);
 
 void AddFile(Tree T, const char *path, i32 port_ss_nm);
 void AddFolder(Tree T, const char *path, i32 port_ss_nm);
 void DeleteFile(Tree T, const char *path);
 void DeleteFolder(Tree T, const char *path);
+i8 ancestor(Tree T, const char *from_path, const char *to_path);
 
 void PrintTree(Tree T, u32 indent);
 

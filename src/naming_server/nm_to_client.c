@@ -193,6 +193,65 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   LOG("Found storage server - naming server port corresponding to path %s\n", from_path);
   LOG("Finding storage server - naming server port corresponding to path %s\n", to_path);
   const i32 to_port = ss_nm_port_from_path(to_path);
+
+  if (from_port == -1)
+  {
+    LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
+    code = NOT_FOUND;
+    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    return;
+  }
+  else if (to_port == -1)
+  {
+    LOG("Not found storage server - naming server port corresponding to the path %s\n", to_path);
+    code = NOT_FOUND;
+    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    return;
+  }
+
+  if (ancestor(NM_Tree, from_path, to_path))
+  {
+    LOG("from_path ancestor of to_path - naming server port corresponding to the path %s\n", to_path);
+    code = UNKNOWN_PERMISSION_DENIED;
+    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    return;
+  }
+
+  if (op == COPY_FOLDER)
+  {
+    if (Is_File(NM_Tree, from_path))
+    {
+      LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
+      code = NOT_FOUND;
+      LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+      return;
+    }
+  }
+  else if (op == COPY_FILE)
+  {
+    if (!Is_File(NM_Tree, from_path))
+    {
+      LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
+      code = NOT_FOUND;
+      LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+      LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+      return;
+    }
+  }
+
+  Tree CopyTree = GetTreeFromPath(NM_Tree, from_path);
+  strcat(to_path, "/");
+  strcat(to_path, CopyTree->NodeInfo.DirectoryName);
+
   LOG("Found storage server - naming server port corresponding to path %s\n", to_path);
   const i32 from_sockfd = connect_to_port(from_port);
   const i32 to_sockfd = connect_to_port(to_port);
@@ -209,9 +268,6 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   CHECK(send(to_sockfd, &op, sizeof(op), 0), -1);
   CHECK(send(to_sockfd, &ch, sizeof(ch), 0), -1);
 
-  Tree CopyTree = GetTreeFromPath(NM_Tree, from_path);
-  strcat(to_path, "/");
-  strcat(to_path, CopyTree->NodeInfo.DirectoryName);
   CopyFileOrFolder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
 
   i8 is_file = 2;
@@ -220,13 +276,6 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
 
   CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
   CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
-  
-  if (op == COPY_FOLDER)
-  {
-  }
-  else if (op == COPY_FILE)
-  {
-  }
 
   CHECK(send(clientfd, &code, sizeof(code), 0), -1);
 

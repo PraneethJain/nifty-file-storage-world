@@ -464,6 +464,29 @@ Tree GetTreeFromPath(Tree T, const char *path)
   return temp;
 }
 
+i8 Is_File(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  if (temp != NULL)
+    return temp->NodeInfo.IsFile;
+  return -1;
+}
+
+i8 ancestor(Tree T, const char *from_path, const char *to_path)
+{
+  Tree to_node = ProcessDirPath(to_path, T, 0);
+  Tree from_node = ProcessDirPath(from_path, T, 0);
+  while (to_node != NULL)
+  {
+    if (from_node == to_node)
+    {
+      return 1;
+    }
+    to_node = to_node->Parent;
+  }
+  return 0;
+}
+
 // void RandomTest()
 // {
 //   Tree T = InitTree();
