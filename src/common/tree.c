@@ -397,12 +397,8 @@ i32 GetPathSSID(Tree T, const char *path)
       }
       prev->next = curr->next;
       req_ssid = curr->SSID;
-      free(curr);
-      node *newnode = malloc(sizeof(node));
-      newnode->SSID = req_ssid;
-      strcpy(newnode->path, path);
-      newnode->next = cache_head.ll;
-      cache_head.ll = newnode;
+      curr->next = cache_head.ll;
+      cache_head.ll = curr;
       return req_ssid;
     }
     prev = curr;
