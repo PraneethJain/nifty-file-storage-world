@@ -21,9 +21,7 @@ void send_client_port(const i32 clientfd)
 {
   char path[MAX_STR_LEN];
 
-  LOG("Receiving path from client at port %i\n", NM_CLIENT_PORT);
-  CHECK(recv(clientfd, path, sizeof(path), 0), -1);
-  LOG("Received path %s from client at port %i\n", path, NM_CLIENT_PORT);
+  LOG_RECV(clientfd, path);
   LOG("Finding storage server client port for path %s\n", path);
   const i32 port = ss_client_port_from_path(path);
   enum status code = SUCCESS;
@@ -32,16 +30,12 @@ void send_client_port(const i32 clientfd)
   {
     code = NOT_FOUND;
     LOG("Not found storage server client port for path %s\n", path);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG_SEND(clientfd, code);
     return;
   }
   LOG("Found storage server client port %i for path %s\n", port, path);
-  LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-  LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
-  LOG("Sending port %i to client at port %i\n", port, NM_CLIENT_PORT);
-  CHECK(send(clientfd, &port, sizeof(port), 0), -1);
-  LOG("Sent port %i to client at port %i\n", port, NM_CLIENT_PORT);
+  LOG_SEND(clientfd, code);
+  LOG_SEND(clientfd, port);
 }
 
 /**
@@ -53,9 +47,7 @@ void send_client_port(const i32 clientfd)
 void create_operations(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
-  LOG("Receiving path from client at port %i\n", NM_CLIENT_PORT);
-  CHECK(recv(clientfd, path, sizeof(path), 0), -1);
-  LOG("Received path %s from client at port %i\n", path, NM_CLIENT_PORT);
+  LOG_RECV(clientfd, path);
 
   enum status code;
   i32 port;
@@ -73,28 +65,18 @@ void create_operations(const i32 clientfd, const enum operation op)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
     code = NOT_FOUND;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
   LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
   const i32 sockfd = connect_to_port(port);
-  LOG("Sending operation %i to storage server at port %i\n", op, NM_SS_PORT);
-  CHECK(send(sockfd, &op, sizeof(op), 0), -1);
-  LOG("Sent operation %i to storage server at port %i\n", op, NM_SS_PORT);
-  LOG("Sending path %s to storage server at port %i\n", path, NM_SS_PORT);
-  CHECK(send(sockfd, path, sizeof(path), 0), -1);
-  LOG("Sent path %s to storage server at port %i\n", path, NM_SS_PORT);
+  LOG_SEND(sockfd, op);
+  LOG_SEND(sockfd, path);
 
   // send status code received from ss to client
-  LOG("Receiving code %i from storage server at port %i\n", op, NM_SS_PORT);
-  CHECK(recv(sockfd, &code, sizeof(code), 0), -1);
-  LOG("Received code %i to storage server at port %i\n", op, NM_SS_PORT);
-  LOG("Sending code %i to client at port %i\n", op, NM_CLIENT_PORT);
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-  LOG("Sent code %i to client at port %i\n", op, NM_CLIENT_PORT);
+  LOG_RECV(sockfd, code);
+  LOG_SEND(clientfd, code);
   close(sockfd);
 
   if (code != SUCCESS)
@@ -123,18 +105,14 @@ void create_operations(const i32 clientfd, const enum operation op)
 void delete_operations(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
-  LOG("Receiving path from client at port %i\n", NM_CLIENT_PORT);
-  CHECK(recv(clientfd, path, sizeof(path), 0), -1);
-  LOG("Received path %s from client at port %i\n", path, NM_CLIENT_PORT);
+  LOG_RECV(clientfd, path);
 
   enum status code;
   bool is_file = Is_File(NM_Tree, path);
   if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
   {
     code = INVALID_PATH;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
@@ -145,28 +123,18 @@ void delete_operations(const i32 clientfd, const enum operation op)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
     code = NOT_FOUND;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
   LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
   const i32 sockfd = connect_to_port(port);
-  LOG("Sending operation %i to storage server at port %i\n", op, NM_SS_PORT);
-  CHECK(send(sockfd, &op, sizeof(op), 0), -1);
-  LOG("Sent operation %i to storage server at port %i\n", op, NM_SS_PORT);
-  LOG("Sending path %s to storage server at port %i\n", path, NM_SS_PORT);
-  CHECK(send(sockfd, path, sizeof(path), 0), -1);
-  LOG("Sent path %s to storage server at port %i\n", path, NM_SS_PORT);
+  LOG_SEND(sockfd, op);
+  LOG_SEND(sockfd, path);
 
   // send status code received from ss to client
-  LOG("Receiving code %i from storage server at port %i\n", op, NM_SS_PORT);
-  CHECK(recv(sockfd, &code, sizeof(code), 0), -1);
-  LOG("Received code %i to storage server at port %i\n", op, NM_SS_PORT);
-  LOG("Sending code %i to client at port %i\n", op, NM_CLIENT_PORT);
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-  LOG("Sent code %i to client at port %i\n", op, NM_CLIENT_PORT);
+  LOG_RECV(sockfd, code);
+  LOG_SEND(clientfd, code);
   close(sockfd);
 
   if (code != SUCCESS)
@@ -242,15 +210,9 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
 
   char from_path[MAX_STR_LEN];
   char to_path[MAX_STR_LEN];
-  LOG("Receiving copy source path from client at port %i\n", NM_CLIENT_PORT);
-  CHECK(recv(clientfd, from_path, sizeof(from_path), 0), -1);
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-  LOG("Received copy source path %s from client at port %i\n", from_path, NM_CLIENT_PORT);
+  LOG_RECV(clientfd, from_path);
+  LOG_RECV(clientfd, to_path);
 
-  LOG("Receiving copy destination path from client at port %i\n", NM_CLIENT_PORT);
-  CHECK(recv(clientfd, to_path, sizeof(to_path), 0), -1);
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-  LOG("Received copy destination path %s from client at port %i\n", to_path, NM_CLIENT_PORT);
   LOG("Finding storage server - naming server port corresponding to path %s\n", from_path);
   const i32 from_port = ss_nm_port_from_path(from_path);
   LOG("Found storage server - naming server port corresponding to path %s\n", from_path);
@@ -261,9 +223,7 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
     code = NOT_FOUND;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
@@ -271,9 +231,7 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", to_path);
     code = NOT_FOUND;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
@@ -281,65 +239,46 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   {
     LOG("from_path ancestor of to_path - naming server port corresponding to the path %s\n", to_path);
     code = UNKNOWN_PERMISSION_DENIED;
-    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    LOG_SEND(clientfd, code);
     return;
   }
 
-  if (op == COPY_FOLDER)
+  if ((op == CREATE_FILE && !Is_File(NM_Tree, from_path)) || (op == COPY_FOLDER && Is_File(NM_Tree, from_path)))
   {
-    if (Is_File(NM_Tree, from_path))
-    {
-      LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
-      code = NOT_FOUND;
-      LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
-      return;
-    }
+    LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
+    code = NOT_FOUND;
+    LOG_SEND(clientfd, code);
+    return;
   }
-  else if (op == COPY_FILE)
-  {
-    if (!Is_File(NM_Tree, from_path))
-    {
-      LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
-      code = NOT_FOUND;
-      LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
-      CHECK(send(clientfd, &code, sizeof(code), 0), -1);
-      LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
-      return;
-    }
-  }
+  LOG("Found storage server - naming server port corresponding to path %s\n", to_path);
 
   Tree CopyTree = GetTreeFromPath(NM_Tree, from_path);
   strcat(to_path, "/");
   strcat(to_path, CopyTree->NodeInfo.DirectoryName);
 
-  LOG("Found storage server - naming server port corresponding to path %s\n", to_path);
   const i32 from_sockfd = connect_to_port(from_port);
   const i32 to_sockfd = connect_to_port(to_port);
 
   enum copy_type ch = SENDER;
 
-  CHECK(send(from_sockfd, &op, sizeof(op), 0), -1);
-  CHECK(send(from_sockfd, &ch, sizeof(ch), 0), -1);
+  LOG_SEND(from_sockfd, op);
+  LOG_SEND(from_sockfd, ch);
 
   ch = RECEIVER;
 
-  CHECK(send(to_sockfd, &op, sizeof(op), 0), -1);
-  CHECK(send(to_sockfd, &ch, sizeof(ch), 0), -1);
+  LOG_SEND(to_sockfd, op);
+  LOG_SEND(to_sockfd, ch);
 
   copy_file_or_folder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
 
   i8 is_file = 2;
-  CHECK(send(to_sockfd, &is_file, sizeof(is_file), 0), -1);
-  CHECK(send(from_sockfd, &is_file, sizeof(is_file), 0), -1);
+  LOG_SEND(to_sockfd, is_file);
+  LOG_SEND(from_sockfd, is_file);
 
-  CHECK(recv(from_sockfd, &code, sizeof(code), 0), -1);
-  CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
+  LOG_RECV(from_sockfd, code);
+  LOG_RECV(to_sockfd, code);
 
-  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+  LOG_SEND(clientfd, code);
 
   close(from_sockfd);
   close(to_sockfd);
@@ -390,9 +329,7 @@ void *client_relay(void *arg)
   while (!disconnect)
   {
     enum operation op;
-    LOG("Receiving operation from client at port %i\n", NM_CLIENT_PORT);
-    CHECK(recv(clientfd, &op, sizeof(op), 0), -1)
-    LOG("Received operation %i from client at port %i\n", op, NM_CLIENT_PORT);
+    LOG_RECV(clientfd, op);
     switch (op)
     {
     case READ:

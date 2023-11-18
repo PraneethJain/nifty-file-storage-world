@@ -11,9 +11,19 @@
     time(&currentTime);                                                                                                \
     char timestamp[20];                                                                                                \
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtime(&currentTime));                              \
-    fprintf(ptr, "[%s] - " fmt, timestamp, ##args);                                                                    \
+    fprintf(ptr, "[%s] %s:%d:%s() - " fmt, timestamp, __FILE__, __LINE__, __func__, ##args);                           \
     fclose(ptr);                                                                                                       \
   } while (0)
+
+#define LOG_RECV(sockfd, data)                                                                                         \
+  LOG("Receiving " #data " from " #sockfd "\n");                                                                       \
+  RECV(sockfd, data);                                                                                                  \
+  LOG("Received " #data " from " #sockfd "\n");
+
+#define LOG_SEND(sockfd, data)                                                                                         \
+  LOG("Sending " #data " to " #sockfd "\n");                                                                           \
+  SEND(sockfd, data);                                                                                                  \
+  LOG("Sent " #data " to " #sockfd "\n");
 
 // nm_to_ss.c
 void add_connected_storage_server(storage_server_data data);

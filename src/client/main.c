@@ -215,12 +215,8 @@ int main()
       read_path(to_path);
 
       CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
-      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
-      print_error(code);
       CHECK(send(nm_sockfd, to_path, sizeof(to_path), 0), -1);
-      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
-      print_error(code);
-      // receive code once more to check if copying was a success
+
       CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
       if (code == SUCCESS)
         printf("Copied successfully\n");

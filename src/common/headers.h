@@ -93,4 +93,7 @@ void receive_and_write_file(const i32 from_sockfd, FILE *f);
     exit(1);                                                                                                           \
   }
 
+#define RECV(sockfd, data) CHECK(recv(sockfd, &data, sizeof(data), 0), -1)
+#define SEND(sockfd, data) CHECK(send(sockfd, &data, sizeof(data), 0), -1)
+
 #endif
