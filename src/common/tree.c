@@ -250,7 +250,6 @@ struct TreeNode *ProcessDirPath(const char *DirPath, Tree T, bool CreateFlag)
       return NULL;
     token = strtok(NULL, Delim);
   }
-  Cur->NodeInfo.Access = 1;
   return Cur;
 }
 
@@ -289,11 +288,13 @@ void ProcessWholeDir(char *DirPath, Tree Parent)
     {
       struct TreeNode *T = ProcessDirPath(en->d_name, Parent, 1);
       T->NodeInfo.IsFile = 0;
+      T->NodeInfo.Access = 1;
       ProcessWholeDir(filepath, T);
     }
     else
     {
       struct TreeNode *T = ProcessDirPath(en->d_name, Parent, 1);
+      T->NodeInfo.Access = 1;
       T->NodeInfo.IsFile = 1;
     }
     free(files[index]);
@@ -319,10 +320,12 @@ void AddAccessibleDir(char *DirPath, Tree Parent)
   if (CheckIfFile(DirPath))
   {
     T->NodeInfo.IsFile = 1;
+    T->NodeInfo.Access = 1;
     return;
   }
-  else
-    T->NodeInfo.IsFile = 0;
+
+  T->NodeInfo.IsFile = 0;
+  T->NodeInfo.Access = 1;
   ProcessWholeDir(DirPath, T);
 }
 
@@ -407,7 +410,9 @@ i32 GetPathSSID(Tree T, const char *path)
   }
   printf("Cache miss!\n");
   char pathcopy[MAX_STR_LEN];
-  if (ProcessDirPath(path, T, 0) == NULL)
+  Tree temp = ProcessDirPath(path, T, 0);
+  printf("%s %d\n", temp->NodeInfo.DirectoryName, temp->NodeInfo.Access);
+  if (temp == NULL || temp->NodeInfo.Access == 0)
     return -1;
   strcpy(pathcopy, path);
   char *Delim = "/\\";
@@ -493,6 +498,7 @@ char *get_parent(const char *path)
 void AddFile(Tree T, const char *path, i32 port_ss_nm)
 {
   Tree temp = ProcessDirPath(path, T, 1);
+  temp->NodeInfo.Access = 1;
   temp->NodeInfo.IsFile = 1;
   temp->NodeInfo.ss_id = port_ss_nm;
 }
@@ -500,6 +506,7 @@ void AddFile(Tree T, const char *path, i32 port_ss_nm)
 void AddFolder(Tree T, const char *path, i32 port_ss_nm)
 {
   Tree temp = ProcessDirPath(path, T, 1);
+  temp->NodeInfo.Access = 1;
   temp->NodeInfo.IsFile = 0;
   temp->NodeInfo.ss_id = port_ss_nm;
 }
