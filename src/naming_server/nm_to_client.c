@@ -45,12 +45,12 @@ void send_client_port(const i32 clientfd)
 }
 
 /**
- * @brief Receive path from client, perform specified operation on storage server and send the status code
+ * @brief Receive path from client, perform create operation on storage server and send the status code
  *
  * @param clientfd file descriptor of the client socket
  * @param op specified operation
  */
-void send_nm_op_single(const i32 clientfd, const enum operation op)
+void create_operations(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
   LOG("Receiving path from client at port %i\n", NM_CLIENT_PORT);
@@ -58,9 +58,8 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
   LOG("Received path %s from client at port %i\n", path, NM_CLIENT_PORT);
 
   enum status code;
-  char *parent = get_parent(path);
   i32 port;
-  LOG("Finding storage server - naming server port corresponding to the path %s\n", path);
+  char *parent = get_parent(path);
   if (parent == NULL)
   {
     port = ss_nm_port_new();
@@ -79,6 +78,7 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
     LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
     return;
   }
+
   LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
   const i32 sockfd = connect_to_port(port);
   LOG("Sending operation %i to storage server at port %i\n", op, NM_SS_PORT);
@@ -107,15 +107,78 @@ void send_nm_op_single(const i32 clientfd, const enum operation op)
     AddFile(NM_Tree, path, port);
     LOG("Added file %s to NM Tree\n", path);
   }
-  else if (op == DELETE_FILE)
-  {
-    DeleteFile(NM_Tree, path);
-    LOG("Deleted file %s from NM Tree\n", path);
-  }
   else if (op == CREATE_FOLDER)
   {
     AddFolder(NM_Tree, path, port);
     LOG("Added folder %s to NM Tree\n", path);
+  }
+}
+
+/**
+ * @brief receive path from client, perform delete operation on storage server and send the status code
+ *
+ * @param clientfd file descriptor of the client socket
+ * @param op specified operation
+ */
+void delete_operations(const i32 clientfd, const enum operation op)
+{
+  char path[MAX_STR_LEN];
+  LOG("Receiving path from client at port %i\n", NM_CLIENT_PORT);
+  CHECK(recv(clientfd, path, sizeof(path), 0), -1);
+  LOG("Received path %s from client at port %i\n", path, NM_CLIENT_PORT);
+
+  enum status code;
+  bool is_file = Is_File(NM_Tree, path);
+  if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
+  {
+    code = INVALID_PATH;
+    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    return;
+  }
+
+  LOG("Finding storage server - naming server port corresponding to the path %s\n", path);
+  const i32 port = ss_nm_port_from_path(path);
+
+  if (port == -1)
+  {
+    LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
+    code = NOT_FOUND;
+    LOG("Sending code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+    LOG("Sent code %i to client at port %i\n", code, NM_CLIENT_PORT);
+    return;
+  }
+
+  LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
+  const i32 sockfd = connect_to_port(port);
+  LOG("Sending operation %i to storage server at port %i\n", op, NM_SS_PORT);
+  CHECK(send(sockfd, &op, sizeof(op), 0), -1);
+  LOG("Sent operation %i to storage server at port %i\n", op, NM_SS_PORT);
+  LOG("Sending path %s to storage server at port %i\n", path, NM_SS_PORT);
+  CHECK(send(sockfd, path, sizeof(path), 0), -1);
+  LOG("Sent path %s to storage server at port %i\n", path, NM_SS_PORT);
+
+  // send status code received from ss to client
+  LOG("Receiving code %i from storage server at port %i\n", op, NM_SS_PORT);
+  CHECK(recv(sockfd, &code, sizeof(code), 0), -1);
+  LOG("Received code %i to storage server at port %i\n", op, NM_SS_PORT);
+  LOG("Sending code %i to client at port %i\n", op, NM_CLIENT_PORT);
+  CHECK(send(clientfd, &code, sizeof(code), 0), -1);
+  LOG("Sent code %i to client at port %i\n", op, NM_CLIENT_PORT);
+  close(sockfd);
+
+  if (code != SUCCESS)
+  {
+    LOG("Operation failed with code %i\n", code);
+    return;
+  }
+
+  if (op == DELETE_FILE)
+  {
+    DeleteFile(NM_Tree, path);
+    LOG("Deleted file %s from NM Tree\n", path);
   }
   else if (op == DELETE_FOLDER)
   {
@@ -338,10 +401,12 @@ void *client_relay(void *arg)
       send_client_port(clientfd);
       break;
     case CREATE_FILE:
-    case DELETE_FILE:
     case CREATE_FOLDER:
+      create_operations(clientfd, op);
+      break;
+    case DELETE_FILE:
     case DELETE_FOLDER:
-      send_nm_op_single(clientfd, op);
+      delete_operations(clientfd, op);
       break;
     case COPY_FILE:
     case COPY_FOLDER:
