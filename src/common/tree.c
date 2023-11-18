@@ -405,17 +405,18 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
-i32 GetPathSSID(Tree T, const char *path)
+// checks if path is cached
+i32 CheckCache(const char *path)
 {
   i32 req_ssid;
   node *prev = NULL;
   node *curr = cache_head.ll;
-  printf("Length of cache = %d\n", cache_head.length);
+  printf("Length of cache = %d\n", cache_head.length); // remove if not needed
   while (curr != NULL)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      printf("Cache hit at path %s!\n", curr->path);
+      printf("Cache hit!\n");
       req_ssid = curr->SSID;
       if (prev != NULL)
       {
@@ -429,19 +430,15 @@ i32 GetPathSSID(Tree T, const char *path)
     curr = curr->next;
   }
   printf("Cache miss!\n");
-  char pathcopy[MAX_STR_LEN];
-  Tree temp = ProcessDirPath(path, T, 0);
-  if (temp == NULL || temp->NodeInfo.Access == 0)
-    return -1;
-  strcpy(pathcopy, path);
-  char *Delim = "/\\";
-  char *token = strtok(pathcopy, Delim);
-  Tree RetT = FindChild(T, token, 0, 0);
-  if (RetT == NULL)
-    return -1;
+  return -1;
+}
+
+// inserts path into cache
+void InsertIntoCache(const char *path, i32 ssid)
+{
   node *newnode = malloc(sizeof(node));
   strcpy(newnode->path, path);
-  newnode->SSID = RetT->NodeInfo.ss_id;
+  newnode->SSID = ssid;
   newnode->next = cache_head.ll;
   cache_head.ll = newnode;
   if (cache_head.length == CACHE_SIZE)
@@ -457,6 +454,24 @@ i32 GetPathSSID(Tree T, const char *path)
   }
   else
     ++cache_head.length;
+}
+
+i32 GetPathSSID(Tree T, const char *path)
+{
+  i32 req_ssid = CheckCache(path);
+  if (req_ssid != -1)
+    return req_ssid;
+  char pathcopy[MAX_STR_LEN];
+  Tree temp = ProcessDirPath(path, T, 0);
+  if (temp == NULL || temp->NodeInfo.Access == 0)
+    return -1;
+  strcpy(pathcopy, path);
+  char *Delim = "/\\";
+  char *token = strtok(pathcopy, Delim);
+  Tree RetT = FindChild(T, token, 0, 0);
+  if (RetT == NULL)
+    return -1;
+  InsertIntoCache(path, RetT->NodeInfo.ss_id);
   return RetT->NodeInfo.ss_id;
 }
 
@@ -538,8 +553,6 @@ void DeleteFromCache(const char *path)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      printf("To be deleted node found in cache\n");
-      printf("Cache length before: %d\n", cache_head.length);
       if (prev == NULL)
       {
         cache_head.ll = curr->next;
@@ -548,7 +561,6 @@ void DeleteFromCache(const char *path)
       else
         prev->next = curr->next;
       cache_head.length--;
-      printf("Cache length after: %d\n", cache_head.length);
       free(curr);
       break;
     }
