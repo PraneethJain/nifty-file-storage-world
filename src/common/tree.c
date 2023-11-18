@@ -411,7 +411,6 @@ i32 GetPathSSID(Tree T, const char *path)
   printf("Cache miss!\n");
   char pathcopy[MAX_STR_LEN];
   Tree temp = ProcessDirPath(path, T, 0);
-  printf("%s %d\n", temp->NodeInfo.DirectoryName, temp->NodeInfo.Access);
   if (temp == NULL || temp->NodeInfo.Access == 0)
     return -1;
   strcpy(pathcopy, path);
