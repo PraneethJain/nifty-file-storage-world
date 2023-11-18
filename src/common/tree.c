@@ -358,8 +358,33 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id)
   free(T2);
 }
 
+//  Deletes all cache nodes with ssid of disconnected storage server
+void DeleteFromCacheWithSSID(u32 ss_id)
+{
+  node *prev = NULL;
+  node *curr = cache_head.ll;
+  while (curr != NULL)
+  {
+    if (curr->SSID == (i32)ss_id) // typecasting because of moida's nakhre
+    {
+      node *temp = curr;
+      if (prev != NULL)
+        prev->next = curr->next;
+      else
+        cache_head.ll = curr->next;
+      curr = curr->next;
+      free(temp);
+      --cache_head.length;
+      continue;
+    }
+    prev = curr;
+    curr = curr->next;
+  }
+}
+
 void RemoveServerPath(Tree T, u32 ss_id)
 {
+  DeleteFromCacheWithSSID(ss_id);
   Tree trav = T->ChildDirectoryLL;
   while (trav != NULL)
   {
@@ -390,7 +415,7 @@ i32 GetPathSSID(Tree T, const char *path)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      printf("Cache hit!\n");
+      printf("Cache hit at path %s!\n", curr->path);
       req_ssid = curr->SSID;
       if (prev != NULL)
       {
