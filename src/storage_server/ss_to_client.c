@@ -16,7 +16,6 @@
  */
 void *client_init(void *arg)
 {
-  // TODO
   (void)arg;
 
   const i32 serverfd = bind_to_port(0);
