@@ -391,14 +391,13 @@ i32 GetPathSSID(Tree T, const char *path)
     if (strcmp(curr->path, path) == 0)
     {
       printf("Cache hit!\n");
-      if (prev == NULL)
-      {
-        return curr->SSID;
-      }
-      prev->next = curr->next;
       req_ssid = curr->SSID;
-      curr->next = cache_head.ll;
-      cache_head.ll = curr;
+      if (prev != NULL)
+      {
+        prev->next = curr->next;
+        curr->next = cache_head.ll;
+        cache_head.ll = curr;
+      }
       return req_ssid;
     }
     prev = curr;
