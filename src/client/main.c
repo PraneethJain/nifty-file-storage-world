@@ -146,14 +146,14 @@ int main()
   while (1)
   {
     const enum operation op = get_operation();
-    CHECK(send(nm_sockfd, &op, sizeof(op), 0), -1);
+    SEND(nm_sockfd, op);
     enum status code;
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
       read_path(path);
-      CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
-      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      SEND(nm_sockfd, path);
+      RECV(nm_sockfd, code);
       if (code != SUCCESS)
       {
         print_error(code);
@@ -163,9 +163,10 @@ int main()
       i32 port;
       CHECK(recv(nm_sockfd, &port, sizeof(port), 0), -1);
       const i32 ss_sockfd = connect_to_port(port);
-      CHECK(send(ss_sockfd, &op, sizeof(op), 0), -1);
-      CHECK(send(ss_sockfd, path, sizeof(path), 0), -1);
-      CHECK(recv(ss_sockfd, &code, sizeof(code), 0), -1);
+      SEND(ss_sockfd, op);
+      SEND(ss_sockfd, path);
+      RECV(ss_sockfd, code);
+
       if (code != SUCCESS)
       {
         print_error(code);
@@ -181,12 +182,12 @@ int main()
         char buffer[MAX_STR_LEN];
         fgets(buffer, MAX_STR_LEN, stdin);
         buffer[strcspn(buffer, "\n")] = 0;
-        CHECK(send(ss_sockfd, buffer, sizeof(buffer), 0), -1);
+        SEND(ss_sockfd, buffer);
       }
       else if (op == METADATA)
       {
         struct metadata meta;
-        CHECK(recv(ss_sockfd, &meta, sizeof(meta), 0), -1);
+        RECV(ss_sockfd, meta);
         printf("Size: %lu\n", meta.size);
         printf("Last accessed: %s\n", ctime(&meta.last_access_time));
         printf("Last modified: %s\n", ctime(&meta.last_modified_time));
@@ -200,8 +201,8 @@ int main()
     {
       char path[MAX_STR_LEN];
       read_path(path);
-      CHECK(send(nm_sockfd, path, sizeof(path), 0), -1);
-      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      SEND(nm_sockfd, path);
+      RECV(nm_sockfd, code);
       if (code != SUCCESS)
         print_error(code);
       else
@@ -214,10 +215,10 @@ int main()
       read_path(from_path);
       read_path(to_path);
 
-      CHECK(send(nm_sockfd, from_path, sizeof(from_path), 0), -1);
-      CHECK(send(nm_sockfd, to_path, sizeof(to_path), 0), -1);
+      SEND(nm_sockfd, from_path);
+      SEND(nm_sockfd, to_path);
 
-      CHECK(recv(nm_sockfd, &code, sizeof(code), 0), -1);
+      RECV(nm_sockfd, code);
       if (code == SUCCESS)
         printf("Copied successfully\n");
       else
