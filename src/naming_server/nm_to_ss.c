@@ -61,7 +61,7 @@ void add_connected_storage_server(storage_server_data data)
   ++connected_storage_servers.length;
 
   Tree temp = ReceiveTreeData(data.ss_tree);
-  MergeTree(NM_Tree, temp, data.port_for_nm);
+  MergeTree(NM_Tree, temp, data.port_for_nm, data.UUID);
   PrintTree(NM_Tree, 0);
 }
 
@@ -147,12 +147,30 @@ void *alive_checker(void *arg)
           exit(1);
         }
       }
-      else
+      else if (connected_storage_servers.length >= 3)
       {
         // if num storage servers >= 3
-        // delete ./rd1/cur
-        // copy over cur to ./rd1/cur
-        // same with ./rd2
+        // delete .rd1/cur
+        // copy over cur to .rd1/cur
+        // same with .rd2
+
+        connected_storage_server_node *cur_red_ss = connected_storage_servers.first;
+        for (int i=0; i<3; cur_red_ss = cur_red_ss->next, i++)
+        {
+          if (cur_red_ss->data.UUID == cur->data.UUID)
+            continue;
+
+          for (Tree T = NM_Tree->ChildDirectoryLL; T != NULL; T = T->NextSibling)
+          {
+            // if ()
+            // Delete Directory -> cur_red_ss name/.rdi/T->Name
+
+            // const i32 from_sockfd = connect_to_port(from_port);
+            // const i32 to_sockfd = connect_to_port(to_port);
+          }
+        }
+
+        
       }
 
       CHECK(close(sockfd), -1);

@@ -329,7 +329,7 @@ void AddAccessibleDir(char *DirPath, Tree Parent)
   ProcessWholeDir(DirPath, T);
 }
 
-void MergeTree(Tree T1, Tree T2, u32 ss_id)
+void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID)
 {
   Tree trav = T1->ChildDirectoryLL;
 
@@ -352,6 +352,7 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id)
   while (trav != NULL)
   {
     trav->NodeInfo.ss_id = ss_id;
+    strcpy(trav->NodeInfo.UUID, UUID);
     trav->Parent = T1;
     trav = trav->NextSibling;
   }
@@ -529,20 +530,22 @@ char *get_parent(const char *path)
   return NULL;
 }
 
-void AddFile(Tree T, const char *path, i32 port_ss_nm)
+void AddFile(Tree T, const char *path, i32 port_ss_nm, char* UUID)
 {
   Tree temp = ProcessDirPath(path, T, 1);
   temp->NodeInfo.Access = 1;
   temp->NodeInfo.IsFile = 1;
   temp->NodeInfo.ss_id = port_ss_nm;
+  strcpy(temp->NodeInfo.UUID, UUID);
 }
 
-void AddFolder(Tree T, const char *path, i32 port_ss_nm)
+void AddFolder(Tree T, const char *path, i32 port_ss_nm, char *UUID)
 {
   Tree temp = ProcessDirPath(path, T, 1);
   temp->NodeInfo.Access = 1;
   temp->NodeInfo.IsFile = 0;
   temp->NodeInfo.ss_id = port_ss_nm;
+  strcpy(temp->NodeInfo.UUID, UUID);
 }
 
 void DeleteFromCache(const char *path)

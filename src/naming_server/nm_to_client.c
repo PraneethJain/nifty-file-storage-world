@@ -51,23 +51,25 @@ void create_operations(const i32 clientfd, const enum operation op)
 
   enum status code;
   i32 port;
+  storage_server_data *temp = NULL;
   char *parent = get_parent(path);
   if (parent == NULL)
   {
-    port = ss_nm_port_new();
+    temp = MinSizeStorageServer();
   }
   else
   {
-    port = ss_nm_port_from_path(parent);
+    temp = ss_from_path(parent);
     free(parent);
   }
-  if (port == -1)
+  if (temp == NULL)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
     code = NOT_FOUND;
     LOG_SEND(clientfd, code);
     return;
   }
+  port = temp->port_for_nm;
 
   LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
   const i32 sockfd = connect_to_port(port);
@@ -86,12 +88,12 @@ void create_operations(const i32 clientfd, const enum operation op)
   }
   if (op == CREATE_FILE)
   {
-    AddFile(NM_Tree, path, port);
+    AddFile(NM_Tree, path, port, temp->UUID);
     LOG("Added file %s to NM Tree\n", path);
   }
   else if (op == CREATE_FOLDER)
   {
-    AddFolder(NM_Tree, path, port);
+    AddFolder(NM_Tree, path, port, temp->UUID);
     LOG("Added folder %s to NM Tree\n", path);
   }
 }
@@ -156,7 +158,7 @@ void delete_operations(const i32 clientfd, const enum operation op)
 }
 
 void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
-                         const i32 to_port)
+                         const i32 to_port, char *UUID)
 {
   enum status code;
   i8 is_file = CopyTree->NodeInfo.IsFile;
@@ -173,13 +175,13 @@ void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const 
 
     receive_and_transmit_file(from_sockfd, to_sockfd);
 
-    AddFile(NM_Tree, dest_path, to_port);
+    AddFile(NM_Tree, dest_path, to_port, UUID);
     return;
   }
   else
   {
     CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
-    AddFolder(NM_Tree, dest_path, to_port);
+    AddFolder(NM_Tree, dest_path, to_port, UUID);
   }
 
   for (Tree trav = CopyTree->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)
@@ -194,7 +196,7 @@ void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const 
     strcat(to_path_copy, "/");
     strcat(to_path_copy, trav->NodeInfo.DirectoryName);
 
-    copy_file_or_folder(trav, from_path_copy, to_path_copy, from_sockfd, to_sockfd, to_port);
+    copy_file_or_folder(trav, from_path_copy, to_path_copy, from_sockfd, to_sockfd, to_port, UUID);
   }
 }
 
@@ -214,26 +216,28 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   LOG_RECV(clientfd, to_path);
 
   LOG("Finding storage server - naming server port corresponding to path %s\n", from_path);
-  const i32 from_port = ss_nm_port_from_path(from_path);
-  LOG("Found storage server - naming server port corresponding to path %s\n", from_path);
-  LOG("Finding storage server - naming server port corresponding to path %s\n", to_path);
-  const i32 to_port = ss_nm_port_from_path(to_path);
+  storage_server_data *from_ss = ss_from_path(from_path);
 
-  if (from_port == -1)
+  if (from_ss == NULL)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
     code = NOT_FOUND;
     LOG_SEND(clientfd, code);
     return;
   }
+  LOG("Found storage server - naming server port corresponding to path %s\n", from_path);
+  const i32 from_port = from_ss->port_for_nm;
 
-  if (to_port == -1)
+  LOG("Finding storage server - naming server port corresponding to path %s\n", to_path);
+  storage_server_data *to_ss = ss_from_path(to_path);
+  if (to_ss == NULL)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", to_path);
     code = NOT_FOUND;
     LOG_SEND(clientfd, code);
     return;
   }
+  const i32 to_port = to_ss->port_for_nm;
 
   if (ancestor(NM_Tree, from_path, to_path))
   {
@@ -269,7 +273,7 @@ void send_nm_op_double(const i32 clientfd, const enum operation op)
   LOG_SEND(to_sockfd, op);
   LOG_SEND(to_sockfd, ch);
 
-  copy_file_or_folder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port);
+  copy_file_or_folder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port, to_ss->UUID);
 
   i8 is_file = 2;
   LOG_SEND(to_sockfd, is_file);

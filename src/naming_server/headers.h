@@ -32,6 +32,8 @@ void *alive_checker(void *arg);
 i32 ss_client_port_from_path(const char *path);
 i32 ss_nm_port_from_path(const char *path);
 i32 ss_nm_port_new();
+storage_server_data *ss_from_path(const char *path);
+storage_server_data *MinSizeStorageServer();
 
 // nm_to_client.c
 void *client_relay(void *arg);
