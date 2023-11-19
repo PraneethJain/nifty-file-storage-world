@@ -149,7 +149,10 @@ void *alive_checker(void *arg)
       }
       else
       {
-        // ok
+        // if num storage servers >= 3
+        // delete ./rd1/cur
+        // copy over cur to ./rd1/cur
+        // same with ./rd2
       }
 
       CHECK(close(sockfd), -1);
