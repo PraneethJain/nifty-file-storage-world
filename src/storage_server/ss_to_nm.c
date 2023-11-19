@@ -29,7 +29,7 @@ void *init_storage_server(void *arg)
   Tree SS_Tree = InitTree();
 
   i8 numpaths;
-  scanf("%hhd", &numpaths);
+  scanf("%hhi", &numpaths);
   for (i8 i = 0; i < numpaths; i++)
   {
     char filepath[MAX_STR_LEN];
@@ -44,6 +44,7 @@ void *init_storage_server(void *arg)
   resp.port_for_client = port_for_client;
   resp.port_for_nm = port_for_nm;
   resp.port_for_alive = port_for_alive;
+  CHECK(getcwd(resp.UUID, MAX_STR_LEN), NULL);
 
   const i32 sockfd = connect_to_port(NM_SS_PORT);
   CHECK(send(sockfd, &resp, sizeof(resp), 0), -1);
