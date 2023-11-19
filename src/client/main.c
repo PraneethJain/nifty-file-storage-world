@@ -154,6 +154,42 @@ int main()
       read_path(path);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
+
+      if (op == READ)
+      {
+        // to read from redundancy
+        if (code == NOT_FOUND)
+        {
+          char rd1_path[MAX_STR_LEN] = {0};
+          strcpy(rd1_path, ".rd1/%s");
+          strcat(rd1_path, path);
+          SEND(nm_sockfd, op);
+          SEND(nm_sockfd, rd1_path);
+          RECV(nm_sockfd, code);
+
+          if (code == SUCCESS)
+          {
+            bzero(path, sizeof(path));
+            strcpy(path, rd1_path);
+          }
+          else if (code == NOT_FOUND)
+          {
+            char rd2_path[MAX_STR_LEN] = {0};
+            strcpy(rd2_path, ".rd2/%s");
+            strcat(rd2_path, path);
+            SEND(nm_sockfd, op);
+            SEND(nm_sockfd, rd2_path);
+            RECV(nm_sockfd, code);
+
+            if (code == SUCCESS)
+            {
+              bzero(path, sizeof(path));
+              strcpy(path, rd2_path);
+            }
+          }
+        }
+      }
+
       if (code != SUCCESS)
       {
         print_error(code);
