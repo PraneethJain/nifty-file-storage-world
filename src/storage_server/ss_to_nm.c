@@ -39,8 +39,6 @@ void *init_storage_server(void *arg)
     RemoveInaccessiblePath(SS_Tree, filepath);
   }
 
-  
-
   SendTreeData(SS_Tree, resp.ss_tree);
 
   resp.port_for_client = port_for_client;
@@ -263,21 +261,39 @@ void *naming_server_relay(void *arg)
     }
     else if (op == DELETE_FOLDER)
     {
-      i32 res = rmdir(path);
-      if (res == -1)
+      pid_t pid = fork();
+      CHECK(pid, -1);
+      if (pid == 0)
       {
-        if (errno == EACCES)
+        char *args[] = {"rm", "-r", path, NULL};
+        execvp("rm", args);
+        exit(1); // this line won't be reached if execvp succeeds
+      }
+      i32 status;
+      CHECK(wait(&status), -1);
+      if (WIFEXITED(status))
+      {
+        switch (WEXITSTATUS(status))
+        {
+        case 0:
+          code = SUCCESS;
+          break;
+        case 1:  // Operation not permitted
+        case 13: // Permission denied
+        case 30: // Read-only file system
           code = DELETE_PERMISSION_DENIED;
-        else if (errno == EBUSY)
-          code = NON_EMPTY_DIRECTORY;
-        else if (errno == EBUSY)
+          break;
+        case 16: // Resource busy
           code = UNAVAILABLE;
-        else
+          break;
+        default:
           code = NOT_FOUND;
+          break;
+        }
       }
       else
       {
-        code = SUCCESS;
+        code = UNKNOWN_PERMISSION_DENIED;
       }
     }
   }

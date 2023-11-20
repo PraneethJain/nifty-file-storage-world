@@ -140,6 +140,25 @@ void print_mode(mode_t mode)
   putchar(' ');
 }
 
+void fill_rd_path(const i32 i, const char *path, char *buf)
+{
+  sprintf(buf, ".rd%i/", i);
+  strcat(buf, path);
+}
+
+void delete_rd_paths(const i32 nm_sockfd, enum operation op, const char *path)
+{
+  for (int i = 1; i <= 3; ++i)
+  {
+    char rd_path[MAX_STR_LEN];
+    fill_rd_path(i, path, rd_path);
+    SEND(nm_sockfd, op);
+    SEND(nm_sockfd, rd_path);
+    enum status code;
+    RECV(nm_sockfd, code);
+  }
+}
+
 int main()
 {
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
@@ -233,7 +252,7 @@ int main()
       }
       close(ss_sockfd);
     }
-    else if (op == CREATE_FILE || op == DELETE_FILE || op == CREATE_FOLDER || op == DELETE_FOLDER)
+    else if (op == CREATE_FILE || op == CREATE_FOLDER)
     {
       char path[MAX_STR_LEN];
       read_path(path);
@@ -243,6 +262,20 @@ int main()
         print_error(code);
       else
         printf("Operation done successfully\n");
+    }
+    else if (op == DELETE_FILE || op == DELETE_FOLDER)
+    {
+
+      char path[MAX_STR_LEN];
+      read_path(path);
+      SEND(nm_sockfd, path);
+      RECV(nm_sockfd, code);
+      if (code != SUCCESS)
+        print_error(code);
+      else
+        printf("Operation done successfully\n");
+
+      delete_rd_paths(nm_sockfd, op, path);
     }
     else if (op == COPY_FILE || op == COPY_FOLDER)
     {
