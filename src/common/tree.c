@@ -1,6 +1,6 @@
 #include "headers.h"
 
-const i32 MaxBufferLength = MAX_STR_LEN*2000;
+const i32 MaxBufferLength = MAX_STR_LEN * 2000;
 
 /*
       *
@@ -473,9 +473,12 @@ void InsertIntoCache(const char *path, i32 ssid)
 
 i32 GetPathSSID(Tree T, const char *path)
 {
-  i32 req_ssid = CheckCache(path);
-  if (req_ssid != -1)
-    return req_ssid;
+  if (strncmp(path, ".rd", 3) != 0)
+  {
+    i32 req_ssid = CheckCache(path);
+    if (req_ssid != -1)
+      return req_ssid;
+  }
   char pathcopy[MAX_STR_LEN];
   Tree temp = ProcessDirPath(path, T, 0);
   if (temp == NULL || temp->NodeInfo.Access == 0)
@@ -486,7 +489,8 @@ i32 GetPathSSID(Tree T, const char *path)
   Tree RetT = FindChild(T, token, 0, 0);
   if (RetT == NULL)
     return -1;
-  InsertIntoCache(path, RetT->NodeInfo.ss_id);
+  if (strncmp(path, ".rd", 3) != 0)
+    InsertIntoCache(path, RetT->NodeInfo.ss_id);
   return RetT->NodeInfo.ss_id;
 }
 
@@ -544,7 +548,7 @@ char *get_parent(const char *path)
   return NULL;
 }
 
-void AddFile(Tree T, const char *path, i32 port_ss_nm, char* UUID)
+void AddFile(Tree T, const char *path, i32 port_ss_nm, char *UUID)
 {
   Tree temp = ProcessDirPath(path, T, 1);
   temp->NodeInfo.Access = 1;
