@@ -30,14 +30,16 @@ void *init_storage_server(void *arg)
 
   i8 numpaths;
   scanf("%hhi", &numpaths);
+  InitDirectory(SS_Tree);
   for (i8 i = 0; i < numpaths; i++)
   {
     char filepath[MAX_STR_LEN];
     scanf("%s", filepath);
-    AddAccessibleDir(filepath, SS_Tree);
+    // AddAccessibleDir(filepath, SS_Tree);
+    RemoveInaccessiblePath(SS_Tree, filepath);
   }
 
-  PrintTree(SS_Tree, 0);
+  
 
   SendTreeData(SS_Tree, resp.ss_tree);
 
@@ -47,7 +49,8 @@ void *init_storage_server(void *arg)
   CHECK(getcwd(resp.UUID, MAX_STR_LEN), NULL);
 
   const i32 sockfd = connect_to_port(NM_SS_PORT);
-  CHECK(send(sockfd, &resp, sizeof(resp), 0), -1);
+  send_data_in_packets(&resp, sockfd, sizeof(resp));
+  PrintTree(SS_Tree, 0);
 
   CHECK(close(sockfd), -1);
   return NULL;

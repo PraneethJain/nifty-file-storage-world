@@ -31,6 +31,8 @@ typedef struct TreeNode *Tree;
 Tree InitTree();
 
 void AddAccessibleDir(char *DirPath, Tree Parent);
+void InitDirectory(Tree Parent);
+void RemoveInaccessiblePath(Tree Parent, const char *DirPath);
 int SendTreeData(Tree T, char *buffer);
 Tree ReceiveTreeData(char *buffer);
 void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID);

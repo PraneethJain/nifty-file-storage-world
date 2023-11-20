@@ -29,7 +29,7 @@ typedef struct storage_server_data
   i32 port_for_nm;
   i32 port_for_alive;
   char UUID[MAX_STR_LEN];
-  char ss_tree[MAX_STR_LEN * 50];
+  char ss_tree[MAX_STR_LEN * 2000];
 } storage_server_data;
 
 typedef struct metadata
@@ -86,6 +86,8 @@ void receive_and_print_file(const i32 sockfd);
 void transmit_file_for_writing(FILE *f, const i32 sockfd);
 void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd);
 void receive_and_write_file(const i32 from_sockfd, FILE *f);
+void send_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length);
+void receive_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length);
 
 #define CHECK(actual_value, error_value)                                                                               \
   if ((actual_value) == error_value)                                                                                   \

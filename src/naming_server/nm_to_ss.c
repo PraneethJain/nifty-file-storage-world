@@ -87,7 +87,8 @@ void *storage_server_init(void *arg)
     CHECK(clientfd, -1);
     LOG("Accepted connection on socket FD\n");
     storage_server_data resp;
-    LOG_RECV(clientfd, resp);
+    // LOG_RECV(clientfd, resp);
+    receive_data_in_packets(&resp, clientfd, sizeof(resp));
     printf("%i %i %i\n", resp.port_for_client, resp.port_for_nm, resp.port_for_alive);
 
     CHECK(close(clientfd), -1);

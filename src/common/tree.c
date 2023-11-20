@@ -1,6 +1,6 @@
 #include "headers.h"
 
-const i32 MaxBufferLength = 50000;
+const i32 MaxBufferLength = MAX_STR_LEN*2000;
 
 /*
       *
@@ -329,6 +329,21 @@ void AddAccessibleDir(char *DirPath, Tree Parent)
   ProcessWholeDir(DirPath, T);
 }
 
+void InitDirectory(Tree Parent)
+{
+  Parent->NodeInfo.IsFile = 0;
+  Parent->NodeInfo.Access = 1;
+  ProcessWholeDir(".", Parent);
+}
+
+void RemoveInaccessiblePath(Tree Parent, const char *DirPath)
+{
+  Tree T = ProcessDirPath(DirPath, Parent, 0);
+  if (T == NULL)
+    return;
+  DeleteTree(T);
+}
+
 void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID)
 {
   Tree trav = T1->ChildDirectoryLL;
@@ -345,7 +360,6 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID)
   {
     T1->ChildDirectoryLL = T2->ChildDirectoryLL;
   }
-
   if (T2->ChildDirectoryLL != NULL)
     T2->ChildDirectoryLL->PrevSibling = trav;
   trav = T2->ChildDirectoryLL;

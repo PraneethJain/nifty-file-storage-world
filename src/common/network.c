@@ -75,6 +75,32 @@ void send_file(FILE *f, const i32 sockfd)
   }
 }
 
+void send_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length)
+{
+  i16 numpackets = buffer_length/MAX_STR_LEN;
+  for (int i=0; i<numpackets; i++)
+  {
+    CHECK(send(sockfd, buffer + MAX_STR_LEN*i, MAX_STR_LEN, 0), -1);
+  }
+  if (buffer_length % MAX_STR_LEN != 0)
+  {
+    CHECK(send(sockfd, buffer + MAX_STR_LEN*numpackets, buffer_length % MAX_STR_LEN, 0), -1);
+  }
+}
+
+void receive_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length)
+{
+  i16 numpackets = buffer_length/MAX_STR_LEN;
+  for (int i=0; i<numpackets; i++)
+  {
+    CHECK(recv(sockfd, buffer + MAX_STR_LEN*i, MAX_STR_LEN, 0), -1);
+  }
+  if (buffer_length % MAX_STR_LEN != 0)
+  {
+    CHECK(recv(sockfd, buffer + MAX_STR_LEN*numpackets, buffer_length % MAX_STR_LEN, 0), -1);
+  }
+}
+
 /**
  * @brief Receive a file and print it to stdout
  *
