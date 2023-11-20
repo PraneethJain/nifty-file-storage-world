@@ -412,12 +412,12 @@ i32 CheckCache(const char *path)
   i32 req_ssid;
   node *prev = NULL;
   node *curr = cache_head.ll;
-  printf("Length of cache = %d\n", cache_head.length); // remove if not needed
+  // printf("Length of cache = %d\n", cache_head.length); // remove if not needed
   while (curr != NULL)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      printf("Cache hit!\n");
+      // printf("Cache hit!\n");
       req_ssid = curr->SSID;
       if (prev != NULL)
       {
@@ -430,7 +430,7 @@ i32 CheckCache(const char *path)
     prev = curr;
     curr = curr->next;
   }
-  printf("Cache miss!\n");
+  // printf("Cache miss!\n");
   return -1;
 }
 

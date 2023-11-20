@@ -4,12 +4,16 @@
 #include <stdint.h>
 
 #define LOCALHOST "127.0.0.1"
-#define NM_SS_PORT 7171
-#define NM_CLIENT_PORT 7172
+#define NM_SS_PORT 18010
+#define NM_CLIENT_PORT 18011
 #define MAX_STR_LEN 1024
 #define MAX_NAME_LEN 128
 #define MAX_CONNECTIONS 16
 #define CACHE_SIZE 16
+
+#define RD1 "/home/praneeth/Repos/final-project-027/buckets/1"
+#define RD2 "/home/praneeth/Repos/final-project-027/buckets/2"
+#define RD3 "/home/praneeth/Repos/final-project-027/buckets/3"
 
 typedef int8_t i8;
 typedef int16_t i16;

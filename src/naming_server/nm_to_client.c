@@ -110,14 +110,6 @@ void delete_operations(const i32 clientfd, const enum operation op)
   LOG_RECV(clientfd, path);
 
   enum status code;
-  bool is_file = Is_File(NM_Tree, path);
-  if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
-  {
-    code = INVALID_PATH;
-    LOG_SEND(clientfd, code);
-    return;
-  }
-
   LOG("Finding storage server - naming server port corresponding to the path %s\n", path);
   const i32 port = ss_nm_port_from_path(path);
 
@@ -125,6 +117,14 @@ void delete_operations(const i32 clientfd, const enum operation op)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
     code = NOT_FOUND;
+    LOG_SEND(clientfd, code);
+    return;
+  }
+
+  bool is_file = Is_File(NM_Tree, path);
+  if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
+  {
+    code = INVALID_PATH;
     LOG_SEND(clientfd, code);
     return;
   }

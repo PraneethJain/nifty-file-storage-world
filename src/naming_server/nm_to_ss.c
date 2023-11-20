@@ -98,6 +98,33 @@ void *storage_server_init(void *arg)
   return NULL;
 }
 
+enum status delete_and_copy(const Tree T, const i32 rd_num, const i32 nm_sockfd)
+{
+  char from_path[MAX_STR_LEN] = {0};
+  strcpy(from_path, T->NodeInfo.DirectoryName);
+
+  char to_path[MAX_STR_LEN] = {0};
+  sprintf(to_path, ".rd%i", rd_num);
+
+  char delete_path[MAX_STR_LEN] = {0};
+  sprintf(delete_path, ".rd%i/%s", rd_num, T->NodeInfo.DirectoryName);
+
+  enum operation op = T->NodeInfo.IsFile ? DELETE_FILE : DELETE_FOLDER;
+  SEND(nm_sockfd, op);
+  SEND(nm_sockfd, delete_path);
+  enum status code;
+  RECV(nm_sockfd, code);
+  if (code != SUCCESS && code != NOT_FOUND)
+    return code;
+
+  op = T->NodeInfo.IsFile ? COPY_FILE : COPY_FOLDER;
+  SEND(nm_sockfd, op);
+  SEND(nm_sockfd, from_path);
+  SEND(nm_sockfd, to_path);
+  RECV(nm_sockfd, code);
+  return code;
+}
+
 /**
  * @brief Periodically check if each storage server is still alive.
  * Disconnect the ones that have crashed.
@@ -108,6 +135,8 @@ void *storage_server_init(void *arg)
 void *alive_checker(void *arg)
 {
   (void)arg;
+  sleep(5);
+  const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
   while (1)
   {
     sleep(5);
@@ -147,30 +176,9 @@ void *alive_checker(void *arg)
           exit(1);
         }
       }
-      else if (connected_storage_servers.length >= 3)
+      else
       {
-        // if num storage servers >= 3
-        // delete .rd1/cur
-        // copy over cur to .rd1/cur
-        // same with .rd2
-
-        connected_storage_server_node *cur_red_ss = connected_storage_servers.first;
-        for (int i=0; i<3; cur_red_ss = cur_red_ss->next, i++)
-        {
-          if (cur_red_ss->data.UUID == cur->data.UUID)
-            continue;
-
-          for (Tree T = NM_Tree->ChildDirectoryLL; T != NULL; T = T->NextSibling)
-          {
-            // if ()
-            // Delete Directory -> cur_red_ss name/.rdi/T->Name
-
-            // const i32 from_sockfd = connect_to_port(from_port);
-            // const i32 to_sockfd = connect_to_port(to_port);
-          }
-        }
-
-        
+        // ok
       }
 
       CHECK(close(sockfd), -1);
@@ -178,7 +186,36 @@ void *alive_checker(void *arg)
       prev = cur;
       cur = cur->next;
     }
+
+    if (connected_storage_servers.length < 3)
+      continue;
+
+    for (Tree T = NM_Tree->ChildDirectoryLL; T != NULL; T = T->NextSibling)
+    {
+      if (strcmp(T->NodeInfo.UUID, RD1) == 0)
+      {
+        if (strstr(T->NodeInfo.DirectoryName, ".rd1") == T->NodeInfo.DirectoryName)
+          continue;
+        delete_and_copy(T, 2, nm_sockfd);
+        delete_and_copy(T, 3, nm_sockfd);
+      }
+      else if (strcmp(T->NodeInfo.UUID, RD2) == 0)
+      {
+        if (strstr(T->NodeInfo.DirectoryName, ".rd2") == T->NodeInfo.DirectoryName)
+          continue;
+        delete_and_copy(T, 1, nm_sockfd);
+        delete_and_copy(T, 3, nm_sockfd);
+      }
+      else
+      {
+        if (strstr(T->NodeInfo.DirectoryName, ".rd3") == T->NodeInfo.DirectoryName)
+          continue;
+        delete_and_copy(T, 1, nm_sockfd);
+        delete_and_copy(T, 2, nm_sockfd);
+      }
+    }
   }
+  close(nm_sockfd);
   return NULL;
 }
 

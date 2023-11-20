@@ -218,7 +218,7 @@ void *naming_server_relay(void *arg)
         if (errno == EACCES)
           code = WRITE_PERMISSION_DENIED;
         else
-          code = INVALID_PATH;
+          code = NOT_FOUND;
       }
       else
       {
@@ -236,7 +236,7 @@ void *naming_server_relay(void *arg)
         else if (errno == EBUSY)
           code = UNAVAILABLE;
         else
-          code = INVALID_PATH;
+          code = NOT_FOUND;
       }
       else
       {
@@ -251,7 +251,7 @@ void *naming_server_relay(void *arg)
         if (errno == EACCES)
           code = CREATE_PERMISSION_DENIED;
         else
-          code = INVALID_PATH;
+          code = NOT_FOUND;
       }
       else
       {
@@ -270,7 +270,7 @@ void *naming_server_relay(void *arg)
         else if (errno == EBUSY)
           code = UNAVAILABLE;
         else
-          code = INVALID_PATH;
+          code = NOT_FOUND;
       }
       else
       {
