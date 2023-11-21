@@ -358,9 +358,9 @@ void send_tree_for_printing(const i32 clientfd)
     return;
   }
   SEND(clientfd, code);
-  char printedtree[50 * MAX_STR_LEN] = {0};
-  GetPrintedSubtree(NM_Tree, path, printedtree);
-  SEND(clientfd, printedtree);
+  char printed_tree[200 * MAX_STR_LEN] = {0};
+  GetPrintedSubtree(NM_Tree, path, printed_tree);
+  send_data_in_packets(printed_tree, clientfd, sizeof(printed_tree));
 }
 
 /**

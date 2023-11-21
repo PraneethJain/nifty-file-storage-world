@@ -135,8 +135,8 @@ int main()
       RECV(nm_sockfd, code);
       if (code == SUCCESS)
       {
-        char printed_tree[50 * MAX_STR_LEN];
-        RECV(nm_sockfd, printed_tree);
+        char printed_tree[200 * MAX_STR_LEN];
+        receive_data_in_packets(printed_tree, nm_sockfd, sizeof(printed_tree));
         printf("%s", printed_tree);
       }
       else
