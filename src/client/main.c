@@ -20,7 +20,9 @@ i8 get_operation()
   while (op_int < 1 || op_int >= END_OPERATION)
   {
     printf(C_YELLOW "Choice: " C_RESET);
-    scanf("%hhi", &op_int);
+    if (scanf("%hhi", &op_int) != 1)
+      while (getchar() != '\n')
+        ;
   }
   return op_int - 1;
 }
