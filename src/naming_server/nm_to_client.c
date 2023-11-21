@@ -165,6 +165,17 @@ void delete_operations(const i32 clientfd, const enum operation op)
   }
 }
 
+/**
+ * @brief Copy a file or folder across different storage servers or same storage servers
+ * 
+ * @param CopyTree The tree being copied from
+ * @param from_path current file/folder path being copied
+ * @param dest_path destination path
+ * @param from_sockfd socket of the storage server being copied from
+ * @param to_sockfd socket of the storage server being copied to
+ * @param to_port nm port for the `to` storage server
+ * @param UUID unique identifier of the `to` storage server
+ */
 void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
                          const i32 to_port, char *UUID)
 {
@@ -218,7 +229,7 @@ void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const 
  * @param clientfd file descriptor of the client socket
  * @param op specified operation
  */
-void send_nm_op_double(const i32 clientfd, const enum operation op)
+void copy_operation(const i32 clientfd, const enum operation op)
 {
   enum status code = SUCCESS;
 
@@ -363,7 +374,7 @@ void *client_relay(void *arg)
       break;
     case COPY_FILE:
     case COPY_FOLDER:
-      send_nm_op_double(clientfd, op);
+      copy_operation(clientfd, op);
       break;
     case DISCONNECT:
       disconnect = true;
