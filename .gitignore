@@ -1,7 +1,6 @@
 *.out
 *.log
 .vscode
-doxygen
 buckets
 error.txt
 hello
