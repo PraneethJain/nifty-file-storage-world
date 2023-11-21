@@ -11,12 +11,14 @@
 
 i8 get_operation()
 {
-  printf("\nOperations:-\n1.Read\n2.Write\n3.Metadata\n4.Create file\n5.Delete file\n6.Create folder\n7.Delete "
-         "folder\n8.Copy file\n9.Copy folder\n10.Exit\n");
+  printf(C_YELLOW "\nOperations:-\n" C_CYAN "1.Read\n"
+                  "2.Write\n"
+                  "3.Metadata\n" C_GREEN "4.Create file\n" C_RED "5.Delete file\n" C_GREEN "6.Create folder\n" C_RED
+                  "7.Delete folder\n" C_WHITE "8.Copy file\n" C_WHITE "9.Copy folder\n" C_BLACK "10.Exit\n");
   i8 op_int = -1;
   while (op_int < 1 || op_int > 10)
   {
-    printf("Enter the number of the operation that you wish to perform: ");
+    printf(C_YELLOW "Choice: " C_RESET);
     scanf("%hhi", &op_int);
   }
   return op_int - 1;
