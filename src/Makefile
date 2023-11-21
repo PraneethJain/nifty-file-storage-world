@@ -7,4 +7,4 @@ all:
 	$(CC) $(CFLAGS) -o naming_server.out naming_server/main.c naming_server/nm_to_ss.c naming_server/nm_to_client.c common/network.c common/tree.c
 	
 clean:
-	rm *.out
+	rm *.out *.log
