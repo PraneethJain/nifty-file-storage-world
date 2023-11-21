@@ -12,6 +12,7 @@
 #include "headers.h"
 
 Tree NM_Tree;
+pthread_mutex_t tree_lock = PTHREAD_MUTEX_INITIALIZER;
 
 int main()
 {

@@ -39,4 +39,7 @@ storage_server_data *MinSizeStorageServer();
 void *client_relay(void *arg);
 void *client_init(void *arg);
 
+extern Tree NM_Tree;
+extern pthread_mutex_t tree_lock;
+
 #endif

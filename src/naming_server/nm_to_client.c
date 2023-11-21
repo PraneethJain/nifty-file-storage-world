@@ -10,8 +10,6 @@
 #include "../common/headers.h"
 #include "headers.h"
 
-extern Tree NM_Tree;
-
 /**
  * @brief Receive path from client and send the corresponding storage server's port
  *
@@ -88,12 +86,16 @@ void create_operations(const i32 clientfd, const enum operation op)
   }
   if (op == CREATE_FILE)
   {
+    pthread_mutex_lock(&tree_lock);
     AddFile(NM_Tree, path, port, temp->UUID);
+    pthread_mutex_unlock(&tree_lock);
     LOG("Added file %s to NM Tree\n", path);
   }
   else if (op == CREATE_FOLDER)
   {
+    pthread_mutex_lock(&tree_lock);
     AddFolder(NM_Tree, path, port, temp->UUID);
+    pthread_mutex_unlock(&tree_lock);
     LOG("Added folder %s to NM Tree\n", path);
   }
 }
@@ -147,12 +149,16 @@ void delete_operations(const i32 clientfd, const enum operation op)
 
   if (op == DELETE_FILE)
   {
+    pthread_mutex_lock(&tree_lock);
     DeleteFile(NM_Tree, path);
+    pthread_mutex_unlock(&tree_lock);
     LOG("Deleted file %s from NM Tree\n", path);
   }
   else if (op == DELETE_FOLDER)
   {
+    pthread_mutex_lock(&tree_lock);
     DeleteFolder(NM_Tree, path);
+    pthread_mutex_unlock(&tree_lock);
     LOG("Deleted folder %s from NM Tree\n", path);
   }
 }
@@ -175,13 +181,17 @@ void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const 
 
     receive_and_transmit_file(from_sockfd, to_sockfd);
 
+    pthread_mutex_lock(&tree_lock);
     AddFile(NM_Tree, dest_path, to_port, UUID);
+    pthread_mutex_unlock(&tree_lock);
     return;
   }
   else
   {
     CHECK(recv(to_sockfd, &code, sizeof(code), 0), -1);
+    pthread_mutex_unlock(&tree_lock);
     AddFolder(NM_Tree, dest_path, to_port, UUID);
+    pthread_mutex_unlock(&tree_lock);
   }
 
   for (Tree trav = CopyTree->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)

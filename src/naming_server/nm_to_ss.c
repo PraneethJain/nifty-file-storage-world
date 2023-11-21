@@ -10,8 +10,6 @@
 #include "../common/headers.h"
 #include "headers.h"
 
-extern Tree NM_Tree;
-
 typedef struct connected_storage_server_node
 {
   storage_server_data data;
@@ -61,7 +59,9 @@ void add_connected_storage_server(storage_server_data data)
   ++connected_storage_servers.length;
 
   Tree temp = ReceiveTreeData(data.ss_tree);
+  pthread_mutex_lock(&tree_lock);
   MergeTree(NM_Tree, temp, data.port_for_nm, data.UUID);
+  pthread_mutex_unlock(&tree_lock);
   PrintTree(NM_Tree, 0);
 }
 
@@ -158,7 +158,11 @@ void *alive_checker(void *arg)
         {
           printf("Storage server with ssid %i has disconnected!\n", cur->data.port_for_nm);
           LOG("Storage server with ssid %i disconnected\n", cur->data.port_for_nm);
+
+          pthread_mutex_lock(&tree_lock);
           RemoveServerPath(NM_Tree, cur->data.port_for_nm);
+          pthread_mutex_unlock(&tree_lock);
+
           if (prev == NULL)
           {
             connected_storage_servers.first = cur->next;
