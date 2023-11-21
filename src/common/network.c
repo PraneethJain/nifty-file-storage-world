@@ -1,3 +1,12 @@
+/**
+ * @file network.c
+ * @brief Contains all the functions related to networking.
+ * @details 
+ *    - Functions for binding to port, connecting to port and finding port.
+ *    - Functions for sending, receiving and transmitting files.
+ *    - Functions for sending and receiving a large buffer in small packets.
+ */
+
 #include "headers.h"
 
 /**
@@ -78,7 +87,7 @@ void send_file(FILE *f, const i32 sockfd)
 void send_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length)
 {
   i16 numpackets = buffer_length/MAX_STR_LEN;
-  for (int i=0; i<numpackets; i++)
+  for (i32 i=0; i<numpackets; i++)
   {
     CHECK(send(sockfd, buffer + MAX_STR_LEN*i, MAX_STR_LEN, 0), -1);
   }
@@ -91,7 +100,7 @@ void send_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length)
 void receive_data_in_packets(void *buffer, const i32 sockfd, u32 buffer_length)
 {
   i16 numpackets = buffer_length/MAX_STR_LEN;
-  for (int i=0; i<numpackets; i++)
+  for (i32 i=0; i<numpackets; i++)
   {
     CHECK(recv(sockfd, buffer + MAX_STR_LEN*i, MAX_STR_LEN, 0), -1);
   }
@@ -120,11 +129,18 @@ void receive_and_print_file(const i32 sockfd)
   }
 }
 
+
+/**
+ * @brief transmit file in small packets.
+ * 
+ * @param f File that is to be sent.
+ * @param sockfd socket that is being sent to.
+ */
 void transmit_file_for_writing(FILE *f, const i32 sockfd)
 {
   char buffer[MAX_STR_LEN] = {0};
-  int num_bytes_read = 0;
-  int i = 0;
+  i32 num_bytes_read = 0;
+  i32 i = 0;
   while (1)
   {
     if (i == 100)
@@ -145,11 +161,17 @@ void transmit_file_for_writing(FILE *f, const i32 sockfd)
   CHECK(recv(sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
 }
 
+/**
+ * @brief Receive file from one socket and send it to other.
+ * 
+ * @param from_sockfd the socket that the file is being sent from.
+ * @param to_sockfd the socket that the file has to be sent to.
+ */
 void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
 {
   char buffer[MAX_STR_LEN];
-  int num_bytes_read = 0;
-  int i = 0;
+  i32 num_bytes_read = 0;
+  i32 i = 0;
   while (1)
   {
     if (i == 100)
@@ -175,11 +197,17 @@ void receive_and_transmit_file(const i32 from_sockfd, const i32 to_sockfd)
   CHECK(send(from_sockfd, &num_bytes_read, sizeof(num_bytes_read), 0), -1)
 }
 
+/**
+ * @brief Receive file content from a socket and write it into a file.
+ * 
+ * @param from_sockfd The socket that the file content is being received from.
+ * @param f The file that has to be written to.
+ */
 void receive_and_write_file(const i32 from_sockfd, FILE* f)
 {
   char buffer[MAX_STR_LEN];
-  int num_bytes_read = 0;
-  int i = 0;
+  i32 num_bytes_read = 0;
+  i32 i = 0;
   while (1)
   {
     if (i == 100)

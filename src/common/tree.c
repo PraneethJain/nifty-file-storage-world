@@ -1,3 +1,12 @@
+/**
+ * @file tree.c
+ * @brief Contains all the functions related to directory trees.
+ * @details 
+ *    - Functions for initialising node for info for each directory.
+ *    - Functions for finding directory nodes with paths.
+ *    - Functions for utilising the nodes or finding specific info.
+ */
+
 #include "headers.h"
 
 const i32 MaxBufferLength = MAX_STR_LEN * 2000;
@@ -103,7 +112,7 @@ struct TreeNode *FindChild(Tree T, const char *ChildName, bool CreateFlag, bool 
 #define DIRINFO 'D'
 #define DIREND '.'
 
-int SendTreeDataDriver(Tree T, char *buffer, u32 *lastindex, u32 BufferCapacity)
+i32 SendTreeDataDriver(Tree T, char *buffer, u32 *lastindex, u32 BufferCapacity)
 {
   if (*lastindex >= BufferCapacity)
     return -1;
@@ -135,7 +144,7 @@ int SendTreeDataDriver(Tree T, char *buffer, u32 *lastindex, u32 BufferCapacity)
   return 0;
 }
 
-int SendTreeData(Tree T, char *buffer)
+i32 SendTreeData(Tree T, char *buffer)
 {
   u32 lastindex = 0;
   if (SendTreeDataDriver(T, buffer, &lastindex, MaxBufferLength) == -1)
@@ -569,9 +578,9 @@ char *get_parent(const char *path)
 {
   char path_copy[MAX_STR_LEN];
   strcpy(path_copy, path);
-  int string_length = strlen(path);
-  int flag = 1;
-  int i = string_length - 1;
+  i32 string_length = strlen(path);
+  i32 flag = 1;
+  i32 i = string_length - 1;
   for (; i >= 0; i--)
   {
     if ((path[i] != '/' && path[i] != '\\'))
@@ -737,30 +746,3 @@ void ReleaseLock(Tree T, const char *path)
     return;
   ReleaseLockDriver(temp);
 }
-
-// void RandomTest()
-// {
-//   Tree T = InitTree();
-//   Tree T2 = FindChild(T, "Hello", 1, 0);
-//   Tree T3 = FindChild(T2, "Fuck YOU", 1, 0);
-//   Tree T4 = FindChild(T, "LOL", 1, 0);
-//   Tree T5 = FindChild(T3, "NOPLEASE", 1, 0);
-//   Tree T6 = FindChild(T4, "OAWKFEOWAJFAW", 1, 0);
-//   Tree T7 = ProcessDirPath("Hello/My/Name/Is/Harshvardhan", T, 1);
-//   char Buffer[MaxBufferLength];
-//   SendTreeData(T, Buffer);
-//   Tree TRec = ReceiveTreeData(Buffer);
-//   DeleteTree(ProcessDirPath("Hello/My/Name", T, 0));
-//   printf("OG:\n");
-//   PrintTree(T, 0);
-//   printf("Test:\n");
-//   PrintTree(TRec, 0);
-//   if ((T7 = ProcessDirPath("Hello/My/Name//Is/Harshvardhan", TRec, 0)) != NULL)
-//   {
-//     printf("Passed: %s!\n", T7->NodeInfo.DirectoryName);
-//   }
-//   else
-//   {
-//     printf("Failed\n");
-//   }
-// }
