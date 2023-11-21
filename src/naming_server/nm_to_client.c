@@ -119,7 +119,7 @@ void create_operations(const i32 clientfd, const enum operation op)
 void delete_operations(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
-  LOG_RECV(clientfd, path);
+  RECV(clientfd, path);
 
   enum status code;
   LOG("Finding storage server - naming server port corresponding to the path %s\n", path);
@@ -136,21 +136,21 @@ void delete_operations(const i32 clientfd, const enum operation op)
   bool is_file = Is_File(NM_Tree, path);
   if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
   {
-    code = INVALID_PATH;
+    code = INVALID_TYPE;
     LOG_SEND(clientfd, code);
     return;
   }
 
   LOG("Found storage server - naming server port %i corresponding to the path %s\n", port, path);
   const i32 sockfd = connect_to_port(port);
-  LOG_SEND(sockfd, op);
-  LOG_SEND(sockfd, path);
+  SEND(sockfd, op);
+  SEND(sockfd, path);
 
   AcquireWriterLock(NM_Tree, path);
 
   // send status code received from ss to client
-  LOG_RECV(sockfd, code);
-  LOG_SEND(clientfd, code);
+  RECV(sockfd, code);
+  SEND(clientfd, code);
   close(sockfd);
 
   if (code != SUCCESS)
@@ -246,8 +246,8 @@ void copy_operation(const i32 clientfd, const enum operation op)
 
   char from_path[MAX_STR_LEN];
   char to_path[MAX_STR_LEN];
-  LOG_RECV(clientfd, from_path);
-  LOG_RECV(clientfd, to_path);
+  RECV(clientfd, from_path);
+  RECV(clientfd, to_path);
   bool cache_flag = true;
   if (strncmp(from_path, ".rd", 3) * strncmp(to_path, ".rd", 3) == 0)
     cache_flag = false;
@@ -279,7 +279,7 @@ void copy_operation(const i32 clientfd, const enum operation op)
   if (ancestor(NM_Tree, from_path, to_path))
   {
     LOG("from_path ancestor of to_path - naming server port corresponding to the path %s\n", to_path);
-    code = UNKNOWN_PERMISSION_DENIED;
+    code = RECURSIVE_COPY;
     LOG_SEND(clientfd, code);
     return;
   }
@@ -287,7 +287,7 @@ void copy_operation(const i32 clientfd, const enum operation op)
   if ((op == COPY_FILE && !Is_File(NM_Tree, from_path)) || (op == COPY_FOLDER && Is_File(NM_Tree, from_path)))
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
-    code = NOT_FOUND;
+    code = INVALID_TYPE;
     LOG_SEND(clientfd, code);
     return;
   }
@@ -304,24 +304,24 @@ void copy_operation(const i32 clientfd, const enum operation op)
 
   enum copy_type ch = SENDER;
 
-  LOG_SEND(from_sockfd, op);
-  LOG_SEND(from_sockfd, ch);
+  SEND(from_sockfd, op);
+  SEND(from_sockfd, ch);
 
   ch = RECEIVER;
 
-  LOG_SEND(to_sockfd, op);
-  LOG_SEND(to_sockfd, ch);
+  SEND(to_sockfd, op);
+  SEND(to_sockfd, ch);
 
   copy_file_or_folder(CopyTree, from_path, to_path, from_sockfd, to_sockfd, to_port, to_ss->UUID);
 
   i8 is_file = 2;
-  LOG_SEND(to_sockfd, is_file);
-  LOG_SEND(from_sockfd, is_file);
+  SEND(to_sockfd, is_file);
+  SEND(from_sockfd, is_file);
 
-  LOG_RECV(from_sockfd, code);
-  LOG_RECV(to_sockfd, code);
+  RECV(from_sockfd, code);
+  RECV(to_sockfd, code);
 
-  LOG_SEND(clientfd, code);
+  SEND(clientfd, code);
 
   ReleaseLock(NM_Tree, from_path);
 

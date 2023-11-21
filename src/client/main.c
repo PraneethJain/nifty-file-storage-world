@@ -85,6 +85,12 @@ void print_error(enum status code)
   case NON_EMPTY_DIRECTORY:
     printf("Directory is not empty");
     break;
+  case INVALID_TYPE:
+    printf("rohan shridhar");
+    break;
+  case RECURSIVE_COPY:
+    printf("rohan shridhar");
+    break;
   }
   printf("\n");
 }
