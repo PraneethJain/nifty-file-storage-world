@@ -32,7 +32,7 @@ void send_client_port(const i32 clientfd, const enum operation op)
     return;
   }
 
-  if (op != METADATA && Is_File(NM_Tree, path) == 0)
+  if (op != METADATA && IsFile(NM_Tree, path) == 0)
   {
     code = INVALID_TYPE;
     LOG("Can't do operation %d on directory %s\n", op, path);
@@ -68,7 +68,7 @@ void create_operations(const i32 clientfd, const enum operation op)
   enum status code;
   i32 port;
   storage_server_data *temp = NULL;
-  char *parent = get_parent(path);
+  char *parent = GetParent(path);
   if (parent == NULL)
   {
     temp = MinSizeStorageServer();
@@ -141,7 +141,7 @@ void delete_operations(const i32 clientfd, const enum operation op)
     return;
   }
 
-  bool is_file = Is_File(NM_Tree, path);
+  bool is_file = IsFile(NM_Tree, path);
   if ((op == DELETE_FILE && !is_file) || (op == DELETE_FOLDER && is_file))
   {
     code = INVALID_TYPE;
@@ -284,15 +284,15 @@ void copy_operation(const i32 clientfd, const enum operation op)
   }
   const i32 to_port = to_ss->port_for_nm;
 
-  if (ancestor(NM_Tree, from_path, to_path))
+  if (Ancestor(NM_Tree, from_path, to_path))
   {
-    LOG("from_path ancestor of to_path - naming server port corresponding to the path %s\n", to_path);
+    LOG("from_path Ancestor of to_path - naming server port corresponding to the path %s\n", to_path);
     code = RECURSIVE_COPY;
     LOG_SEND(clientfd, code);
     return;
   }
 
-  if ((op == COPY_FILE && !Is_File(NM_Tree, from_path)) || (op == COPY_FOLDER && Is_File(NM_Tree, from_path)))
+  if ((op == COPY_FILE && !IsFile(NM_Tree, from_path)) || (op == COPY_FOLDER && IsFile(NM_Tree, from_path)))
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
     code = INVALID_TYPE;
@@ -307,7 +307,7 @@ void copy_operation(const i32 clientfd, const enum operation op)
   strcat(to_path, "/");
   strcat(to_path, CopyTree->NodeInfo.DirectoryName);
 
-  if (Is_File(NM_Tree, to_path) != -1)
+  if (IsFile(NM_Tree, to_path) != -1)
   {
     LOG("File already exists - naming server port corresponding to the path %s\n", from_path);
     code = ALREADY_EXISTS;
@@ -350,7 +350,7 @@ void send_tree_for_printing(const i32 clientfd)
   enum status code = SUCCESS;
   char path[MAX_STR_LEN];
   RECV(clientfd, path);
-  if (Is_File(NM_Tree, path) == -1)
+  if (IsFile(NM_Tree, path) == -1)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
     code = INVALID_TYPE;

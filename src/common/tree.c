@@ -1,7 +1,7 @@
 /**
  * @file tree.c
  * @brief Contains all the functions related to directory trees.
- * @details 
+ * @details
  *    - Functions for initialising node for info for each directory.
  *    - Functions for finding directory nodes with paths.
  *    - Functions for utilising the nodes or finding specific info.
@@ -234,8 +234,6 @@ void GetPrintedSubtreeDriver(Tree T, char *printedtree, u32 indent)
   }
 }
 
-
-
 i32 DeleteTree(Tree T)
 {
   struct TreeNode *trav = T->ChildDirectoryLL;
@@ -398,6 +396,14 @@ void RemoveInaccessiblePath(Tree Parent, const char *DirPath)
   DeleteTree(T);
 }
 
+/**
+ * @brief Merge Tree T1 with T2.
+ * 
+ * @param T1 
+ * @param T2 
+ * @param ss_id 
+ * @param UUID 
+ */
 void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID)
 {
   Tree trav = T1->ChildDirectoryLL;
@@ -451,6 +457,12 @@ void DeleteFromCacheWithSSID(u32 ss_id)
   }
 }
 
+/**
+ * @brief Remove all the directory nodes from the tree of server with the given ssid.
+ * 
+ * @param T 
+ * @param ss_id 
+ */
 void RemoveServerPath(Tree T, u32 ss_id)
 {
   DeleteFromCacheWithSSID(ss_id);
@@ -526,6 +538,14 @@ void InsertIntoCache(const char *path, i32 ssid)
     ++cache_head.length;
 }
 
+/**
+ * @brief Get the SSID of the SS from the path.
+ * 
+ * @param T 
+ * @param path 
+ * @param cache_flag 
+ * @return i32 
+ */
 i32 GetPathSSID(Tree T, const char *path, bool cache_flag)
 {
   if (strncmp(path, ".rd", 3) != 0)
@@ -549,32 +569,7 @@ i32 GetPathSSID(Tree T, const char *path, bool cache_flag)
   return RetT->NodeInfo.ss_id;
 }
 
-Tree GetParentOfPath(Tree T, const char *path)
-{
-  char pathcopy[MAX_STR_LEN];
-  strcpy(pathcopy, path);
-  char *Delim = "/\\";
-
-  Tree Cur = T;
-
-  char *token = strtok(pathcopy, Delim);
-  if (token == NULL)
-  {
-    return 0;
-  }
-  char *nexttoken = strtok(NULL, Delim);
-  while (nexttoken != NULL)
-  {
-    Cur = FindChild(Cur, token, 0, 0);
-    if (Cur == NULL)
-      return NULL;
-    strcpy(token, nexttoken);
-    nexttoken = strtok(NULL, Delim);
-  }
-  return Cur;
-}
-
-char *get_parent(const char *path)
+char *GetParent(const char *path)
 {
   char path_copy[MAX_STR_LEN];
   strcpy(path_copy, path);
@@ -659,6 +654,13 @@ void DeleteFolder(Tree T, const char *path)
   DeleteFromCache(path);
 }
 
+/**
+ * @brief Get the Tree From Path String
+ *
+ * @param T
+ * @param path
+ * @return Tree
+ */
 Tree GetTreeFromPath(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
@@ -667,13 +669,13 @@ Tree GetTreeFromPath(Tree T, const char *path)
 
 /**
  * @brief Checks if the current path is empty or directory or a file.
- * 
+ *
  * @param T The root node of the tree.
  * @param path The path relative to the root node.
  * @return i8 -1 if the file/dir doesn't exist, 0 if it is a directory
  * and 1 if it is a file.
  */
-i8 Is_File(Tree T, const char *path)
+i8 IsFile(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
   if (temp != NULL)
@@ -681,7 +683,15 @@ i8 Is_File(Tree T, const char *path)
   return -1;
 }
 
-i8 ancestor(Tree T, const char *from_path, const char *to_path)
+/**
+ * @brief Check if from_path directory is ancestor of to_path.
+ * 
+ * @param T 
+ * @param from_path 
+ * @param to_path 
+ * @return 1 if from_path is ancestor of to_path and 0 otherwise.
+ */
+i8 Ancestor(Tree T, const char *from_path, const char *to_path)
 {
   Tree to_node = ProcessDirPath(to_path, T, 0);
   Tree from_node = ProcessDirPath(from_path, T, 0);
@@ -705,6 +715,12 @@ void AcquireReaderLockDriver(Tree T)
   }
 }
 
+/**
+ * @brief Acquire reader lock of subtree of directory with the given path.
+ * 
+ * @param T 
+ * @param path 
+ */
 void AcquireReaderLock(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
@@ -722,6 +738,12 @@ void AcquireWriterLockDriver(Tree T)
   }
 }
 
+/**
+ * @brief Acquire writer lock of subtree of directory with the given path.
+ * 
+ * @param T 
+ * @param path 
+ */
 void AcquireWriterLock(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);
@@ -739,6 +761,12 @@ void ReleaseLockDriver(Tree T)
   }
 }
 
+/**
+ * @brief Release lock of subtree of directory with the given path.
+ * 
+ * @param T 
+ * @param path 
+ */
 void ReleaseLock(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);

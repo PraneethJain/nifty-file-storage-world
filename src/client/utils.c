@@ -119,7 +119,7 @@ void print_error(enum status code)
     printf("File/Folder type does not match!");
     break;
   case RECURSIVE_COPY:
-    printf("Cannot copy a file/folder inside its subdirectory!");
+    printf("Cannot copy a folder inside its subdirectory!");
     break;
   case ALREADY_EXISTS:
     printf("The path already exists!");
