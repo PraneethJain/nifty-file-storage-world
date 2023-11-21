@@ -32,6 +32,14 @@ void send_client_port(const i32 clientfd, const enum operation op)
     return;
   }
 
+  if (Is_File(NM_Tree, path) == 0)
+  {
+    code = INVALID_TYPE;
+    LOG("Can't do operation %d on directory %s\n", op, path);
+    LOG_SEND(clientfd, code);
+    return;
+  }
+
   if (op == READ || op == METADATA)
     AcquireReaderLock(NM_Tree, path);
   else
