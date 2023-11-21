@@ -428,6 +428,7 @@ void *client_relay(void *arg)
       LOG("Client disconnected\n");
       break;
     default:
+      disconnect = true;
       LOG("Received invalid operation: %d\n", op);
       break;
     }
