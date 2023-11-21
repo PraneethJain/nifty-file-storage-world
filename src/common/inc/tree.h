@@ -40,15 +40,15 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID);
 
 void RemoveServerPath(Tree T, u32 ss_id);
 i32 GetPathSSID(Tree T, const char *path, bool cache_flag);
-char *get_parent(const char *path);
+char *GetParent(const char *path);
 Tree GetTreeFromPath(Tree T, const char *path);
-i8 Is_File(Tree T, const char *path);
+i8 IsFile(Tree T, const char *path);
 
 void AddFile(Tree T, const char *path, i32 port_ss_nm, char *UUID);
 void AddFolder(Tree T, const char *path, i32 port_ss_nm, char *UUID);
 void DeleteFile(Tree T, const char *path);
 void DeleteFolder(Tree T, const char *path);
-i8 ancestor(Tree T, const char *from_path, const char *to_path);
+i8 Ancestor(Tree T, const char *from_path, const char *to_path);
 
 void AcquireReaderLock(Tree T, const char *path);
 void AcquireWriterLock(Tree T, const char *path);
