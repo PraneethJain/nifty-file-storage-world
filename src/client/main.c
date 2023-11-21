@@ -92,7 +92,7 @@ int main()
       if (code != SUCCESS)
         print_error(code);
       else
-        printf("Operation done successfully\n");
+        printf(C_GREEN "Operation done successfully\n" C_RESET);
     }
     else if (op == DELETE_FILE || op == DELETE_FOLDER)
     {
@@ -105,7 +105,7 @@ int main()
         print_error(code);
       else
       {
-        printf("Operation done successfully\n");
+        printf(C_GREEN "Operation done successfully\n" C_RESET);
         delete_rd_paths(nm_sockfd, op, path);
       }
     }

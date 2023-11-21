@@ -1,0 +1,258 @@
+\doxysection{src/naming\+\_\+server/nm\+\_\+to\+\_\+ss.c File Reference}
+\hypertarget{nm__to__ss_8c}{}\label{nm__to__ss_8c}\index{src/naming\_server/nm\_to\_ss.c@{src/naming\_server/nm\_to\_ss.c}}
+
+
+Communication between the naming server and storage servers.  
+
+
+{\ttfamily \#include "{}../common/headers.\+h"{}}\newline
+{\ttfamily \#include "{}headers.\+h"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structconnected__storage__server__node}{connected\+\_\+storage\+\_\+server\+\_\+node}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{nm__to__ss_8c_a8c3b4d9901d0db97ef5dcf6bb366baae}\label{nm__to__ss_8c_a8c3b4d9901d0db97ef5dcf6bb366baae} 
+typedef struct \mbox{\hyperlink{structconnected__storage__server__node}{connected\+\_\+storage\+\_\+server\+\_\+node}} {\bfseries connected\+\_\+storage\+\_\+server\+\_\+node}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structconnected__storage__server__node}{connected\+\_\+storage\+\_\+server\+\_\+node}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{nm__to__ss_8c_a9846b1bbbe67e87e0e1295d75535c2ae}{init\+\_\+connected\+\_\+storage\+\_\+server\+\_\+node}} (\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} data)
+\begin{DoxyCompactList}\small\item\em Initialize a new storage server node with data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{nm__to__ss_8c_aa696b2bf428163a1e84da5ff9390f421}{add\+\_\+connected\+\_\+storage\+\_\+server}} (\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} data)
+\begin{DoxyCompactList}\small\item\em Add a connected storage server to the linked list and merge accessible paths. \end{DoxyCompactList}\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{nm__to__ss_8c_affd9906c6b1fc8f0435fa706f280df9d}{storage\+\_\+server\+\_\+init}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Receive initial port and accessible paths from all new storage servers. \end{DoxyCompactList}\item 
+enum status \mbox{\hyperlink{nm__to__ss_8c_aafa0f56bd7fef259e31ab714b7b4c182}{delete\+\_\+and\+\_\+copy}} (const \mbox{\hyperlink{structTreeNode}{Tree}} T, const i32 rd\+\_\+num, const i32 nm\+\_\+sockfd)
+\begin{DoxyCompactList}\small\item\em Deletes and copies redundancies. Is called periodically. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{nm__to__ss_8c_aaa63c4126c8781e1e8c2e5bad534363d}{issue\+\_\+redundancy\+\_\+commands}} (const i32 nm\+\_\+sockfd)
+\begin{DoxyCompactList}\small\item\em Ensure redundancy of every tree storage server in two others at all times Update old copies with new updated ones. \end{DoxyCompactList}\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{nm__to__ss_8c_a5bee6cafc27a0d942a7fab95e563e9a4}{alive\+\_\+checker}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Periodically check if each storage server is still alive. Disconnect the ones that have crashed. Issue redundant delete and copy commands. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{nm__to__ss_8c_a6e0fff46cf82004cd0c1ed5165365611}{Min\+Size\+Storage\+Server}} ()
+\begin{DoxyCompactList}\small\item\em Find the minimum size storage server and return it. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{nm__to__ss_8c_a1323929e083ef125cfb71e231d4bf2a5}{ss\+\_\+from\+\_\+path}} (const char \texorpdfstring{$\ast$}{*}path, bool cache\+\_\+flag)
+\begin{DoxyCompactList}\small\item\em Finds the storage server corresponding to the path and returns its data. \end{DoxyCompactList}\item 
+i32 \mbox{\hyperlink{nm__to__ss_8c_a12b56006a58cbfaf27f158e0bc46d975}{ss\+\_\+client\+\_\+port\+\_\+from\+\_\+path}} (const char \texorpdfstring{$\ast$}{*}path)
+\begin{DoxyCompactList}\small\item\em Finds the storage server client port corresponding to the path. \end{DoxyCompactList}\item 
+i32 \mbox{\hyperlink{nm__to__ss_8c_a9cb3415471570ee073c459649c74f3a9}{ss\+\_\+nm\+\_\+port\+\_\+from\+\_\+path}} (const char \texorpdfstring{$\ast$}{*}path)
+\begin{DoxyCompactList}\small\item\em Finds the storage server nm port corresponding to the path. \end{DoxyCompactList}\item 
+i32 \mbox{\hyperlink{nm__to__ss_8c_aff710b7a43ae0a3c7e521fed0f42da3c}{ss\+\_\+nm\+\_\+port\+\_\+new}} ()
+\begin{DoxyCompactList}\small\item\em Finds the storage server nm port of minimum size. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{nm__to__ss_8c_a81024717bfb460c324111dca230d5666}\label{nm__to__ss_8c_a81024717bfb460c324111dca230d5666} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>u32 {\bfseries length}\\
+\>\mbox{\hyperlink{structconnected__storage__server__node}{connected\_storage\_server\_node}} \texorpdfstring{$\ast$}{*} {\bfseries first}\\
+\} {\bfseries connected\_storage\_servers} = \{0\}\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Communication between the naming server and storage servers. 
+
+
+\begin{DoxyItemize}
+\item Stores all the currently connected storage servers
+\item Manages adding and removing these servers whenever needed
+\item Retrieves storage server data from paths provided 
+\end{DoxyItemize}
+
+\doxysubsection{Function Documentation}
+\Hypertarget{nm__to__ss_8c_aa696b2bf428163a1e84da5ff9390f421}\label{nm__to__ss_8c_aa696b2bf428163a1e84da5ff9390f421} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!add\_connected\_storage\_server@{add\_connected\_storage\_server}}
+\index{add\_connected\_storage\_server@{add\_connected\_storage\_server}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{add\_connected\_storage\_server()}{add\_connected\_storage\_server()}}
+{\footnotesize\ttfamily void add\+\_\+connected\+\_\+storage\+\_\+server (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}}}]{data }\end{DoxyParamCaption})}
+
+
+
+Add a connected storage server to the linked list and merge accessible paths. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\Hypertarget{nm__to__ss_8c_a5bee6cafc27a0d942a7fab95e563e9a4}\label{nm__to__ss_8c_a5bee6cafc27a0d942a7fab95e563e9a4} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!alive\_checker@{alive\_checker}}
+\index{alive\_checker@{alive\_checker}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{alive\_checker()}{alive\_checker()}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} alive\+\_\+checker (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg }\end{DoxyParamCaption})}
+
+
+
+Periodically check if each storage server is still alive. Disconnect the ones that have crashed. Issue redundant delete and copy commands. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void\texorpdfstring{$\ast$}{*} NULL 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_aafa0f56bd7fef259e31ab714b7b4c182}\label{nm__to__ss_8c_aafa0f56bd7fef259e31ab714b7b4c182} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!delete\_and\_copy@{delete\_and\_copy}}
+\index{delete\_and\_copy@{delete\_and\_copy}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{delete\_and\_copy()}{delete\_and\_copy()}}
+{\footnotesize\ttfamily enum status delete\+\_\+and\+\_\+copy (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structTreeNode}{Tree}}}]{T,  }\item[{const i32}]{rd\+\_\+num,  }\item[{const i32}]{nm\+\_\+sockfd }\end{DoxyParamCaption})}
+
+
+
+Deletes and copies redundancies. Is called periodically. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & root node to delete redundancies of \\
+\hline
+{\em rd\+\_\+num} & redundancy number to copy to \\
+\hline
+{\em nm\+\_\+sockfd} & socket of the naming server \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+enum status 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_a9846b1bbbe67e87e0e1295d75535c2ae}\label{nm__to__ss_8c_a9846b1bbbe67e87e0e1295d75535c2ae} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!init\_connected\_storage\_server\_node@{init\_connected\_storage\_server\_node}}
+\index{init\_connected\_storage\_server\_node@{init\_connected\_storage\_server\_node}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{init\_connected\_storage\_server\_node()}{init\_connected\_storage\_server\_node()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structconnected__storage__server__node}{connected\+\_\+storage\+\_\+server\+\_\+node}} \texorpdfstring{$\ast$}{*} init\+\_\+connected\+\_\+storage\+\_\+server\+\_\+node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}}}]{data }\end{DoxyParamCaption})}
+
+
+
+Initialize a new storage server node with data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em data} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+connected\+\_\+storage\+\_\+server\+\_\+node\texorpdfstring{$\ast$}{*} 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_aaa63c4126c8781e1e8c2e5bad534363d}\label{nm__to__ss_8c_aaa63c4126c8781e1e8c2e5bad534363d} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!issue\_redundancy\_commands@{issue\_redundancy\_commands}}
+\index{issue\_redundancy\_commands@{issue\_redundancy\_commands}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{issue\_redundancy\_commands()}{issue\_redundancy\_commands()}}
+{\footnotesize\ttfamily void issue\+\_\+redundancy\+\_\+commands (\begin{DoxyParamCaption}\item[{const i32}]{nm\+\_\+sockfd }\end{DoxyParamCaption})}
+
+
+
+Ensure redundancy of every tree storage server in two others at all times Update old copies with new updated ones. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em nm\+\_\+sockfd} & socket of the naming server \\
+\hline
+\end{DoxyParams}
+\Hypertarget{nm__to__ss_8c_a6e0fff46cf82004cd0c1ed5165365611}\label{nm__to__ss_8c_a6e0fff46cf82004cd0c1ed5165365611} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!MinSizeStorageServer@{MinSizeStorageServer}}
+\index{MinSizeStorageServer@{MinSizeStorageServer}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{MinSizeStorageServer()}{MinSizeStorageServer()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} \texorpdfstring{$\ast$}{*} Min\+Size\+Storage\+Server (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Find the minimum size storage server and return it. 
+
+\begin{DoxyReturn}{Returns}
+storage\+\_\+server\+\_\+data\texorpdfstring{$\ast$}{*} 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_a12b56006a58cbfaf27f158e0bc46d975}\label{nm__to__ss_8c_a12b56006a58cbfaf27f158e0bc46d975} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!ss\_client\_port\_from\_path@{ss\_client\_port\_from\_path}}
+\index{ss\_client\_port\_from\_path@{ss\_client\_port\_from\_path}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{ss\_client\_port\_from\_path()}{ss\_client\_port\_from\_path()}}
+{\footnotesize\ttfamily i32 ss\+\_\+client\+\_\+port\+\_\+from\+\_\+path (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{path }\end{DoxyParamCaption})}
+
+
+
+Finds the storage server client port corresponding to the path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+i32 storage server client port 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_a1323929e083ef125cfb71e231d4bf2a5}\label{nm__to__ss_8c_a1323929e083ef125cfb71e231d4bf2a5} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!ss\_from\_path@{ss\_from\_path}}
+\index{ss\_from\_path@{ss\_from\_path}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{ss\_from\_path()}{ss\_from\_path()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structstorage__server__data}{storage\+\_\+server\+\_\+data}} \texorpdfstring{$\ast$}{*} ss\+\_\+from\+\_\+path (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{path,  }\item[{bool}]{cache\+\_\+flag }\end{DoxyParamCaption})}
+
+
+
+Finds the storage server corresponding to the path and returns its data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+{\em cache\+\_\+flag} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{structstorage__server__data}{storage\+\_\+server\+\_\+data} 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_a9cb3415471570ee073c459649c74f3a9}\label{nm__to__ss_8c_a9cb3415471570ee073c459649c74f3a9} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!ss\_nm\_port\_from\_path@{ss\_nm\_port\_from\_path}}
+\index{ss\_nm\_port\_from\_path@{ss\_nm\_port\_from\_path}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{ss\_nm\_port\_from\_path()}{ss\_nm\_port\_from\_path()}}
+{\footnotesize\ttfamily i32 ss\+\_\+nm\+\_\+port\+\_\+from\+\_\+path (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{path }\end{DoxyParamCaption})}
+
+
+
+Finds the storage server nm port corresponding to the path. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+i32 storage server nm port 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_aff710b7a43ae0a3c7e521fed0f42da3c}\label{nm__to__ss_8c_aff710b7a43ae0a3c7e521fed0f42da3c} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!ss\_nm\_port\_new@{ss\_nm\_port\_new}}
+\index{ss\_nm\_port\_new@{ss\_nm\_port\_new}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{ss\_nm\_port\_new()}{ss\_nm\_port\_new()}}
+{\footnotesize\ttfamily i32 ss\+\_\+nm\+\_\+port\+\_\+new (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Finds the storage server nm port of minimum size. 
+
+\begin{DoxyReturn}{Returns}
+i32 
+\end{DoxyReturn}
+\Hypertarget{nm__to__ss_8c_affd9906c6b1fc8f0435fa706f280df9d}\label{nm__to__ss_8c_affd9906c6b1fc8f0435fa706f280df9d} 
+\index{nm\_to\_ss.c@{nm\_to\_ss.c}!storage\_server\_init@{storage\_server\_init}}
+\index{storage\_server\_init@{storage\_server\_init}!nm\_to\_ss.c@{nm\_to\_ss.c}}
+\doxysubsubsection{\texorpdfstring{storage\_server\_init()}{storage\_server\_init()}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} storage\+\_\+server\+\_\+init (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg }\end{DoxyParamCaption})}
+
+
+
+Receive initial port and accessible paths from all new storage servers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void\texorpdfstring{$\ast$}{*} NULL 
+\end{DoxyReturn}
