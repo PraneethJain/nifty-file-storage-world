@@ -273,9 +273,10 @@ int main()
       if (code != SUCCESS)
         print_error(code);
       else
+      {
         printf("Operation done successfully\n");
-
-      delete_rd_paths(nm_sockfd, op, path);
+        delete_rd_paths(nm_sockfd, op, path);
+      }
     }
     else if (op == COPY_FILE || op == COPY_FOLDER)
     {
