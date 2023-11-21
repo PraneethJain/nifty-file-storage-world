@@ -38,7 +38,7 @@ connected_storage_server_node *init_connected_storage_server_node(storage_server
 }
 
 /**
- * @brief Add a connected storage server to the linked list
+ * @brief Add a connected storage server to the linked list and merge accessible paths
  *
  * @param data
  */
@@ -66,7 +66,7 @@ void add_connected_storage_server(storage_server_data data)
 }
 
 /**
- * @brief Receive initial port and directory information from all new storage servers
+ * @brief Receive initial port and accessible paths from all new storage servers
  *
  * @param arg NULL
  * @return void* NULL
@@ -87,9 +87,8 @@ void *storage_server_init(void *arg)
     CHECK(clientfd, -1);
     LOG("Accepted connection on socket FD\n");
     storage_server_data resp;
-    // LOG_RECV(clientfd, resp);
     receive_data_in_packets(&resp, clientfd, sizeof(resp));
-    printf("%i %i %i\n", resp.port_for_client, resp.port_for_nm, resp.port_for_alive);
+    LOG("Received initial information of storage server with UUID %s\n", resp.UUID);
 
     CHECK(close(clientfd), -1);
     add_connected_storage_server(resp);
@@ -99,6 +98,14 @@ void *storage_server_init(void *arg)
   return NULL;
 }
 
+/**
+ * @brief Deletes and copies redundancies. Is called periodically
+ *
+ * @param T root node to delete redundancies of
+ * @param rd_num redundancy number to copy to
+ * @param nm_sockfd socket of the naming server
+ * @return enum status
+ */
 enum status delete_and_copy(const Tree T, const i32 rd_num, const i32 nm_sockfd)
 {
   char from_path[MAX_STR_LEN] = {0};
@@ -127,8 +134,46 @@ enum status delete_and_copy(const Tree T, const i32 rd_num, const i32 nm_sockfd)
 }
 
 /**
+ * @brief Ensure redundancy of every tree storage server in two others at all times
+ * Update old copies with new updated ones.
+ *
+ * @param nm_sockfd socket of the naming server
+ */
+void issue_redundancy_commands(const i32 nm_sockfd)
+{
+  if (connected_storage_servers.length < 3)
+    return;
+
+  for (Tree T = NM_Tree->ChildDirectoryLL; T != NULL; T = T->NextSibling)
+  {
+    if (strcmp(T->NodeInfo.UUID, RD1) == 0)
+    {
+      if (strstr(T->NodeInfo.DirectoryName, ".rd1") == T->NodeInfo.DirectoryName)
+        continue;
+      delete_and_copy(T, 2, nm_sockfd);
+      delete_and_copy(T, 3, nm_sockfd);
+    }
+    else if (strcmp(T->NodeInfo.UUID, RD2) == 0)
+    {
+      if (strstr(T->NodeInfo.DirectoryName, ".rd2") == T->NodeInfo.DirectoryName)
+        continue;
+      delete_and_copy(T, 1, nm_sockfd);
+      delete_and_copy(T, 3, nm_sockfd);
+    }
+    else
+    {
+      if (strstr(T->NodeInfo.DirectoryName, ".rd3") == T->NodeInfo.DirectoryName)
+        continue;
+      delete_and_copy(T, 1, nm_sockfd);
+      delete_and_copy(T, 2, nm_sockfd);
+    }
+  }
+}
+
+/**
  * @brief Periodically check if each storage server is still alive.
  * Disconnect the ones that have crashed.
+ * Issue redundant delete and copy commands.
  *
  * @param arg NULL
  * @return void* NULL
@@ -192,38 +237,17 @@ void *alive_checker(void *arg)
       cur = cur->next;
     }
 
-    if (connected_storage_servers.length < 3)
-      continue;
-
-    for (Tree T = NM_Tree->ChildDirectoryLL; T != NULL; T = T->NextSibling)
-    {
-      if (strcmp(T->NodeInfo.UUID, RD1) == 0)
-      {
-        if (strstr(T->NodeInfo.DirectoryName, ".rd1") == T->NodeInfo.DirectoryName)
-          continue;
-        delete_and_copy(T, 2, nm_sockfd);
-        delete_and_copy(T, 3, nm_sockfd);
-      }
-      else if (strcmp(T->NodeInfo.UUID, RD2) == 0)
-      {
-        if (strstr(T->NodeInfo.DirectoryName, ".rd2") == T->NodeInfo.DirectoryName)
-          continue;
-        delete_and_copy(T, 1, nm_sockfd);
-        delete_and_copy(T, 3, nm_sockfd);
-      }
-      else
-      {
-        if (strstr(T->NodeInfo.DirectoryName, ".rd3") == T->NodeInfo.DirectoryName)
-          continue;
-        delete_and_copy(T, 1, nm_sockfd);
-        delete_and_copy(T, 2, nm_sockfd);
-      }
-    }
+    issue_redundancy_commands(nm_sockfd);
   }
   close(nm_sockfd);
   return NULL;
 }
 
+/**
+ * @brief Find the minimum size storage server and return it.
+ *
+ * @return storage_server_data*
+ */
 storage_server_data *MinSizeStorageServer()
 {
   connected_storage_server_node *BestSS = connected_storage_servers.first;
@@ -296,6 +320,11 @@ i32 ss_nm_port_from_path(const char *path)
   return ss_info->port_for_nm;
 }
 
+/**
+ * @brief Finds the storage server nm port of minimum size
+ *
+ * @return i32
+ */
 i32 ss_nm_port_new()
 {
   storage_server_data *new_ss = MinSizeStorageServer();
