@@ -178,6 +178,8 @@ Tree ReceiveTreeData(char *buffer)
 
 void PrintTree(Tree T, u32 indent)
 {
+  if (strstr(T->NodeInfo.DirectoryName, ".rd") == T->NodeInfo.DirectoryName)
+    return;
   for (u32 i = 0; i < indent; i++)
   {
     printf("\t");
@@ -200,6 +202,8 @@ void PrintTree(Tree T, u32 indent)
 
 void GetPrintedSubtreeDriver(Tree T, char *printedtree, u32 indent)
 {
+  if (strstr(T->NodeInfo.DirectoryName, ".rd") == T->NodeInfo.DirectoryName)
+    return;
   for (u32 i = 0; i < indent; i++)
   {
     strcat(printedtree, "\t");

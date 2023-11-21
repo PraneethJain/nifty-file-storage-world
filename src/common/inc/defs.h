@@ -1,8 +1,9 @@
 #ifndef __DEFS_H
 #define __DEFS_H
 
-#include <stdint.h>
 #include <pthread.h>
+#include <stdint.h>
+#include <string.h>
 
 #define LOCALHOST "127.0.0.1"
 #define NM_SS_PORT 18000
