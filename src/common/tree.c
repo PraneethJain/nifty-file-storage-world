@@ -198,6 +198,31 @@ void PrintTree(Tree T, u32 indent)
   }
 }
 
+void GetPrintedSubtreeDriver(Tree T, char *printedtree, u32 indent)
+{
+  for (u32 i = 0; i < indent; i++)
+  {
+    strcat(printedtree, "\t");
+  }
+  if (T->NodeInfo.Access == 0)
+    strcat(printedtree, C_BLACK);
+  else if (T->NodeInfo.IsFile)
+    strcat(printedtree, C_BLUE);
+  else
+    strcat(printedtree, C_YELLOW);
+  strcat(printedtree, T->NodeInfo.DirectoryName);
+  strcat(printedtree, "\n");
+  strcat(printedtree, C_RESET);
+  struct TreeNode *trav = T->ChildDirectoryLL;
+  while (trav != NULL)
+  {
+    GetPrintedSubtreeDriver(trav, printedtree, indent + 1);
+    trav = trav->NextSibling;
+  }
+}
+
+
+
 i32 DeleteTree(Tree T)
 {
   struct TreeNode *trav = T->ChildDirectoryLL;
@@ -261,6 +286,12 @@ struct TreeNode *ProcessDirPath(const char *DirPath, Tree T, bool CreateFlag)
     token = strtok(NULL, Delim);
   }
   return Cur;
+}
+
+void GetPrintedSubtree(Tree T, const char *path, char *printedtree)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  GetPrintedSubtreeDriver(temp, printedtree, 0);
 }
 
 bool IsDirectory(const char *location)
@@ -621,6 +652,14 @@ Tree GetTreeFromPath(Tree T, const char *path)
   return temp;
 }
 
+/**
+ * @brief Checks if the current path is empty or directory or a file.
+ * 
+ * @param T The root node of the tree.
+ * @param path The path relative to the root node.
+ * @return i8 -1 if the file/dir doesn't exist, 0 if it is a directory
+ * and 1 if it is a file.
+ */
 i8 Is_File(Tree T, const char *path)
 {
   Tree temp = ProcessDirPath(path, T, 0);

@@ -317,7 +317,20 @@ int main()
     }
     else if (op == PRINT_TREE)
     {
-      // rana write
+      char path_of_subdir[MAX_STR_LEN];
+      read_path(path_of_subdir, true);
+
+      SEND(nm_sockfd, path_of_subdir);
+
+      RECV(nm_sockfd, code);
+      if (code == SUCCESS)
+      {
+        char printed_tree[50*MAX_STR_LEN];
+        RECV(nm_sockfd, printed_tree);
+        printf("%s", printed_tree);
+      }
+      else
+        print_error(code);
     }
     else
     {

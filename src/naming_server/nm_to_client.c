@@ -299,6 +299,14 @@ void copy_operation(const i32 clientfd, const enum operation op)
   strcat(to_path, "/");
   strcat(to_path, CopyTree->NodeInfo.DirectoryName);
 
+  if (Is_File(NM_Tree, to_path) != -1)
+  {
+    LOG("File already exists - naming server port corresponding to the path %s\n", from_path);
+    code = ALREADY_EXISTS;
+    LOG_SEND(clientfd, code);
+    return;
+  }
+
   const i32 from_sockfd = connect_to_port(from_port);
   const i32 to_sockfd = connect_to_port(to_port);
 
@@ -327,6 +335,24 @@ void copy_operation(const i32 clientfd, const enum operation op)
 
   close(from_sockfd);
   close(to_sockfd);
+}
+
+void send_tree_for_printing(const i32 clientfd)
+{
+  enum status code = SUCCESS;
+  char path[MAX_STR_LEN];
+  RECV(clientfd, path);
+  if (Is_File(NM_Tree, path) == -1)
+  {
+    LOG("Not found storage server - naming server port corresponding to the path %s\n", path);
+    code = INVALID_TYPE;
+    LOG_SEND(clientfd, code);
+    return;
+  }
+  SEND(clientfd, code);
+  char printedtree[50 * MAX_STR_LEN] = {0};
+  GetPrintedSubtree(NM_Tree, path, printedtree);
+  SEND(clientfd, printedtree);
 }
 
 /**
@@ -393,6 +419,9 @@ void *client_relay(void *arg)
     case COPY_FILE:
     case COPY_FOLDER:
       copy_operation(clientfd, op);
+      break;
+    case PRINT_TREE:
+      send_tree_for_printing(clientfd);
       break;
     case DISCONNECT:
       disconnect = true;

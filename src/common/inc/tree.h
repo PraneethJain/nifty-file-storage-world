@@ -55,5 +55,7 @@ void AcquireWriterLock(Tree T, const char *path);
 void ReleaseLock(Tree T, const char *path);
 
 void PrintTree(Tree T, u32 indent);
+void GetPrintedSubtree(Tree T, const char *path, char *printedtree);
+
 
 #endif
