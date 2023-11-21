@@ -1,0 +1,67 @@
+\doxysection{src/storage\+\_\+server/ss\+\_\+to\+\_\+client.c File Reference}
+\hypertarget{ss__to__client_8c}{}\label{ss__to__client_8c}\index{src/storage\_server/ss\_to\_client.c@{src/storage\_server/ss\_to\_client.c}}
+
+
+Communication between a storage server and a client.  
+
+
+{\ttfamily \#include "{}../common/headers.\+h"{}}\newline
+{\ttfamily \#include "{}headers.\+h"{}}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{ss__to__client_8c_a019701a41a93cf6168617a8d82ae3f90}{client\+\_\+init}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Handles operations from client directly sent to storage server. \end{DoxyCompactList}\item 
+void \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{ss__to__client_8c_ad8013e51b64d4bb64ce25cf288d82f31}{client\+\_\+relay}} (void \texorpdfstring{$\ast$}{*}arg)
+\begin{DoxyCompactList}\small\item\em Receives operations read, write and metadata from the client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Communication between a storage server and a client. 
+
+
+\begin{DoxyItemize}
+\item Handles operations sent directly to a storage server from a client 
+\end{DoxyItemize}
+
+\doxysubsection{Function Documentation}
+\Hypertarget{ss__to__client_8c_a019701a41a93cf6168617a8d82ae3f90}\label{ss__to__client_8c_a019701a41a93cf6168617a8d82ae3f90} 
+\index{ss\_to\_client.c@{ss\_to\_client.c}!client\_init@{client\_init}}
+\index{client\_init@{client\_init}!ss\_to\_client.c@{ss\_to\_client.c}}
+\doxysubsubsection{\texorpdfstring{client\_init()}{client\_init()}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} client\+\_\+init (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg }\end{DoxyParamCaption})}
+
+
+
+Handles operations from client directly sent to storage server. 
+
+Initializes connection to the clients and spawns a new client relay for each of them.
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void\texorpdfstring{$\ast$}{*} NULL 
+\end{DoxyReturn}
+\Hypertarget{ss__to__client_8c_ad8013e51b64d4bb64ce25cf288d82f31}\label{ss__to__client_8c_ad8013e51b64d4bb64ce25cf288d82f31} 
+\index{ss\_to\_client.c@{ss\_to\_client.c}!client\_relay@{client\_relay}}
+\index{client\_relay@{client\_relay}!ss\_to\_client.c@{ss\_to\_client.c}}
+\doxysubsubsection{\texorpdfstring{client\_relay()}{client\_relay()}}
+{\footnotesize\ttfamily void \texorpdfstring{$\ast$}{*} client\+\_\+relay (\begin{DoxyParamCaption}\item[{void \texorpdfstring{$\ast$}{*}}]{arg }\end{DoxyParamCaption})}
+
+
+
+Receives operations read, write and metadata from the client. 
+
+Receives all operations from the client. In case of READ, WRITE and METADATA, sends the port number of the corresponding storage server to the client. In other cases, performs the operation and sends the status code to the client.
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & integer pointer to the client file descriptor \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+void\texorpdfstring{$\ast$}{*} NULL 
+\end{DoxyReturn}

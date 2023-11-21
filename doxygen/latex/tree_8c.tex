@@ -1,0 +1,219 @@
+\doxysection{src/common/tree.c File Reference}
+\hypertarget{tree_8c}{}\label{tree_8c}\index{src/common/tree.c@{src/common/tree.c}}
+
+
+Contains all the functions related to directory trees.  
+
+
+{\ttfamily \#include "{}headers.\+h"{}}\newline
+\doxysubsubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structnode}{node}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{tree_8c_a9b18aaa9c44ed30a23fcf8811d4c2763}\label{tree_8c_a9b18aaa9c44ed30a23fcf8811d4c2763} 
+\#define {\bfseries DIRINFO}~\textquotesingle{}D\textquotesingle{}
+\item 
+\Hypertarget{tree_8c_a3487835adc6b34a44403d45788f9cb6b}\label{tree_8c_a3487835adc6b34a44403d45788f9cb6b} 
+\#define {\bfseries DIREND}~\textquotesingle{}.\textquotesingle{}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{tree_8c_af4aeda155dbe167f1c1cf38cb65bf324}\label{tree_8c_af4aeda155dbe167f1c1cf38cb65bf324} 
+typedef struct \mbox{\hyperlink{structnode}{node}} {\bfseries node}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{tree_8c_a66f88af4b76cd0cb03624d67afdcd07c}\label{tree_8c_a66f88af4b76cd0cb03624d67afdcd07c} 
+struct \mbox{\hyperlink{structTreeNode}{Tree\+Node}} \texorpdfstring{$\ast$}{*} {\bfseries Init\+Node} (const char \texorpdfstring{$\ast$}{*}Name, struct \mbox{\hyperlink{structTreeNode}{Tree\+Node}} \texorpdfstring{$\ast$}{*}Parent)
+\item 
+\Hypertarget{tree_8c_a112883fbe1f2e2b13726bb6d25e0a643}\label{tree_8c_a112883fbe1f2e2b13726bb6d25e0a643} 
+\mbox{\hyperlink{structTreeNode}{Tree}} {\bfseries Init\+Tree} ()
+\item 
+\Hypertarget{tree_8c_ab41e77e9f5284eeb60e50670a57f6d4b}\label{tree_8c_ab41e77e9f5284eeb60e50670a57f6d4b} 
+struct \mbox{\hyperlink{structTreeNode}{Tree\+Node}} \texorpdfstring{$\ast$}{*} {\bfseries Find\+Child} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}Child\+Name, bool Create\+Flag, bool No\+Name\+Flag)
+\item 
+\Hypertarget{tree_8c_abd1c6bf61bc50a68a7c2c56fb7bcf432}\label{tree_8c_abd1c6bf61bc50a68a7c2c56fb7bcf432} 
+i32 {\bfseries Send\+Tree\+Data\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T, char \texorpdfstring{$\ast$}{*}buffer, u32 \texorpdfstring{$\ast$}{*}lastindex, u32 Buffer\+Capacity)
+\item 
+\Hypertarget{tree_8c_a7c2d9c2cacebc7d8ab011719d1225e9d}\label{tree_8c_a7c2d9c2cacebc7d8ab011719d1225e9d} 
+i32 {\bfseries Send\+Tree\+Data} (\mbox{\hyperlink{structTreeNode}{Tree}} T, char \texorpdfstring{$\ast$}{*}buffer)
+\item 
+\Hypertarget{tree_8c_a438d3bc01be1501072b9f5d66510a5ba}\label{tree_8c_a438d3bc01be1501072b9f5d66510a5ba} 
+i32 {\bfseries Receive\+Tree\+Data\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T, char \texorpdfstring{$\ast$}{*}buffer, u32 \texorpdfstring{$\ast$}{*}lastindex, u32 Buffer\+Capacity)
+\item 
+\Hypertarget{tree_8c_a96968990014f5f10dfcc4c4956e09377}\label{tree_8c_a96968990014f5f10dfcc4c4956e09377} 
+\mbox{\hyperlink{structTreeNode}{Tree}} {\bfseries Receive\+Tree\+Data} (char \texorpdfstring{$\ast$}{*}buffer)
+\item 
+\Hypertarget{tree_8c_a68315c92bd5b5bb4994a49337dfca4b8}\label{tree_8c_a68315c92bd5b5bb4994a49337dfca4b8} 
+void {\bfseries Print\+Tree} (\mbox{\hyperlink{structTreeNode}{Tree}} T, u32 indent)
+\item 
+\Hypertarget{tree_8c_a08969dbdf7ce04da9e5353c581761511}\label{tree_8c_a08969dbdf7ce04da9e5353c581761511} 
+void {\bfseries Get\+Printed\+Subtree\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T, char \texorpdfstring{$\ast$}{*}printedtree, u32 indent)
+\item 
+\Hypertarget{tree_8c_afc868ae2e3b6bcb99a0e15657aeaa426}\label{tree_8c_afc868ae2e3b6bcb99a0e15657aeaa426} 
+i32 {\bfseries Delete\+Tree} (\mbox{\hyperlink{structTreeNode}{Tree}} T)
+\item 
+struct \mbox{\hyperlink{structTreeNode}{Tree\+Node}} \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{tree_8c_a219faf2e15dc29c52524db4ab5be2238}{Process\+Dir\+Path}} (const char \texorpdfstring{$\ast$}{*}Dir\+Path, \mbox{\hyperlink{structTreeNode}{Tree}} T, bool Create\+Flag)
+\begin{DoxyCompactList}\small\item\em finds the tree node with the given path \end{DoxyCompactList}\item 
+\Hypertarget{tree_8c_a9295f56a7fd1900311c2a753a30090d1}\label{tree_8c_a9295f56a7fd1900311c2a753a30090d1} 
+void {\bfseries Get\+Printed\+Subtree} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path, char \texorpdfstring{$\ast$}{*}printedtree)
+\item 
+\Hypertarget{tree_8c_aa35a6e29d8db990a37f3705234aca8be}\label{tree_8c_aa35a6e29d8db990a37f3705234aca8be} 
+bool {\bfseries Is\+Directory} (const char \texorpdfstring{$\ast$}{*}location)
+\item 
+\Hypertarget{tree_8c_a53404c82c8df1f73f1ab4dd3028d68f6}\label{tree_8c_a53404c82c8df1f73f1ab4dd3028d68f6} 
+void {\bfseries Process\+Whole\+Dir} (char \texorpdfstring{$\ast$}{*}Dir\+Path, \mbox{\hyperlink{structTreeNode}{Tree}} Parent)
+\item 
+\Hypertarget{tree_8c_acb6ce60f23c31090c3c38e6909cd4172}\label{tree_8c_acb6ce60f23c31090c3c38e6909cd4172} 
+bool {\bfseries Check\+If\+File} (char \texorpdfstring{$\ast$}{*}Dir\+Path)
+\item 
+\Hypertarget{tree_8c_a9e24f4d1f370ae6379acbd6400124975}\label{tree_8c_a9e24f4d1f370ae6379acbd6400124975} 
+void {\bfseries Add\+Accessible\+Dir} (char \texorpdfstring{$\ast$}{*}Dir\+Path, \mbox{\hyperlink{structTreeNode}{Tree}} Parent)
+\item 
+\Hypertarget{tree_8c_a48233bf571bb3255caa5ac0dcae204b5}\label{tree_8c_a48233bf571bb3255caa5ac0dcae204b5} 
+void {\bfseries Init\+Directory} (\mbox{\hyperlink{structTreeNode}{Tree}} Parent)
+\item 
+\Hypertarget{tree_8c_a9abba94ce5ae90e7798e8fab8892f28e}\label{tree_8c_a9abba94ce5ae90e7798e8fab8892f28e} 
+void {\bfseries Remove\+Inaccessible\+Path} (\mbox{\hyperlink{structTreeNode}{Tree}} Parent, const char \texorpdfstring{$\ast$}{*}Dir\+Path)
+\item 
+\Hypertarget{tree_8c_a2ac7941d36715ca7697252e86ceecfbe}\label{tree_8c_a2ac7941d36715ca7697252e86ceecfbe} 
+void {\bfseries Merge\+Tree} (\mbox{\hyperlink{structTreeNode}{Tree}} T1, \mbox{\hyperlink{structTreeNode}{Tree}} T2, u32 ss\+\_\+id, char \texorpdfstring{$\ast$}{*}UUID)
+\item 
+\Hypertarget{tree_8c_a2ffc3ae0002fc80bbf37cb44c722fbb8}\label{tree_8c_a2ffc3ae0002fc80bbf37cb44c722fbb8} 
+void {\bfseries Delete\+From\+Cache\+With\+SSID} (u32 ss\+\_\+id)
+\item 
+\Hypertarget{tree_8c_a46ab3e44e4f7c29e426b9466f976988e}\label{tree_8c_a46ab3e44e4f7c29e426b9466f976988e} 
+void {\bfseries Remove\+Server\+Path} (\mbox{\hyperlink{structTreeNode}{Tree}} T, u32 ss\+\_\+id)
+\item 
+\Hypertarget{tree_8c_a4cf883ee3a88e22fd37ffe3b5dbf359f}\label{tree_8c_a4cf883ee3a88e22fd37ffe3b5dbf359f} 
+i32 {\bfseries Check\+Cache} (const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_aa347585e0e15672fd7f81244df88fa09}\label{tree_8c_aa347585e0e15672fd7f81244df88fa09} 
+void {\bfseries Insert\+Into\+Cache} (const char \texorpdfstring{$\ast$}{*}path, i32 ssid)
+\item 
+\Hypertarget{tree_8c_a1302459f766f441d9fd19d1e1d320124}\label{tree_8c_a1302459f766f441d9fd19d1e1d320124} 
+i32 {\bfseries Get\+Path\+SSID} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path, bool cache\+\_\+flag)
+\item 
+\Hypertarget{tree_8c_acf54a8bc025b501c58c500333a0a4f68}\label{tree_8c_acf54a8bc025b501c58c500333a0a4f68} 
+\mbox{\hyperlink{structTreeNode}{Tree}} {\bfseries Get\+Parent\+Of\+Path} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_abe83de7ba5ddbc7e70ca8a901000199c}\label{tree_8c_abe83de7ba5ddbc7e70ca8a901000199c} 
+char \texorpdfstring{$\ast$}{*} {\bfseries get\+\_\+parent} (const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_abe13e012c586c68d30693275fef3272a}\label{tree_8c_abe13e012c586c68d30693275fef3272a} 
+void {\bfseries Add\+File} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path, i32 port\+\_\+ss\+\_\+nm, char \texorpdfstring{$\ast$}{*}UUID)
+\item 
+\Hypertarget{tree_8c_a7cdea5aa36a9c88d524727a137a166b3}\label{tree_8c_a7cdea5aa36a9c88d524727a137a166b3} 
+void {\bfseries Add\+Folder} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path, i32 port\+\_\+ss\+\_\+nm, char \texorpdfstring{$\ast$}{*}UUID)
+\item 
+\Hypertarget{tree_8c_a1a0d88bf1bd3c2ffbb23d50cec3a915e}\label{tree_8c_a1a0d88bf1bd3c2ffbb23d50cec3a915e} 
+void {\bfseries Delete\+From\+Cache} (const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_aaa54ef0a91c7746a88c669669d38197b}\label{tree_8c_aaa54ef0a91c7746a88c669669d38197b} 
+void {\bfseries Delete\+File} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_a9c4936cb29d24100a73a0f8e06788377}\label{tree_8c_a9c4936cb29d24100a73a0f8e06788377} 
+void {\bfseries Delete\+Folder} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_a566e5a329fbaf0eb58d29d63108ae1be}\label{tree_8c_a566e5a329fbaf0eb58d29d63108ae1be} 
+\mbox{\hyperlink{structTreeNode}{Tree}} {\bfseries Get\+Tree\+From\+Path} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+i8 \mbox{\hyperlink{tree_8c_a0a78f0dee8b2ee720eccc8ac5cb491b9}{Is\+\_\+\+File}} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\begin{DoxyCompactList}\small\item\em Checks if the current path is empty or directory or a file. \end{DoxyCompactList}\item 
+\Hypertarget{tree_8c_a2e285c32ec9a0ba8aacb02bb61fdb855}\label{tree_8c_a2e285c32ec9a0ba8aacb02bb61fdb855} 
+i8 {\bfseries ancestor} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}from\+\_\+path, const char \texorpdfstring{$\ast$}{*}to\+\_\+path)
+\item 
+\Hypertarget{tree_8c_acb89f5aceff338005385859e39b3ebb5}\label{tree_8c_acb89f5aceff338005385859e39b3ebb5} 
+void {\bfseries Acquire\+Reader\+Lock\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T)
+\item 
+\Hypertarget{tree_8c_ab2b8d15cd48776eb21d69485e69197a8}\label{tree_8c_ab2b8d15cd48776eb21d69485e69197a8} 
+void {\bfseries Acquire\+Reader\+Lock} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_a7d1285ceee5bf7fd506c76d70af961e8}\label{tree_8c_a7d1285ceee5bf7fd506c76d70af961e8} 
+void {\bfseries Acquire\+Writer\+Lock\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T)
+\item 
+\Hypertarget{tree_8c_ab8a40e632f684a1890f6d8f0954cd03b}\label{tree_8c_ab8a40e632f684a1890f6d8f0954cd03b} 
+void {\bfseries Acquire\+Writer\+Lock} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\item 
+\Hypertarget{tree_8c_a78a6c4d1ce4dbb83de74bac96c07cb26}\label{tree_8c_a78a6c4d1ce4dbb83de74bac96c07cb26} 
+void {\bfseries Release\+Lock\+Driver} (\mbox{\hyperlink{structTreeNode}{Tree}} T)
+\item 
+\Hypertarget{tree_8c_a297730ed948c202342dc2e761d47a0ae}\label{tree_8c_a297730ed948c202342dc2e761d47a0ae} 
+void {\bfseries Release\+Lock} (\mbox{\hyperlink{structTreeNode}{Tree}} T, const char \texorpdfstring{$\ast$}{*}path)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{tree_8c_a124403069d58cae6c7e429fd30f24676}\label{tree_8c_a124403069d58cae6c7e429fd30f24676} 
+const i32 {\bfseries Max\+Buffer\+Length} = MAX\+\_\+\+STR\+\_\+\+LEN \texorpdfstring{$\ast$}{*} 2000
+\item 
+\Hypertarget{tree_8c_a44c25b1eee925933a0d22af9b4ff43ed}\label{tree_8c_a44c25b1eee925933a0d22af9b4ff43ed} 
+\begin{tabbing}
+xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=xx\=\kill
+struct \{\\
+\>\mbox{\hyperlink{structnode}{node}} \texorpdfstring{$\ast$}{*} {\bfseries ll}\\
+\>i32 {\bfseries length}\\
+\} {\bfseries cache\_head} = \{0\}\\
+
+\end{tabbing}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Contains all the functions related to directory trees. 
+
+
+\begin{DoxyItemize}
+\item Functions for initialising node for info for each directory.
+\item Functions for finding directory nodes with paths.
+\item Functions for utilising the nodes or finding specific info. 
+\end{DoxyItemize}
+
+\doxysubsection{Function Documentation}
+\Hypertarget{tree_8c_a0a78f0dee8b2ee720eccc8ac5cb491b9}\label{tree_8c_a0a78f0dee8b2ee720eccc8ac5cb491b9} 
+\index{tree.c@{tree.c}!Is\_File@{Is\_File}}
+\index{Is\_File@{Is\_File}!tree.c@{tree.c}}
+\doxysubsubsection{\texorpdfstring{Is\_File()}{Is\_File()}}
+{\footnotesize\ttfamily i8 Is\+\_\+\+File (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structTreeNode}{Tree}}}]{T,  }\item[{const char \texorpdfstring{$\ast$}{*}}]{path }\end{DoxyParamCaption})}
+
+
+
+Checks if the current path is empty or directory or a file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em T} & The root node of the tree. \\
+\hline
+{\em path} & The path relative to the root node. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+i8 -\/1 if the file/dir doesn\textquotesingle{}t exist, 0 if it is a directory and 1 if it is a file. 
+\end{DoxyReturn}
+\Hypertarget{tree_8c_a219faf2e15dc29c52524db4ab5be2238}\label{tree_8c_a219faf2e15dc29c52524db4ab5be2238} 
+\index{tree.c@{tree.c}!ProcessDirPath@{ProcessDirPath}}
+\index{ProcessDirPath@{ProcessDirPath}!tree.c@{tree.c}}
+\doxysubsubsection{\texorpdfstring{ProcessDirPath()}{ProcessDirPath()}}
+{\footnotesize\ttfamily struct \mbox{\hyperlink{structTreeNode}{Tree\+Node}} \texorpdfstring{$\ast$}{*} Process\+Dir\+Path (\begin{DoxyParamCaption}\item[{const char \texorpdfstring{$\ast$}{*}}]{Dir\+Path,  }\item[{\mbox{\hyperlink{structTreeNode}{Tree}}}]{T,  }\item[{bool}]{Create\+Flag }\end{DoxyParamCaption})}
+
+
+
+finds the tree node with the given path 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Dir\+Path} & the path of the required node relative to T \\
+\hline
+{\em T} & the root node of the tree \\
+\hline
+{\em Create\+Flag} & if the required node doesn\textquotesingle{}t exist and Create\+Flag is enabled then the node is created. Otherwise NULL is returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+struct Tree\+Node\texorpdfstring{$\ast$}{*} Required Node 
+\end{DoxyReturn}
