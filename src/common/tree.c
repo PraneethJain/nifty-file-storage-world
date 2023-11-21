@@ -433,15 +433,16 @@ void RemoveServerPath(Tree T, u32 ss_id)
 // checks if path is cached
 i32 CheckCache(const char *path)
 {
+  // printf("Checking in cache for path %s\n", path);
   i32 req_ssid;
   node *prev = NULL;
   node *curr = cache_head.ll;
-  // printf("Length of cache = %d\n", cache_head.length); // remove if not needed
+  // printf("Length of cache = %d\n", cache_head.length);
   while (curr != NULL)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      // printf("Cache hit!\n");
+      // printf("Cache hit! %s\n", path);
       req_ssid = curr->SSID;
       if (prev != NULL)
       {
@@ -454,7 +455,7 @@ i32 CheckCache(const char *path)
     prev = curr;
     curr = curr->next;
   }
-  // printf("Cache miss!\n");
+  // printf("Cache miss! %s\n", path);
   return -1;
 }
 
@@ -481,7 +482,7 @@ void InsertIntoCache(const char *path, i32 ssid)
     ++cache_head.length;
 }
 
-i32 GetPathSSID(Tree T, const char *path)
+i32 GetPathSSID(Tree T, const char *path, bool cache_flag)
 {
   if (strncmp(path, ".rd", 3) != 0)
   {
@@ -499,7 +500,7 @@ i32 GetPathSSID(Tree T, const char *path)
   Tree RetT = FindChild(T, token, 0, 0);
   if (RetT == NULL)
     return -1;
-  if (strncmp(path, ".rd", 3) != 0)
+  if (cache_flag)
     InsertIntoCache(path, RetT->NodeInfo.ss_id);
   return RetT->NodeInfo.ss_id;
 }

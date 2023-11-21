@@ -67,7 +67,7 @@ void create_operations(const i32 clientfd, const enum operation op)
   }
   else
   {
-    temp = ss_from_path(parent);
+    temp = ss_from_path(parent, true);
     free(parent);
   }
   if (temp == NULL)
@@ -178,7 +178,7 @@ void delete_operations(const i32 clientfd, const enum operation op)
 
 /**
  * @brief Copy a file or folder across different storage servers or same storage servers
- * 
+ *
  * @param CopyTree The tree being copied from
  * @param from_path current file/folder path being copied
  * @param dest_path destination path
@@ -187,8 +187,8 @@ void delete_operations(const i32 clientfd, const enum operation op)
  * @param to_port nm port for the `to` storage server
  * @param UUID unique identifier of the `to` storage server
  */
-void copy_file_or_folder(Tree CopyTree, const char *from_path, const char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
-                         const i32 to_port, char *UUID)
+void copy_file_or_folder(Tree CopyTree, const char *from_path, const char *dest_path, const i32 from_sockfd,
+                         const i32 to_sockfd, const i32 to_port, char *UUID)
 {
   enum status code;
   i8 is_file = CopyTree->NodeInfo.IsFile;
@@ -248,9 +248,12 @@ void copy_operation(const i32 clientfd, const enum operation op)
   char to_path[MAX_STR_LEN];
   LOG_RECV(clientfd, from_path);
   LOG_RECV(clientfd, to_path);
+  bool cache_flag = true;
+  if (strncmp(from_path, ".rd", 3) * strncmp(to_path, ".rd", 3) == 0)
+    cache_flag = false;
 
   LOG("Finding storage server - naming server port corresponding to path %s\n", from_path);
-  storage_server_data *from_ss = ss_from_path(from_path);
+  storage_server_data *from_ss = ss_from_path(from_path, cache_flag);
 
   if (from_ss == NULL)
   {
@@ -263,7 +266,7 @@ void copy_operation(const i32 clientfd, const enum operation op)
   const i32 from_port = from_ss->port_for_nm;
 
   LOG("Finding storage server - naming server port corresponding to path %s\n", to_path);
-  storage_server_data *to_ss = ss_from_path(to_path);
+  storage_server_data *to_ss = ss_from_path(to_path, cache_flag);
   if (to_ss == NULL)
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", to_path);

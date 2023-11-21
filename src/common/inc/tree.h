@@ -39,7 +39,7 @@ Tree ReceiveTreeData(char *buffer);
 void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID);
 
 void RemoveServerPath(Tree T, u32 ss_id);
-i32 GetPathSSID(Tree T, const char *path);
+i32 GetPathSSID(Tree T, const char *path, bool cache_flag);
 char *get_parent(const char *path);
 Tree GetTreeFromPath(Tree T, const char *path);
 i8 Is_File(Tree T, const char *path);

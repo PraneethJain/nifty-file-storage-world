@@ -270,11 +270,13 @@ storage_server_data *MinSizeStorageServer()
  * @brief Finds the storage server corresponding to the path and returns its data
  *
  * @param path
+ * @param cache_flag
  * @return storage_server_data
  */
-storage_server_data *ss_from_path(const char *path)
+storage_server_data *ss_from_path(const char *path, bool cache_flag)
 {
-  i32 ssid = GetPathSSID(NM_Tree, path);
+  cache_flag &= strncmp(path, ".rd", 3) != 0;
+  i32 ssid = GetPathSSID(NM_Tree, path, cache_flag);
   if (ssid != -1)
   {
     for (connected_storage_server_node *cur = connected_storage_servers.first; cur != NULL; cur = cur->next)
@@ -296,7 +298,7 @@ storage_server_data *ss_from_path(const char *path)
  */
 i32 ss_client_port_from_path(const char *path)
 {
-  storage_server_data *ss_info = ss_from_path(path);
+  storage_server_data *ss_info = ss_from_path(path, true);
   if (ss_info == NULL)
   {
     return -1;
@@ -312,7 +314,7 @@ i32 ss_client_port_from_path(const char *path)
  */
 i32 ss_nm_port_from_path(const char *path)
 {
-  storage_server_data *ss_info = ss_from_path(path);
+  storage_server_data *ss_info = ss_from_path(path, true);
   if (ss_info == NULL)
   {
     return -1;
