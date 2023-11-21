@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Network File System", "index.html", [
+  [ "Nifty File Storage World", "index.html", [
     [ "README", "md_README.html", null ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Network File System: src/common/inc/tree.h Source File</title>
+<title>Nifty File Storage World: src/common/inc/tree.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -17,6 +17,7 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -25,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Network File System
+   <div id="projectname">Nifty File Storage World
    </div>
   </td>
  </tr>
@@ -143,15 +144,15 @@ $(document).ready(function(){initNavTree('tree_8h_source.html',''); initResizabl
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keywordtype">void</span> RemoveServerPath(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, u32 ss_id);</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>i32 GetPathSSID(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, <span class="keywordtype">bool</span> cache_flag);</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">char</span> *get_parent(<span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">char</span> *GetParent(<span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><a class="code hl_struct" href="structTreeNode.html">Tree</a> GetTreeFromPath(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>i8 Is_File(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>i8 IsFile(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="keywordtype">void</span> AddFile(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, i32 port_ss_nm, <span class="keywordtype">char</span> *UUID);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keywordtype">void</span> AddFolder(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path, i32 port_ss_nm, <span class="keywordtype">char</span> *UUID);</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keywordtype">void</span> DeleteFile(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="keywordtype">void</span> DeleteFolder(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>i8 ancestor(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *from_path, <span class="keyword">const</span> <span class="keywordtype">char</span> *to_path);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>i8 Ancestor(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *from_path, <span class="keyword">const</span> <span class="keywordtype">char</span> *to_path);</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keywordtype">void</span> AcquireReaderLock(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="keywordtype">void</span> AcquireWriterLock(<a class="code hl_struct" href="structTreeNode.html">Tree</a> T, <span class="keyword">const</span> <span class="keywordtype">char</span> *path);</div>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Network File System: src/common/tree.c File Reference</title>
+<title>Nifty File Storage World: src/common/tree.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -17,6 +17,7 @@
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -25,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Network File System
+   <div id="projectname">Nifty File Storage World
    </div>
   </td>
  </tr>
@@ -179,38 +180,35 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>InitDirectory</b> (<a
 <tr class="memitem:a9abba94ce5ae90e7798e8fab8892f28e" id="r_a9abba94ce5ae90e7798e8fab8892f28e"><td class="memItemLeft" align="right" valign="top"><a id="a9abba94ce5ae90e7798e8fab8892f28e" name="a9abba94ce5ae90e7798e8fab8892f28e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveInaccessiblePath</b> (<a class="el" href="structTreeNode.html">Tree</a> Parent, const char *DirPath)</td></tr>
 <tr class="separator:a9abba94ce5ae90e7798e8fab8892f28e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ac7941d36715ca7697252e86ceecfbe" id="r_a2ac7941d36715ca7697252e86ceecfbe"><td class="memItemLeft" align="right" valign="top"><a id="a2ac7941d36715ca7697252e86ceecfbe" name="a2ac7941d36715ca7697252e86ceecfbe"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>MergeTree</b> (<a class="el" href="structTreeNode.html">Tree</a> T1, <a class="el" href="structTreeNode.html">Tree</a> T2, u32 ss_id, char *UUID)</td></tr>
+<tr class="memitem:a2ac7941d36715ca7697252e86ceecfbe" id="r_a2ac7941d36715ca7697252e86ceecfbe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a2ac7941d36715ca7697252e86ceecfbe">MergeTree</a> (<a class="el" href="structTreeNode.html">Tree</a> T1, <a class="el" href="structTreeNode.html">Tree</a> T2, u32 ss_id, char *UUID)</td></tr>
+<tr class="memdesc:a2ac7941d36715ca7697252e86ceecfbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Merge Tree T1 with T2.  <br /></td></tr>
 <tr class="separator:a2ac7941d36715ca7697252e86ceecfbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ffc3ae0002fc80bbf37cb44c722fbb8" id="r_a2ffc3ae0002fc80bbf37cb44c722fbb8"><td class="memItemLeft" align="right" valign="top"><a id="a2ffc3ae0002fc80bbf37cb44c722fbb8" name="a2ffc3ae0002fc80bbf37cb44c722fbb8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DeleteFromCacheWithSSID</b> (u32 ss_id)</td></tr>
+<tr class="memitem:a2ffc3ae0002fc80bbf37cb44c722fbb8" id="r_a2ffc3ae0002fc80bbf37cb44c722fbb8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a2ffc3ae0002fc80bbf37cb44c722fbb8">DeleteFromCacheWithSSID</a> (u32 ss_id)</td></tr>
+<tr class="memdesc:a2ffc3ae0002fc80bbf37cb44c722fbb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes all cache nodes with ssid of disconnected storage server.  <br /></td></tr>
 <tr class="separator:a2ffc3ae0002fc80bbf37cb44c722fbb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a46ab3e44e4f7c29e426b9466f976988e" id="r_a46ab3e44e4f7c29e426b9466f976988e"><td class="memItemLeft" align="right" valign="top"><a id="a46ab3e44e4f7c29e426b9466f976988e" name="a46ab3e44e4f7c29e426b9466f976988e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>RemoveServerPath</b> (<a class="el" href="structTreeNode.html">Tree</a> T, u32 ss_id)</td></tr>
+<tr class="memitem:a46ab3e44e4f7c29e426b9466f976988e" id="r_a46ab3e44e4f7c29e426b9466f976988e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a46ab3e44e4f7c29e426b9466f976988e">RemoveServerPath</a> (<a class="el" href="structTreeNode.html">Tree</a> T, u32 ss_id)</td></tr>
+<tr class="memdesc:a46ab3e44e4f7c29e426b9466f976988e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all the directory nodes from the tree of server with the given ssid.  <br /></td></tr>
 <tr class="separator:a46ab3e44e4f7c29e426b9466f976988e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4cf883ee3a88e22fd37ffe3b5dbf359f" id="r_a4cf883ee3a88e22fd37ffe3b5dbf359f"><td class="memItemLeft" align="right" valign="top"><a id="a4cf883ee3a88e22fd37ffe3b5dbf359f" name="a4cf883ee3a88e22fd37ffe3b5dbf359f"></a>
-i32&#160;</td><td class="memItemRight" valign="bottom"><b>CheckCache</b> (const char *path)</td></tr>
+<tr class="memitem:a4cf883ee3a88e22fd37ffe3b5dbf359f" id="r_a4cf883ee3a88e22fd37ffe3b5dbf359f"><td class="memItemLeft" align="right" valign="top">i32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a4cf883ee3a88e22fd37ffe3b5dbf359f">CheckCache</a> (const char *path)</td></tr>
+<tr class="memdesc:a4cf883ee3a88e22fd37ffe3b5dbf359f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if path is cached.  <br /></td></tr>
 <tr class="separator:a4cf883ee3a88e22fd37ffe3b5dbf359f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa347585e0e15672fd7f81244df88fa09" id="r_aa347585e0e15672fd7f81244df88fa09"><td class="memItemLeft" align="right" valign="top"><a id="aa347585e0e15672fd7f81244df88fa09" name="aa347585e0e15672fd7f81244df88fa09"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>InsertIntoCache</b> (const char *path, i32 ssid)</td></tr>
+<tr class="memitem:aa347585e0e15672fd7f81244df88fa09" id="r_aa347585e0e15672fd7f81244df88fa09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#aa347585e0e15672fd7f81244df88fa09">InsertIntoCache</a> (const char *path, i32 ssid)</td></tr>
+<tr class="memdesc:aa347585e0e15672fd7f81244df88fa09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts path into cache.  <br /></td></tr>
 <tr class="separator:aa347585e0e15672fd7f81244df88fa09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1302459f766f441d9fd19d1e1d320124" id="r_a1302459f766f441d9fd19d1e1d320124"><td class="memItemLeft" align="right" valign="top"><a id="a1302459f766f441d9fd19d1e1d320124" name="a1302459f766f441d9fd19d1e1d320124"></a>
-i32&#160;</td><td class="memItemRight" valign="bottom"><b>GetPathSSID</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path, bool cache_flag)</td></tr>
+<tr class="memitem:a1302459f766f441d9fd19d1e1d320124" id="r_a1302459f766f441d9fd19d1e1d320124"><td class="memItemLeft" align="right" valign="top">i32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a1302459f766f441d9fd19d1e1d320124">GetPathSSID</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path, bool cache_flag)</td></tr>
+<tr class="memdesc:a1302459f766f441d9fd19d1e1d320124"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the SSID of the SS from the path.  <br /></td></tr>
 <tr class="separator:a1302459f766f441d9fd19d1e1d320124"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf54a8bc025b501c58c500333a0a4f68" id="r_acf54a8bc025b501c58c500333a0a4f68"><td class="memItemLeft" align="right" valign="top"><a id="acf54a8bc025b501c58c500333a0a4f68" name="acf54a8bc025b501c58c500333a0a4f68"></a>
-<a class="el" href="structTreeNode.html">Tree</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetParentOfPath</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
-<tr class="separator:acf54a8bc025b501c58c500333a0a4f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe83de7ba5ddbc7e70ca8a901000199c" id="r_abe83de7ba5ddbc7e70ca8a901000199c"><td class="memItemLeft" align="right" valign="top"><a id="abe83de7ba5ddbc7e70ca8a901000199c" name="abe83de7ba5ddbc7e70ca8a901000199c"></a>
-char *&#160;</td><td class="memItemRight" valign="bottom"><b>get_parent</b> (const char *path)</td></tr>
-<tr class="separator:abe83de7ba5ddbc7e70ca8a901000199c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81f5a2762a4a930ff1a1119410617542" id="r_a81f5a2762a4a930ff1a1119410617542"><td class="memItemLeft" align="right" valign="top"><a id="a81f5a2762a4a930ff1a1119410617542" name="a81f5a2762a4a930ff1a1119410617542"></a>
+char *&#160;</td><td class="memItemRight" valign="bottom"><b>GetParent</b> (const char *path)</td></tr>
+<tr class="separator:a81f5a2762a4a930ff1a1119410617542"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe13e012c586c68d30693275fef3272a" id="r_abe13e012c586c68d30693275fef3272a"><td class="memItemLeft" align="right" valign="top"><a id="abe13e012c586c68d30693275fef3272a" name="abe13e012c586c68d30693275fef3272a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddFile</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path, i32 port_ss_nm, char *UUID)</td></tr>
 <tr class="separator:abe13e012c586c68d30693275fef3272a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cdea5aa36a9c88d524727a137a166b3" id="r_a7cdea5aa36a9c88d524727a137a166b3"><td class="memItemLeft" align="right" valign="top"><a id="a7cdea5aa36a9c88d524727a137a166b3" name="a7cdea5aa36a9c88d524727a137a166b3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddFolder</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path, i32 port_ss_nm, char *UUID)</td></tr>
 <tr class="separator:a7cdea5aa36a9c88d524727a137a166b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a0d88bf1bd3c2ffbb23d50cec3a915e" id="r_a1a0d88bf1bd3c2ffbb23d50cec3a915e"><td class="memItemLeft" align="right" valign="top"><a id="a1a0d88bf1bd3c2ffbb23d50cec3a915e" name="a1a0d88bf1bd3c2ffbb23d50cec3a915e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DeleteFromCache</b> (const char *path)</td></tr>
+<tr class="memitem:a1a0d88bf1bd3c2ffbb23d50cec3a915e" id="r_a1a0d88bf1bd3c2ffbb23d50cec3a915e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a1a0d88bf1bd3c2ffbb23d50cec3a915e">DeleteFromCache</a> (const char *path)</td></tr>
+<tr class="memdesc:a1a0d88bf1bd3c2ffbb23d50cec3a915e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes node with given path from cache.  <br /></td></tr>
 <tr class="separator:a1a0d88bf1bd3c2ffbb23d50cec3a915e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa54ef0a91c7746a88c669669d38197b" id="r_aaa54ef0a91c7746a88c669669d38197b"><td class="memItemLeft" align="right" valign="top"><a id="aaa54ef0a91c7746a88c669669d38197b" name="aaa54ef0a91c7746a88c669669d38197b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DeleteFile</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
@@ -218,32 +216,32 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>DeleteFile</b> (<a cl
 <tr class="memitem:a9c4936cb29d24100a73a0f8e06788377" id="r_a9c4936cb29d24100a73a0f8e06788377"><td class="memItemLeft" align="right" valign="top"><a id="a9c4936cb29d24100a73a0f8e06788377" name="a9c4936cb29d24100a73a0f8e06788377"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DeleteFolder</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
 <tr class="separator:a9c4936cb29d24100a73a0f8e06788377"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a566e5a329fbaf0eb58d29d63108ae1be" id="r_a566e5a329fbaf0eb58d29d63108ae1be"><td class="memItemLeft" align="right" valign="top"><a id="a566e5a329fbaf0eb58d29d63108ae1be" name="a566e5a329fbaf0eb58d29d63108ae1be"></a>
-<a class="el" href="structTreeNode.html">Tree</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetTreeFromPath</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memitem:a566e5a329fbaf0eb58d29d63108ae1be" id="r_a566e5a329fbaf0eb58d29d63108ae1be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a566e5a329fbaf0eb58d29d63108ae1be">GetTreeFromPath</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memdesc:a566e5a329fbaf0eb58d29d63108ae1be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the Tree From Path String.  <br /></td></tr>
 <tr class="separator:a566e5a329fbaf0eb58d29d63108ae1be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a78f0dee8b2ee720eccc8ac5cb491b9" id="r_a0a78f0dee8b2ee720eccc8ac5cb491b9"><td class="memItemLeft" align="right" valign="top">i8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a0a78f0dee8b2ee720eccc8ac5cb491b9">Is_File</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
-<tr class="memdesc:a0a78f0dee8b2ee720eccc8ac5cb491b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the current path is empty or directory or a file.  <br /></td></tr>
-<tr class="separator:a0a78f0dee8b2ee720eccc8ac5cb491b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e285c32ec9a0ba8aacb02bb61fdb855" id="r_a2e285c32ec9a0ba8aacb02bb61fdb855"><td class="memItemLeft" align="right" valign="top"><a id="a2e285c32ec9a0ba8aacb02bb61fdb855" name="a2e285c32ec9a0ba8aacb02bb61fdb855"></a>
-i8&#160;</td><td class="memItemRight" valign="bottom"><b>ancestor</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *from_path, const char *to_path)</td></tr>
-<tr class="separator:a2e285c32ec9a0ba8aacb02bb61fdb855"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58fe784a6a2b9c6e24abb079ee283636" id="r_a58fe784a6a2b9c6e24abb079ee283636"><td class="memItemLeft" align="right" valign="top">i8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a58fe784a6a2b9c6e24abb079ee283636">IsFile</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memdesc:a58fe784a6a2b9c6e24abb079ee283636"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the current path is empty or directory or a file.  <br /></td></tr>
+<tr class="separator:a58fe784a6a2b9c6e24abb079ee283636"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a517fe6400cb5b471a11aa59949708e3b" id="r_a517fe6400cb5b471a11aa59949708e3b"><td class="memItemLeft" align="right" valign="top">i8&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a517fe6400cb5b471a11aa59949708e3b">Ancestor</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *from_path, const char *to_path)</td></tr>
+<tr class="memdesc:a517fe6400cb5b471a11aa59949708e3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if from_path directory is ancestor of to_path.  <br /></td></tr>
+<tr class="separator:a517fe6400cb5b471a11aa59949708e3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb89f5aceff338005385859e39b3ebb5" id="r_acb89f5aceff338005385859e39b3ebb5"><td class="memItemLeft" align="right" valign="top"><a id="acb89f5aceff338005385859e39b3ebb5" name="acb89f5aceff338005385859e39b3ebb5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AcquireReaderLockDriver</b> (<a class="el" href="structTreeNode.html">Tree</a> T)</td></tr>
 <tr class="separator:acb89f5aceff338005385859e39b3ebb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2b8d15cd48776eb21d69485e69197a8" id="r_ab2b8d15cd48776eb21d69485e69197a8"><td class="memItemLeft" align="right" valign="top"><a id="ab2b8d15cd48776eb21d69485e69197a8" name="ab2b8d15cd48776eb21d69485e69197a8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AcquireReaderLock</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memitem:ab2b8d15cd48776eb21d69485e69197a8" id="r_ab2b8d15cd48776eb21d69485e69197a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#ab2b8d15cd48776eb21d69485e69197a8">AcquireReaderLock</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memdesc:ab2b8d15cd48776eb21d69485e69197a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquire reader lock of subtree of directory with the given path.  <br /></td></tr>
 <tr class="separator:ab2b8d15cd48776eb21d69485e69197a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d1285ceee5bf7fd506c76d70af961e8" id="r_a7d1285ceee5bf7fd506c76d70af961e8"><td class="memItemLeft" align="right" valign="top"><a id="a7d1285ceee5bf7fd506c76d70af961e8" name="a7d1285ceee5bf7fd506c76d70af961e8"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AcquireWriterLockDriver</b> (<a class="el" href="structTreeNode.html">Tree</a> T)</td></tr>
 <tr class="separator:a7d1285ceee5bf7fd506c76d70af961e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8a40e632f684a1890f6d8f0954cd03b" id="r_ab8a40e632f684a1890f6d8f0954cd03b"><td class="memItemLeft" align="right" valign="top"><a id="ab8a40e632f684a1890f6d8f0954cd03b" name="ab8a40e632f684a1890f6d8f0954cd03b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AcquireWriterLock</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memitem:ab8a40e632f684a1890f6d8f0954cd03b" id="r_ab8a40e632f684a1890f6d8f0954cd03b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#ab8a40e632f684a1890f6d8f0954cd03b">AcquireWriterLock</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memdesc:ab8a40e632f684a1890f6d8f0954cd03b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquire writer lock of subtree of directory with the given path.  <br /></td></tr>
 <tr class="separator:ab8a40e632f684a1890f6d8f0954cd03b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78a6c4d1ce4dbb83de74bac96c07cb26" id="r_a78a6c4d1ce4dbb83de74bac96c07cb26"><td class="memItemLeft" align="right" valign="top"><a id="a78a6c4d1ce4dbb83de74bac96c07cb26" name="a78a6c4d1ce4dbb83de74bac96c07cb26"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ReleaseLockDriver</b> (<a class="el" href="structTreeNode.html">Tree</a> T)</td></tr>
 <tr class="separator:a78a6c4d1ce4dbb83de74bac96c07cb26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a297730ed948c202342dc2e761d47a0ae" id="r_a297730ed948c202342dc2e761d47a0ae"><td class="memItemLeft" align="right" valign="top"><a id="a297730ed948c202342dc2e761d47a0ae" name="a297730ed948c202342dc2e761d47a0ae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ReleaseLock</b> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memitem:a297730ed948c202342dc2e761d47a0ae" id="r_a297730ed948c202342dc2e761d47a0ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tree_8c.html#a297730ed948c202342dc2e761d47a0ae">ReleaseLock</a> (<a class="el" href="structTreeNode.html">Tree</a> T, const char *path)</td></tr>
+<tr class="memdesc:a297730ed948c202342dc2e761d47a0ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release lock of subtree of directory with the given path.  <br /></td></tr>
 <tr class="separator:a297730ed948c202342dc2e761d47a0ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
@@ -271,14 +269,332 @@ struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
 <li>Functions for utilising the nodes or finding specific info. </li>
 </ul>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a0a78f0dee8b2ee720eccc8ac5cb491b9" name="a0a78f0dee8b2ee720eccc8ac5cb491b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a78f0dee8b2ee720eccc8ac5cb491b9">&#9670;&#160;</a></span>Is_File()</h2>
+<a id="ab2b8d15cd48776eb21d69485e69197a8" name="ab2b8d15cd48776eb21d69485e69197a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2b8d15cd48776eb21d69485e69197a8">&#9670;&#160;</a></span>AcquireReaderLock()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">i8 Is_File </td>
+          <td class="memname">void AcquireReaderLock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Acquire reader lock of subtree of directory with the given path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab8a40e632f684a1890f6d8f0954cd03b" name="ab8a40e632f684a1890f6d8f0954cd03b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8a40e632f684a1890f6d8f0954cd03b">&#9670;&#160;</a></span>AcquireWriterLock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AcquireWriterLock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Acquire writer lock of subtree of directory with the given path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a517fe6400cb5b471a11aa59949708e3b" name="a517fe6400cb5b471a11aa59949708e3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a517fe6400cb5b471a11aa59949708e3b">&#9670;&#160;</a></span>Ancestor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">i8 Ancestor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>from_path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>to_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check if from_path directory is ancestor of to_path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">from_path</td><td></td></tr>
+    <tr><td class="paramname">to_path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>1 if from_path is ancestor of to_path and 0 otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a4cf883ee3a88e22fd37ffe3b5dbf359f" name="a4cf883ee3a88e22fd37ffe3b5dbf359f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cf883ee3a88e22fd37ffe3b5dbf359f">&#9670;&#160;</a></span>CheckCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">i32 CheckCache </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks if path is cached. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>i32 </dd></dl>
+
+</div>
+</div>
+<a id="a1a0d88bf1bd3c2ffbb23d50cec3a915e" name="a1a0d88bf1bd3c2ffbb23d50cec3a915e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a0d88bf1bd3c2ffbb23d50cec3a915e">&#9670;&#160;</a></span>DeleteFromCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DeleteFromCache </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes node with given path from cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2ffc3ae0002fc80bbf37cb44c722fbb8" name="a2ffc3ae0002fc80bbf37cb44c722fbb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ffc3ae0002fc80bbf37cb44c722fbb8">&#9670;&#160;</a></span>DeleteFromCacheWithSSID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void DeleteFromCacheWithSSID </td>
+          <td>(</td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>ss_id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes all cache nodes with ssid of disconnected storage server. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ss_id</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1302459f766f441d9fd19d1e1d320124" name="a1302459f766f441d9fd19d1e1d320124"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1302459f766f441d9fd19d1e1d320124">&#9670;&#160;</a></span>GetPathSSID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">i32 GetPathSSID </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>cache_flag</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the SSID of the SS from the path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">path</td><td></td></tr>
+    <tr><td class="paramname">cache_flag</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>i32 </dd></dl>
+
+</div>
+</div>
+<a id="a566e5a329fbaf0eb58d29d63108ae1be" name="a566e5a329fbaf0eb58d29d63108ae1be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a566e5a329fbaf0eb58d29d63108ae1be">&#9670;&#160;</a></span>GetTreeFromPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structTreeNode.html">Tree</a> GetTreeFromPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the Tree From Path String. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Tree </dd></dl>
+
+</div>
+</div>
+<a id="aa347585e0e15672fd7f81244df88fa09" name="aa347585e0e15672fd7f81244df88fa09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa347585e0e15672fd7f81244df88fa09">&#9670;&#160;</a></span>InsertIntoCache()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void InsertIntoCache </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">i32&#160;</td>
+          <td class="paramname"><em>ssid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts path into cache. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">path</td><td></td></tr>
+    <tr><td class="paramname">ssid</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a58fe784a6a2b9c6e24abb079ee283636" name="a58fe784a6a2b9c6e24abb079ee283636"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58fe784a6a2b9c6e24abb079ee283636">&#9670;&#160;</a></span>IsFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">i8 IsFile </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
           <td class="paramname"><em>T</em>, </td>
@@ -306,6 +622,57 @@ struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>i8 -1 if the file/dir doesn't exist, 0 if it is a directory and 1 if it is a file. </dd></dl>
+
+</div>
+</div>
+<a id="a2ac7941d36715ca7697252e86ceecfbe" name="a2ac7941d36715ca7697252e86ceecfbe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac7941d36715ca7697252e86ceecfbe">&#9670;&#160;</a></span>MergeTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MergeTree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>ss_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>UUID</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Merge Tree T1 with T2. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T1</td><td></td></tr>
+    <tr><td class="paramname">T2</td><td></td></tr>
+    <tr><td class="paramname">ss_id</td><td></td></tr>
+    <tr><td class="paramname">UUID</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -351,6 +718,80 @@ struct {&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>struct TreeNode* Required Node </dd></dl>
+
+</div>
+</div>
+<a id="a297730ed948c202342dc2e761d47a0ae" name="a297730ed948c202342dc2e761d47a0ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a297730ed948c202342dc2e761d47a0ae">&#9670;&#160;</a></span>ReleaseLock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ReleaseLock </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release lock of subtree of directory with the given path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">path</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a46ab3e44e4f7c29e426b9466f976988e" name="a46ab3e44e4f7c29e426b9466f976988e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46ab3e44e4f7c29e426b9466f976988e">&#9670;&#160;</a></span>RemoveServerPath()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RemoveServerPath </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structTreeNode.html">Tree</a>&#160;</td>
+          <td class="paramname"><em>T</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">u32&#160;</td>
+          <td class="paramname"><em>ss_id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all the directory nodes from the tree of server with the given ssid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">T</td><td></td></tr>
+    <tr><td class="paramname">ss_id</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
