@@ -12,6 +12,7 @@ struct Information
   bool Access;
   u32 ss_id;
   char UUID[MAX_STR_LEN];
+  pthread_rwlock_t rwlock;
   /*
   Extra Information
   */

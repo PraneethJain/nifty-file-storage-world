@@ -251,6 +251,8 @@ int main()
         printf("\n");
       }
       close(ss_sockfd);
+      enum operation ack = ACK;
+      SEND(nm_sockfd, ack);
     }
     else if (op == CREATE_FILE || op == CREATE_FOLDER)
     {

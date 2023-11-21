@@ -34,6 +34,8 @@ void send_client_port(const i32 clientfd)
   LOG("Found storage server client port %i for path %s\n", port, path);
   LOG_SEND(clientfd, code);
   LOG_SEND(clientfd, port);
+  enum operation ack;
+  LOG_RECV(clientfd, ack);
 }
 
 /**
@@ -366,6 +368,9 @@ void *client_relay(void *arg)
     case DISCONNECT:
       disconnect = true;
       LOG("Client disconnected\n");
+      break;
+    default:
+      LOG("Received invalid operation: %d\n", op);
       break;
     }
   }

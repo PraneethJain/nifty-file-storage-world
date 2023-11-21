@@ -33,6 +33,7 @@ struct TreeNode *InitNode(const char *Name, struct TreeNode *Parent)
   struct TreeNode *Node = malloc(sizeof(struct TreeNode));
   strcpy(Node->NodeInfo.DirectoryName, Name);
   Node->NodeInfo.NumChild = 0;
+  pthread_rwlock_init(&Node->NodeInfo.rwlock, NULL);
   Node->Parent = Parent;
   Node->ChildDirectoryLL = NULL;
   Node->NextSibling = NULL;

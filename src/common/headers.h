@@ -6,7 +6,6 @@
 #include <dirent.h>
 #include <errno.h>
 #include <netinet/in.h>
-#include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -53,6 +52,7 @@ enum operation
   DELETE_FOLDER,
   COPY_FILE,
   COPY_FOLDER,
+  ACK,
   DISCONNECT
 };
 
