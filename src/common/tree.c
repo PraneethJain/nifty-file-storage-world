@@ -433,14 +433,18 @@ void MergeTree(Tree T1, Tree T2, u32 ss_id, char *UUID)
   free(T2);
 }
 
-//  Deletes all cache nodes with ssid of disconnected storage server
+/**
+ * @brief Deletes all cache nodes with ssid of disconnected storage server
+ * 
+ * @param ss_id 
+ */
 void DeleteFromCacheWithSSID(u32 ss_id)
 {
   node *prev = NULL;
   node *curr = cache_head.ll;
   while (curr != NULL)
   {
-    if (curr->SSID == (i32)ss_id) // typecasting because of moida's nakhre
+    if (curr->SSID == (i32)ss_id)
     {
       node *temp = curr;
       if (prev != NULL)
@@ -486,19 +490,21 @@ void RemoveServerPath(Tree T, u32 ss_id)
   }
 }
 
-// checks if path is cached
+/**
+ * @brief Checks if path is cached
+ * 
+ * @param path 
+ * @return i32 
+ */
 i32 CheckCache(const char *path)
 {
-  // printf("Checking in cache for path %s\n", path);
   i32 req_ssid;
   node *prev = NULL;
   node *curr = cache_head.ll;
-  // printf("Length of cache = %d\n", cache_head.length);
   while (curr != NULL)
   {
     if (strcmp(curr->path, path) == 0)
     {
-      // printf("Cache hit! %s\n", path);
       req_ssid = curr->SSID;
       if (prev != NULL)
       {
@@ -511,11 +517,15 @@ i32 CheckCache(const char *path)
     prev = curr;
     curr = curr->next;
   }
-  // printf("Cache miss! %s\n", path);
   return -1;
 }
 
-// inserts path into cache
+/**
+ * @brief Inserts path into cache
+ * 
+ * @param path 
+ * @param ssid 
+ */
 void InsertIntoCache(const char *path, i32 ssid)
 {
   node *newnode = malloc(sizeof(node));
@@ -616,6 +626,11 @@ void AddFolder(Tree T, const char *path, i32 port_ss_nm, char *UUID)
   strcpy(temp->NodeInfo.UUID, UUID);
 }
 
+/**
+ * @brief Deletes node with given path from cache
+ * 
+ * @param path 
+ */
 void DeleteFromCache(const char *path)
 {
   node *prev = NULL;
