@@ -20,9 +20,14 @@ i8 get_operation()
   while (op_int < 1 || op_int >= END_OPERATION)
   {
     printf(C_YELLOW "Choice: " C_RESET);
-    if (scanf("%hhi", &op_int) != 1)
-      while (getchar() != '\n')
-        ;
+    char buf[MAX_STR_LEN];
+    fgets(buf, MAX_STR_LEN, stdin);
+    char *endptr;
+    op_int = strtol(buf, &endptr, 10);
+    if ((errno != 0 && op_int == 0) || endptr == buf)
+    {
+      continue;
+    }
   }
   return op_int - 1;
 }
@@ -40,13 +45,12 @@ bool path_error(const char *path)
   return false;
 }
 
-void read_path(char *path_buffer, bool flag)
+void read_path(char *path_buffer)
 {
-  if (flag)
-  {
-    fgets(path_buffer, MAX_STR_LEN, stdin);
-    path_buffer[strcspn(path_buffer, "\n")] = 0;
-  }
+  printf(C_YELLOW "Enter path: " C_RESET);
+  fgets(path_buffer, MAX_STR_LEN, stdin);
+  path_buffer[strcspn(path_buffer, "\n")] = 0;
+
   while (path_error(path_buffer))
   {
     printf(C_YELLOW "Enter path: " C_RESET);
@@ -180,16 +184,13 @@ int main()
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
   while (1)
   {
-    char ch;
-    scanf("%c", &ch);
-    system("clear");
     const enum operation op = get_operation();
     SEND(nm_sockfd, op);
     enum status code;
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
-      read_path(path, true);
+      read_path(path);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
 
@@ -259,7 +260,7 @@ int main()
     else if (op == CREATE_FILE || op == CREATE_FOLDER)
     {
       char path[MAX_STR_LEN];
-      read_path(path, true);
+      read_path(path);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
       if (code != SUCCESS)
@@ -271,7 +272,7 @@ int main()
     {
 
       char path[MAX_STR_LEN];
-      read_path(path, true);
+      read_path(path);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
       if (code != SUCCESS)
@@ -286,8 +287,8 @@ int main()
     {
       char from_path[MAX_STR_LEN];
       char to_path[MAX_STR_LEN];
-      read_path(from_path, true);
-      read_path(to_path, false);
+      read_path(from_path);
+      read_path(to_path);
 
       SEND(nm_sockfd, from_path);
       SEND(nm_sockfd, to_path);
@@ -301,14 +302,14 @@ int main()
     else if (op == PRINT_TREE)
     {
       char path_of_subdir[MAX_STR_LEN];
-      read_path(path_of_subdir, true);
+      read_path(path_of_subdir);
 
       SEND(nm_sockfd, path_of_subdir);
 
       RECV(nm_sockfd, code);
       if (code == SUCCESS)
       {
-        char printed_tree[50*MAX_STR_LEN];
+        char printed_tree[50 * MAX_STR_LEN];
         RECV(nm_sockfd, printed_tree);
         printf("%s", printed_tree);
       }
