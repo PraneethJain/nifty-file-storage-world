@@ -52,8 +52,10 @@ enum operation
   DELETE_FOLDER,
   COPY_FILE,
   COPY_FOLDER,
+  PRINT_TREE,
   ACK,
-  DISCONNECT
+  DISCONNECT,
+  END_OPERATION
 };
 
 enum status

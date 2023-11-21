@@ -14,9 +14,10 @@ i8 get_operation()
   printf(C_YELLOW "\nOperations:-\n" C_CYAN "1.Read\n"
                   "2.Write\n"
                   "3.Metadata\n" C_GREEN "4.Create file\n" C_RED "5.Delete file\n" C_GREEN "6.Create folder\n" C_RED
-                  "7.Delete folder\n" C_WHITE "8.Copy file\n" C_WHITE "9.Copy folder\n" C_BLACK "10.Exit\n");
+                  "7.Delete folder\n" C_WHITE "8.Copy file\n" C_WHITE "9.Copy folder\n" C_BLUE "10.Print Tree\n" C_BLACK
+                  "11.Exit\n");
   i8 op_int = -1;
-  while (op_int < 1 || op_int > 10)
+  while (op_int < 1 || op_int >= END_OPERATION)
   {
     printf(C_YELLOW "Choice: " C_RESET);
     scanf("%hhi", &op_int);
@@ -297,6 +298,10 @@ int main()
         printf("Copied successfully\n");
       else
         print_error(code);
+    }
+    else if (op == PRINT_TREE)
+    {
+      // rana write
     }
     else
     {
