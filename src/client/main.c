@@ -40,12 +40,16 @@ bool path_error(const char *path)
   return false;
 }
 
-void read_path(char *path_buffer)
+void read_path(char *path_buffer, bool flag)
 {
-  fgets(path_buffer, MAX_STR_LEN, stdin);
-  path_buffer[strcspn(path_buffer, "\n")] = 0;
+  if (flag)
+  {
+    fgets(path_buffer, MAX_STR_LEN, stdin);
+    path_buffer[strcspn(path_buffer, "\n")] = 0;
+  }
   while (path_error(path_buffer))
   {
+    printf(C_YELLOW "Enter path: " C_RESET);
     fgets(path_buffer, MAX_STR_LEN, stdin);
     path_buffer[strcspn(path_buffer, "\n")] = 0;
   }
@@ -185,7 +189,7 @@ int main()
     if (op == READ || op == WRITE || op == METADATA)
     {
       char path[MAX_STR_LEN];
-      read_path(path);
+      read_path(path, true);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
 
@@ -272,7 +276,7 @@ int main()
     else if (op == CREATE_FILE || op == CREATE_FOLDER)
     {
       char path[MAX_STR_LEN];
-      read_path(path);
+      read_path(path, true);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
       if (code != SUCCESS)
@@ -284,7 +288,7 @@ int main()
     {
 
       char path[MAX_STR_LEN];
-      read_path(path);
+      read_path(path, true);
       SEND(nm_sockfd, path);
       RECV(nm_sockfd, code);
       if (code != SUCCESS)
@@ -299,8 +303,8 @@ int main()
     {
       char from_path[MAX_STR_LEN];
       char to_path[MAX_STR_LEN];
-      read_path(from_path);
-      read_path(to_path);
+      read_path(from_path, true);
+      read_path(to_path, false);
 
       SEND(nm_sockfd, from_path);
       SEND(nm_sockfd, to_path);
