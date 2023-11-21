@@ -51,48 +51,49 @@ void read_path(char *path_buffer)
 
 void print_error(enum status code)
 {
+  printf("\n" C_RED);
   switch (code)
   {
   case SUCCESS:
     break;
   case INVALID_PATH:
-    printf("Invalid path");
+    printf("The path is invalid!");
     break;
   case INVALID_OPERATION:
-    printf("Invalid operation");
+    printf("Bad operation!");
     break;
   case NOT_FOUND:
-    printf("Not found");
+    printf("The path is not found!");
     break;
   case UNAVAILABLE:
-    printf("Resource is busy");
+    printf("The resource is busy!");
     break;
   case READ_PERMISSION_DENIED:
-    printf("Read permission denied");
+    printf("Read permission denied!");
     break;
   case WRITE_PERMISSION_DENIED:
-    printf("Write permission denied");
+    printf("Write permission denied!");
     break;
   case CREATE_PERMISSION_DENIED:
-    printf("Create permission denied");
+    printf("Create permission denied!");
     break;
   case DELETE_PERMISSION_DENIED:
-    printf("Delete permission denied");
+    printf("Delete permission denied!");
     break;
   case UNKNOWN_PERMISSION_DENIED:
-    printf("Permission denied");
-    break;
-  case NON_EMPTY_DIRECTORY:
-    printf("Directory is not empty");
+    printf("Permission denied!");
     break;
   case INVALID_TYPE:
-    printf("rohan shridhar");
+    printf("File/Folder type does not match!");
     break;
   case RECURSIVE_COPY:
-    printf("rohan shridhar");
+    printf("Cannot copy a file/folder inside its subdirectory!");
+    break;
+  case ALREADY_EXISTS:
+    printf("The path already exists!");
     break;
   }
-  printf("\n");
+  printf("\n" C_RESET);
 }
 
 void print_mode(mode_t mode)
@@ -173,6 +174,9 @@ int main()
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
   while (1)
   {
+    char ch;
+    scanf("%c", &ch);
+    system("clear");
     const enum operation op = get_operation();
     SEND(nm_sockfd, op);
     enum status code;
