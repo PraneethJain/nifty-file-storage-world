@@ -50,6 +50,10 @@ void DeleteFile(Tree T, const char *path);
 void DeleteFolder(Tree T, const char *path);
 i8 ancestor(Tree T, const char *from_path, const char *to_path);
 
+void AcquireReaderLock(Tree T, const char *path);
+void AcquireWriterLock(Tree T, const char *path);
+void ReleaseLock(Tree T, const char *path);
+
 void PrintTree(Tree T, u32 indent);
 
 #endif

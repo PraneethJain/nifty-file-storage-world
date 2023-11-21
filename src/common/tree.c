@@ -229,6 +229,15 @@ i32 DeleteTree(Tree T)
   return 0;
 }
 
+/**
+ * @brief finds the tree node with the given path
+ *
+ * @param DirPath the path of the required node relative to T
+ * @param T the root node of the tree
+ * @param CreateFlag if the required node doesn't exist and CreateFlag is enabled
+ * then the node is created. Otherwise NULL is returned
+ * @return struct TreeNode* Required Node
+ */
 struct TreeNode *ProcessDirPath(const char *DirPath, Tree T, bool CreateFlag)
 {
   struct TreeNode *Cur = T;
@@ -632,6 +641,57 @@ i8 ancestor(Tree T, const char *from_path, const char *to_path)
     to_node = to_node->Parent;
   }
   return 0;
+}
+
+void AcquireReaderLockDriver(Tree T)
+{
+  pthread_rwlock_rdlock(&T->NodeInfo.rwlock);
+  for (Tree trav = T->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)
+  {
+    AcquireReaderLockDriver(trav);
+  }
+}
+
+void AcquireReaderLock(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  if (temp == NULL)
+    return;
+  AcquireReaderLockDriver(temp);
+}
+
+void AcquireWriterLockDriver(Tree T)
+{
+  pthread_rwlock_wrlock(&T->NodeInfo.rwlock);
+  for (Tree trav = T->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)
+  {
+    AcquireWriterLockDriver(trav);
+  }
+}
+
+void AcquireWriterLock(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  if (temp == NULL)
+    return;
+  AcquireWriterLockDriver(temp);
+}
+
+void ReleaseLockDriver(Tree T)
+{
+  pthread_rwlock_unlock(&T->NodeInfo.rwlock);
+  for (Tree trav = T->ChildDirectoryLL; trav != NULL; trav = trav->NextSibling)
+  {
+    ReleaseLockDriver(trav);
+  }
+}
+
+void ReleaseLock(Tree T, const char *path)
+{
+  Tree temp = ProcessDirPath(path, T, 0);
+  if (temp == NULL)
+    return;
+  ReleaseLockDriver(temp);
 }
 
 // void RandomTest()

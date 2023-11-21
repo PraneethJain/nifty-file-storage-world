@@ -15,7 +15,7 @@
  *
  * @param clientfd file descriptor of the client socket
  */
-void send_client_port(const i32 clientfd)
+void send_client_port(const i32 clientfd, const enum operation op)
 {
   char path[MAX_STR_LEN];
 
@@ -31,11 +31,19 @@ void send_client_port(const i32 clientfd)
     LOG_SEND(clientfd, code);
     return;
   }
+
+  if (op == READ || op == METADATA)
+    AcquireReaderLock(NM_Tree, path);
+  else
+    AcquireWriterLock(NM_Tree, path);
+
   LOG("Found storage server client port %i for path %s\n", port, path);
   LOG_SEND(clientfd, code);
   LOG_SEND(clientfd, port);
   enum operation ack;
   LOG_RECV(clientfd, ack);
+
+  ReleaseLock(NM_Tree, path);
 }
 
 /**
@@ -138,6 +146,8 @@ void delete_operations(const i32 clientfd, const enum operation op)
   LOG_SEND(sockfd, op);
   LOG_SEND(sockfd, path);
 
+  AcquireWriterLock(NM_Tree, path);
+
   // send status code received from ss to client
   LOG_RECV(sockfd, code);
   LOG_SEND(clientfd, code);
@@ -145,6 +155,7 @@ void delete_operations(const i32 clientfd, const enum operation op)
 
   if (code != SUCCESS)
   {
+    ReleaseLock(NM_Tree, path);
     LOG("Operation failed with code %i\n", code);
     return;
   }
@@ -176,7 +187,7 @@ void delete_operations(const i32 clientfd, const enum operation op)
  * @param to_port nm port for the `to` storage server
  * @param UUID unique identifier of the `to` storage server
  */
-void copy_file_or_folder(Tree CopyTree, char *from_path, char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
+void copy_file_or_folder(Tree CopyTree, const char *from_path, const char *dest_path, const i32 from_sockfd, const i32 to_sockfd,
                          const i32 to_port, char *UUID)
 {
   enum status code;
@@ -270,7 +281,7 @@ void copy_operation(const i32 clientfd, const enum operation op)
     return;
   }
 
-  if ((op == CREATE_FILE && !Is_File(NM_Tree, from_path)) || (op == COPY_FOLDER && Is_File(NM_Tree, from_path)))
+  if ((op == COPY_FILE && !Is_File(NM_Tree, from_path)) || (op == COPY_FOLDER && Is_File(NM_Tree, from_path)))
   {
     LOG("Not found storage server - naming server port corresponding to the path %s\n", from_path);
     code = NOT_FOUND;
@@ -278,6 +289,8 @@ void copy_operation(const i32 clientfd, const enum operation op)
     return;
   }
   LOG("Found storage server - naming server port corresponding to path %s\n", to_path);
+
+  AcquireReaderLock(NM_Tree, from_path);
 
   Tree CopyTree = GetTreeFromPath(NM_Tree, from_path);
   strcat(to_path, "/");
@@ -306,6 +319,8 @@ void copy_operation(const i32 clientfd, const enum operation op)
   LOG_RECV(to_sockfd, code);
 
   LOG_SEND(clientfd, code);
+
+  ReleaseLock(NM_Tree, from_path);
 
   close(from_sockfd);
   close(to_sockfd);
@@ -362,7 +377,7 @@ void *client_relay(void *arg)
     case READ:
     case WRITE:
     case METADATA:
-      send_client_port(clientfd);
+      send_client_port(clientfd, op);
       break;
     case CREATE_FILE:
     case CREATE_FOLDER:
