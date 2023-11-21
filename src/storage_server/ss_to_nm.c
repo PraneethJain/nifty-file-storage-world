@@ -251,6 +251,8 @@ void *naming_server_relay(void *arg)
       {
         if (errno == EACCES)
           code = CREATE_PERMISSION_DENIED;
+        else if (errno == EEXIST)
+          code = ALREADY_EXISTS;
         else
           code = NOT_FOUND;
       }
