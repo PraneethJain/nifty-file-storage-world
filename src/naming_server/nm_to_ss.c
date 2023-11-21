@@ -185,7 +185,7 @@ void *alive_checker(void *arg)
   const i32 nm_sockfd = connect_to_port(NM_CLIENT_PORT);
   while (1)
   {
-    sleep(5);
+    sleep(15);
     connected_storage_server_node *cur = connected_storage_servers.first;
     connected_storage_server_node *prev = NULL;
     while (cur != NULL)
@@ -216,9 +216,12 @@ void *alive_checker(void *arg)
           {
             prev->next = cur->next;
           }
+          connected_storage_server_node *temp = cur->next;
           free(cur);
+          cur = temp;
           --connected_storage_servers.length;
-          break;
+          CHECK(close(sockfd), -1);
+          continue;
         }
         else
         {
